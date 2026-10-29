@@ -28,9 +28,29 @@ The first run, before the fixes below, scored: degraded CER 90.6% with 0 dishes 
 2. **Split merged columns.** Tesseract merges side-by-side columns into one line. Lines are now split at wide word gaps, and a lone price stays with its dish.
 3. **Re-attach right-aligned prices.** Tesseract returns right-aligned prices as a separate block. Each price-only line is now attached to the nearest text on the same row.
 
+### Real menu photos
+Five openly licensed photos from Wikimedia Commons (CC0 / CC BY-SA, not redistributed in the repo; fetch list in `tests/ocr/real/sources.json`) were run through the deployed scan UI (`node tests/ocr/real-run.ts`). There is no ground truth here, so this is a reading of the output, not a score.
+
+| Photo | Before this round | After |
+| --- | --- | --- |
+| Printed tasting menu (Penarth) | 26 dishes with descriptions | Same; only tasting-menu lines carry prices, which matches the menu |
+| Two-column bistro menu, tilted (Petit Pois) | Columns interleaved; several prices misread (`£350`) | Columns separated; 37/41 rows priced; 7 dropped decimals restored and flagged; dish/description split at the first comma |
+| Thai set menu with bullets and smaller-set descriptions (Sawadee) | 4 dishes | All ~20 dish names correct, descriptions separated. Set menu, so no per-dish prices (correct) |
+| Chalkboard, light on dark, partly hidden by flowers | Garbled | Still mostly garbled (handwriting + occlusion); auto-invert helps a little |
+| Wide shot of a café counter, boards far away | 1 row | 1 row, plus a new hint to get closer so the menu fills the photo |
+
+Changes behind the "after" column:
+- deskew line boxes from Tesseract's baseline angle;
+- a finer gutter detector (columns down to ~1.5% of the page apart);
+- split lines right after a price;
+- detect name→description where the type gets smaller;
+- strip bullets, and allow a trailing note after a price ("(£22.45 per person)");
+- restore dropped decimal points when the rest of the menu uses decimals;
+- auto-invert dark images.
+
 ### Known limits
 - On the degraded photo Tesseract doesn't read the blurred prices at all. The dishes are found and each is flagged "no price found" for the user to fix.
-- The fixtures are rendered images, not phone photos of real paper menus. Real photos (perspective, curvature, glare, decorative fonts) will do worse. The review step exists for that reason.
+- Real photos with heavy perspective, handwriting, chalkboards or occlusion still need substantial correction in the review step.
 - Only English is supported, and only English has been tested.
 
 ## Recommendation engine (`npm test`)

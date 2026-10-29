@@ -70,6 +70,20 @@ describe("parseMenuText — unusual price formats", () => {
   });
 });
 
+describe("parseMenuText — OCR decimal loss", () => {
+  it("restores a dropped decimal point when the rest of the menu uses decimals, and flags it", () => {
+    const r = parseMenuText(["Olives £3.50", "Bread £4.00", "Soup £9.50", "Oysters £10.50", "Croquettes £350", "Salad £8.00"].join("\n"));
+    const cro = r.items.find((i) => i.name === "Croquettes")!;
+    expect(cro.priceCents).toBe(350);
+    expect(cro.flags).toContain("check-price");
+  });
+
+  it("leaves genuinely high prices alone", () => {
+    const r = parseMenuText(["Olives £3.50", "Bread £4.00", "Soup £9.50", "Oysters £10.50", "Tasting menu £120"].join("\n"));
+    expect(r.items.find((i) => i.name === "Tasting menu")!.priceCents).toBe(12000);
+  });
+});
+
 describe("parseMenuText — incomplete and noisy input", () => {
   it("keeps dishes without prices or descriptions and flags them", () => {
     const r = parseMenuText("DESSERTS\nTiramisu\nAffogato\nPanna Cotta");

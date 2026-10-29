@@ -93,6 +93,25 @@ describe("enrichDish", () => {
   });
 });
 
+describe("menu dietary codes", () => {
+  it("reads (V), (VG, GF, DF) as labels and ignores 'on request' variants", () => {
+    expect(enrichDish({ name: "Goats cheese croquettes (v)" }).labels).toEqual(["vegetarian"]);
+    expect(enrichDish({ name: "Olives (VG, GF, DF)" }).labels.sort()).toEqual(["dairy-free", "gluten-free", "vegan"]);
+    expect(enrichDish({ name: "Bread basket (V, GF ON REQUEST)" }).labels).toEqual(["vegetarian"]);
+  });
+
+  it("treats (n) and (g) as stated contents, not labels", () => {
+    const d = enrichDish({ name: "Chicken Satay", description: "Grilled chicken skewers (n)" });
+    expect(group(d, "tree-nuts")).toMatchObject({ source: "stated" });
+    expect(group(enrichDish({ name: "Spring Rolls", description: "mini vegetable spring rolls (g)" }), "gluten")?.source).toBe("stated");
+  });
+
+  it("does not mistake quantities in parentheses for codes", () => {
+    const d = enrichDish({ name: "Snails, garlic & parsley butter (6pcs / 12pcs)" });
+    expect(d.labels).toEqual([]);
+  });
+});
+
 describe("enrichMenu", () => {
   it("produces unique keys even when names repeat", () => {
     const dishes = enrichMenu([{ name: "Tacos" }, { name: "Tacos" }], { menuKey: "m" });

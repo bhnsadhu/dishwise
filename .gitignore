@@ -52,3 +52,6 @@ skills-lock.json
 # playwright
 /test-results/
 /playwright-report/
+
+# third-party menu photos for local OCR checks (licensed CC; not redistributed)
+/tests/ocr/real/

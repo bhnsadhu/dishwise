@@ -1,11 +1,11 @@
 {
-  "ranAt": "2026-10-29T08:46:51.352Z",
+  "ranAt": "2026-10-29T12:17:58.631Z",
   "tesseract": "tesseract.js 7 (eng, LSTM)",
   "rows": [
     {
       "id": "clean",
       "note": "Clear printed single-column menu",
-      "ms": 647,
+      "ms": 728,
       "cer": 0,
       "ocrConfidence": 95,
       "fromOcr": {
@@ -26,7 +26,7 @@
     {
       "id": "two-column",
       "note": "Two-column layout",
-      "ms": 317,
+      "ms": 331,
       "cer": 0,
       "ocrConfidence": 95,
       "fromOcr": {
@@ -47,7 +47,7 @@
     {
       "id": "odd-prices",
       "note": "Dot leaders, euro decimal commas, size ranges and market price",
-      "ms": 266,
+      "ms": 278,
       "cer": 0.01990049751243781,
       "ocrConfidence": 86,
       "fromOcr": {
@@ -68,7 +68,7 @@
     {
       "id": "price-own-line",
       "note": "Name, description, and price each on their own line",
-      "ms": 296,
+      "ms": 294,
       "cer": 0,
       "ocrConfidence": 95,
       "fromOcr": {
@@ -89,7 +89,7 @@
     {
       "id": "names-only",
       "note": "Incomplete menu: names and prices, no descriptions",
-      "ms": 165,
+      "ms": 172,
       "cer": 0,
       "ocrConfidence": 95,
       "fromOcr": {
@@ -110,7 +110,7 @@
     {
       "id": "degraded",
       "note": "Same as 'clean' but blurred, tilted 2°, low contrast and smaller, like a quick phone photo",
-      "ms": 360,
+      "ms": 374,
       "cer": 0.1018867924528302,
       "ocrConfidence": 87,
       "fromOcr": {
@@ -131,7 +131,7 @@
     {
       "id": "blank",
       "note": "No text at all (failed scan)",
-      "ms": 158,
+      "ms": 171,
       "cer": 0,
       "ocrConfidence": 95,
       "fromOcr": {

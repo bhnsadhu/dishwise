@@ -15,7 +15,8 @@ export function computeScale(width: number, height: number): number {
 }
 
 /**
- * In-place: RGBA → grayscale, then stretch contrast between the 2nd and 98th luminance percentiles.
+ * In-place: RGBA → grayscale, stretch contrast between the 2nd and 98th luminance percentiles, and
+ * invert mostly-dark images.
  * Helps with dim restaurant lighting, tinted paper and glare.
  */
 export function enhanceGray(px: Uint8ClampedArray): void {
@@ -31,8 +32,16 @@ export function enhanceGray(px: Uint8ClampedArray): void {
   for (let acc = 0; lo < 255 && (acc += hist[lo]) < total * 0.02; lo++);
   for (let acc = 0; hi > 0 && (acc += hist[hi]) < total * 0.02; hi--);
   const range = Math.max(1, hi - lo);
+  let sum = 0;
   for (let i = 0; i < px.length; i += 4) {
     const v = Math.max(0, Math.min(255, ((px[i] - lo) * 255) / range));
+    px[i] = v;
+    sum += v;
+  }
+  // Light text on a dark board (chalkboards): invert so Tesseract sees dark text on light.
+  const invert = sum / total < 110;
+  for (let i = 0; i < px.length; i += 4) {
+    const v = invert ? 255 - px[i] : px[i];
     px[i] = px[i + 1] = px[i + 2] = v;
   }
 }

@@ -23,7 +23,10 @@ const toRow = (c: Partial<Candidate>): Row => ({
   id: nextId++,
   name: c.name ?? "",
   description: c.description ?? "",
-  price: c.priceText ?? (c.priceCents !== undefined ? (c.priceCents / 100).toFixed(2) : ""),
+  price:
+    c.priceCents !== undefined && (c.flags ?? []).includes("check-price")
+      ? `${c.priceText?.match(/^[$€£₹¥]/)?.[0] ?? ""}${(c.priceCents / 100).toFixed(2)}`
+      : (c.priceText ?? (c.priceCents !== undefined ? (c.priceCents / 100).toFixed(2) : "")),
   section: c.section ?? "",
   flags: c.flags ?? [],
 });
@@ -33,6 +36,7 @@ const FLAG_NOTES: Record<Candidate["flags"][number], string> = {
   "no-price": "no price found",
   "multiple-prices": "several prices, using the first",
   "long-name": "long name, may include the description",
+  "check-price": "price looked like it lost a decimal point, check it",
 };
 
 type Stage =
@@ -73,6 +77,9 @@ export function ScanPage() {
         setRows([toRow({})]);
       } else {
         setRows(parsed.items.map(toRow));
+        if (parsed.items.length <= 2 && parsed.ignored.length >= 4) {
+          setError("Only a couple of dishes were readable. For a better read, get closer so the menu fills the photo, or add the rest below.");
+        }
       }
       setTitle((t) => t || "Scanned menu");
       setStage({ kind: "review", source: "scan", ignored: parsed.ignored, columns: parsed.columns, ms: result.ms, confidence: result.confidence, lowRes: prepared.lowResolution });
@@ -96,7 +103,7 @@ export function ScanPage() {
     setStage({ kind: "review", source: "manual", ignored: parsed.items.length ? parsed.ignored : [], columns: 1 });
   }
 
-  const update = (id: number, patch: Partial<Row>) => setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch, flags: patch.name !== undefined || patch.price !== undefined ? r.flags.filter((f) => f === "multiple-prices") : r.flags } : r)));
+  const update = (id: number, patch: Partial<Row>) => setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch, flags: patch.name !== undefined || patch.price !== undefined ? r.flags.filter((f) => f === "multiple-prices" || (patch.price === undefined && f === "check-price")) : r.flags } : r)));
 
   function submit() {
     setError(null);

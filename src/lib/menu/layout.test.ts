@@ -13,6 +13,26 @@ describe("linesFromTesseract", () => {
     expect(lines[1].bbox).toEqual(box(560, 100, 1020, 120));
   });
 
+  it("separates a name from a smaller-set description on the same line", () => {
+    const big = (t: string, x0: number, x1: number) => ({ text: t, confidence: 90, bbox: box(x0, 100, x1, 124) });
+    const small = (t: string, x0: number, x1: number) => ({ text: t, confidence: 90, bbox: box(x0, 106, x1, 122) });
+    const words = [big("*Chicken", 0, 90), big("Satay", 98, 160), small("Grilled", 172, 230), small("chicken", 236, 300), small("skewers", 306, 370), small("(n)", 376, 400)];
+    const [line] = linesFromTesseract([{ paragraphs: [{ lines: [{ text: "", confidence: 90, bbox: box(0, 100, 400, 124), words }] }] }]);
+    expect(line.text).toBe("*Chicken Satay — Grilled chicken skewers (n)");
+    expect(parseMenuText([line]).items[0]).toMatchObject({ name: "Chicken Satay", description: "Grilled chicken skewers (n)" });
+  });
+
+  it("deskews tilted lines so columns stay separable", () => {
+    const tilt = 0.03;
+    const line = (t: string, x: number, y: number, w: number) => {
+      const y0 = y + x * tilt;
+      return { text: t, confidence: 90, bbox: box(x, y0, x + w, y0 + 20 + w * tilt), baseline: box(x, y0 + 18, x + w, y0 + 18 + w * tilt) };
+    };
+    const out = linesFromTesseract([{ paragraphs: [{ lines: [line("Left dish", 0, 100, 300), line("Right dish", 700, 100, 300), line("Other", 0, 140, 200)] }] }]);
+    // After deskew, two lines on the same printed row have (nearly) the same y
+    expect(Math.abs(out[0].bbox!.y0 - out[1].bbox!.y0)).toBeLessThan(4);
+  });
+
   it("leaves normal lines alone", () => {
     const words = [word("Pork", 0, 50), word("Gyoza", 56, 120), word("$9", 130, 150)];
     expect(linesFromTesseract([{ paragraphs: [{ lines: [{ text: "Pork Gyoza $9", confidence: 90, bbox: box(0, 100, 150, 120), words }] }] }]).map((l) => l.text)).toEqual(["Pork Gyoza $9"]);

@@ -73,6 +73,31 @@ const LABEL_PATTERNS: [DietLabel, RegExp][] = [
   ["nut-free", /(?<![a-z])(nut[\s-]free)(?![a-z])/],
 ];
 
+/**
+ * Menu dietary codes in parentheses, e.g. "(V)", "(VG, GF, DF)", "(n)". Codes qualified with
+ * "on request" / "avail(able)" / "option" describe a variant, not this dish, so they are ignored.
+ */
+const CODE_LABELS: Record<string, DietLabel> = { v: "vegetarian", vg: "vegan", ve: "vegan", gf: "gluten-free", df: "dairy-free", nf: "nut-free" };
+/** Codes that mean the dish *contains* something (common on UK/Thai menus: "(n) = nuts"). */
+const CODE_CONTAINS: Record<string, string> = { n: "tree-nut", g: "wheat-flour" };
+
+export function parseDietCodes(text: string): { labels: DietLabel[]; contains: { ingredientId: string; code: string }[] } {
+  const labels = new Set<DietLabel>();
+  const contains: { ingredientId: string; code: string }[] = [];
+  for (const m of text.matchAll(/\(([^()]{1,60})\)/g)) {
+    const parts = m[1].split(/[,/;]/).map((p) => p.trim().toLowerCase());
+    // Only treat the group as codes if every part is a short code (avoids "(6pcs / 12pcs)", "(8oz)").
+    const codes = parts.map((p) => p.replace(/\s*[-–]?\s*(on request|avail(able)?|option(al)?|traces of .*)$/, (x) => (x ? "@" : "")));
+    if (!codes.every((c) => /^[a-z]{1,2}@?$/.test(c) || c === "")) continue;
+    for (const c of codes) {
+      if (!c || c.endsWith("@")) continue;
+      if (CODE_LABELS[c]) labels.add(CODE_LABELS[c]);
+      else if (CODE_CONTAINS[c]) contains.push({ ingredientId: CODE_CONTAINS[c], code: c });
+    }
+  }
+  return { labels: [...labels], contains };
+}
+
 const NEGATION_BEFORE = /(?:^|[\s(,])(no|without|hold the|minus|sans|except|omit)\s+(?:[a-z'-]+\s+){0,2}$/;
 const FREE_AFTER = /^[\s-]*free(?![a-z])/;
 const SUBSTITUTE_BEFORE =
@@ -179,7 +204,8 @@ export function enrichDish(item: MenuItemInput, opts: EnrichOptions = {}): Enric
   const allN = `${nameN} . ${descN}`;
 
   // Labels
-  const labels = LABEL_PATTERNS.filter(([, re]) => re.test(allN)).map(([l]) => l);
+  const codes = parseDietCodes(`${name} ${item.description ?? ""}`);
+  const labels = [...new Set([...LABEL_PATTERNS.filter(([, re]) => re.test(allN)).map(([l]) => l), ...codes.labels])];
 
   // Ingredients
   const mentions = [...findMentions(nameN, "name"), ...findMentions(descN, "description")];
@@ -193,6 +219,10 @@ export function enrichDish(item: MenuItemInput, opts: EnrichOptions = {}): Enric
       because: `"${m.term}" in ${m.where}`,
       substitute: m.substitute || undefined,
     });
+  }
+
+  for (const c of codes.contains) {
+    if (!ingredients.has(c.ingredientId)) ingredients.set(c.ingredientId, { value: c.ingredientId, source: "stated", because: `"(${c.code})" on menu` });
   }
 
   const archetype = matchArchetype(name);
