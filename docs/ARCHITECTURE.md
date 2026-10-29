@@ -46,6 +46,6 @@ A dish's **raw score** is the exact sum of additive, explainable **contributions
 
 The engine never says "safe" or "allergen-free". Tests enforce this.
 
-**Diversity.** Picks are chosen with Maximal Marginal Relevance (λ = 0.72) over dish feature vectors, so the short-list isn't five near-identical ramens.
+**Diversity.** Picks are chosen with Maximal Marginal Relevance (λ = 0.72, or 0.9 at cold start when scores are close) over dish feature vectors, so the short-list isn't five near-identical ramens.
 
 **Why no collaborative filtering.** It needs real interaction data from many users. A portfolio app won't have that, and synthetic users would be fake personalization.

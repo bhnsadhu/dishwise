@@ -67,7 +67,7 @@ export default function HowPage() {
             </div>
           ))}
         </dl>
-        <p className="mt-4 text-[15px] text-muted">Your top picks are then re-ordered for variety (maximal marginal relevance), so you don&apos;t get five near-identical ramens.</p>
+        <p className="mt-4 text-[15px] text-muted">Your top picks are then re-ordered for variety (maximal marginal relevance; less so when Dishwise knows nothing about you yet), so you don&apos;t get five near-identical ramens.</p>
       </section>
 
       <div className="grid items-start gap-6 lg:grid-cols-2">

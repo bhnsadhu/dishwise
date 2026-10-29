@@ -13,3 +13,12 @@ Next.js, React (MIT), Tailwind CSS (MIT), Drizzle ORM (Apache-2.0), @neondatabas
 
 ## Data
 The ingredient lexicon, dish archetypes and sample menus in `src/lib/` were written for Dishwise. The sample restaurants are fictional.
+
+## Fonts
+Gloock, Newsreader and Gochi Hand: SIL Open Font License 1.1, via Google Fonts (self-hosted at build time by `next/font`).
+
+## Runtime assets
+Tesseract.js downloads its WASM core and the English `eng.traineddata` model (Apache-2.0, tesseract-ocr/tessdata) from the jsDelivr CDN on first scan. Only these model files are fetched; menu photos never leave the browser.
+
+## Dev tooling
+Playwright (Apache-2.0), Vitest (MIT), PGlite (Apache-2.0), Drizzle Kit (MIT), esbuild (MIT).

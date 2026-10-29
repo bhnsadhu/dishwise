@@ -25,7 +25,7 @@ export function NavBar({ path = "", accountStatus = "loading" }: { path?: string
         <span className="font-display text-[28px] leading-none">Dishwise</span>
         <span className="hidden font-hand text-[17px] text-table-muted sm:inline">what should I order?</span>
       </Link>
-      <nav aria-label="Main" className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[16px]">
+      <nav aria-label="Main" className="flex flex-wrap items-center gap-x-4 gap-y-0 text-[15px] sm:gap-x-5 sm:text-[16px]">
         {LINKS.map((l) => {
           const on = path === l.href || (l.href === "/menus" && (path.startsWith("/m/") || path === "/scan"));
           return (

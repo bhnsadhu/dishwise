@@ -48,3 +48,7 @@ skills-lock.json
 
 # Tesseract language data cached by node OCR runs
 *.traineddata
+
+# playwright
+/test-results/
+/playwright-report/
