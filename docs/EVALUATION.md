@@ -102,7 +102,17 @@ There are 55 scenarios (journeys, details, accounts, accessibility, console/meta
 
 They found and fixed two bugs: a frozen form after a wrong password, and false "account created" copy.
 
-**Skipped:** the signed-in round-trip across two browser sessions against real Neon Auth. It needs a test account (`E2E_EMAIL`, `E2E_PASSWORD`), which only the owner should create. Server-side persistence and cross-user isolation are covered by integration tests against real Postgres (PGlite) running the shipped migrations.
+**Real accounts on production (2026-10-29), done by the owner by hand:**
+- sign-up with guest data merged in;
+- edits while signed in;
+- sync to a second browser session;
+- sign-out;
+- a wrong-password error, then recovery;
+- signing back in.
+
+All matched expectations. The live database was then checked directly: one user, two sessions, the profile (tofu + beef liked, cilantro disliked, heat 3), Edamame rated 4★, and Margherita saved. Account deletion was not run on production; it is covered by the faked-backend E2E and the PGlite integration tests.
+
+**Skipped in the automated suite:** the signed-in round-trip against real Neon Auth. It needs owner credentials (E2E_EMAIL, E2E_PASSWORD), and the manual check above covers the same path. It needs a test account (`E2E_EMAIL`, `E2E_PASSWORD`), which only the owner should create. Server-side persistence and cross-user isolation are covered by integration tests against real Postgres (PGlite) running the shipped migrations.
 
 ## What to measure once real people use it
 These are privacy-friendly aggregate counts, not tracking:
