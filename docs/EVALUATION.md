@@ -49,8 +49,14 @@ The engine has no training data, so evaluation is behavioural: tests assert prop
   - vegetarians never get meat in their picks.
 - Picks are diversified (no four ramens), deterministic, and list mains before desserts.
 
+## Production checks (https://dishwise.bhanusadhu.com, 2026-10-29)
+- **E2E against production** (`BASE_URL=https://dishwise.bhanusadhu.com npm run test:e2e`): 68 passed, 2 skipped (the signed-in test), across desktop Chrome and Pixel 7.
+- **Accessibility:** axe WCAG 2.1 A/AA reports 0 violations on all 9 pages, the open dish sheet and the scan review. The first run found a label/name mismatch on the logo and low-contrast margin scores; both were fixed.
+- **Lighthouse (mobile):** Accessibility 100, Best Practices 100, SEO 100. Before the fix, Best Practices was 96 because a guest's `/api/me` logged a 401.
+- **Performance trace** (mobile, 4× CPU, Fast 4G, cold cache): LCP 643 ms (TTFB 21 ms), CLS 0.00.
+
 ## End-to-end (`npm run test:e2e`)
-There are 12 scenarios, each run on desktop Chrome and a Pixel 7 viewport: 24 passed and 2 skipped. They cover:
+There are 35 scenarios (journeys, details, accessibility, security), each run on desktop Chrome and a Pixel 7 viewport. They cover:
 
 - the home page with no sign-up;
 - the guest taste card persisting across reloads and changing rankings;
