@@ -4,6 +4,14 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth/client";
 import { useStore } from "@/lib/client/store";
 
+/** Auth errors arrive either as { error } results or thrown; normalise to a readable message. */
+function authMessage(err: unknown): string {
+  const e = err as { message?: string; error?: { message?: string }; status?: number } | null;
+  const msg = e?.error?.message ?? e?.message;
+  if (msg && !/^(failed to fetch|fetch failed|load failed)$/i.test(msg)) return msg;
+  return "Couldn't reach the sign-in service. Check your connection and try again.";
+}
+
 export function AccountPage() {
   const { account, refreshAccount, signedOut, clearLocal, feedback, syncError } = useStore();
   const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
@@ -20,22 +28,39 @@ export function AccountPage() {
     setBusy(true);
     setError(null);
     setNotice(null);
-    const res =
-      mode === "sign-in"
-        ? await authClient.signIn.email({ email, password })
-        : await authClient.signUp.email({ email, password, name: name.trim() || email.split("@")[0] });
-    setBusy(false);
+    let res: { error?: { message?: string } | null };
+    try {
+      res =
+        mode === "sign-in"
+          ? await authClient.signIn.email({ email, password })
+          : await authClient.signUp.email({ email, password, name: name.trim() || email.split("@")[0] });
+    } catch (err) {
+      res = { error: { message: authMessage(err) } };
+    } finally {
+      setBusy(false);
+    }
     if (res.error) {
-      setError(res.error.message ?? "That didn't work. Check your email and password.");
+      setError(res.error.message || "That didn't work. Check your email and password.");
       return;
     }
     setPassword("");
-    await refreshAccount();
-    setNotice(mode === "sign-up" ? "Account created. Your taste card and ratings are now saved to it." : "Signed in. Your taste card and ratings are synced.");
+    const state = await refreshAccount();
+    if (state.status === "signed-in") {
+      setNotice(mode === "sign-up" ? "Account created. Your taste card and ratings are now saved to it." : "Signed in. Your taste card and ratings are synced.");
+    } else if (mode === "sign-up") {
+      setNotice("Account created. Check your inbox to confirm your email, then sign in here.");
+      setMode("sign-in");
+    } else {
+      setError("Signed in, but your account couldn't be loaded. Refresh the page and try again.");
+    }
   }
 
   async function signOut() {
-    await authClient.signOut();
+    try {
+      await authClient.signOut();
+    } catch {
+      /* the session cookie is cleared server-side anyway; fall through to local sign-out */
+    }
     signedOut();
     setNotice("Signed out. This device keeps a local copy.");
   }
@@ -43,8 +68,8 @@ export function AccountPage() {
   async function deleteEverything() {
     setBusy(true);
     setError(null);
-    const res = await fetch("/api/me", { method: "DELETE" });
-    if (!res.ok) {
+    const res = await fetch("/api/me", { method: "DELETE" }).catch(() => null);
+    if (!res?.ok) {
       setBusy(false);
       setError("Couldn't delete your data. Try again.");
       return;

@@ -24,6 +24,21 @@ function allowWrite(userId: string, capacity = 60, refillPerSec = 1): boolean {
 
 const MAX_BODY = 256 * 1024;
 
+/**
+ * Defence in depth against cross-site writes (session cookies are SameSite=Lax already): a write
+ * that carries an Origin header must come from this site.
+ */
+function sameOrigin(req: Request): boolean {
+  const origin = req.headers.get("origin");
+  if (!origin) return true;
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? new URL(req.url).host;
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
+}
+
 export async function readJson(req: Request): Promise<unknown> {
   const text = await req.text();
   if (text.length > MAX_BODY) throw new RangeError("Request body too large");
@@ -37,6 +52,7 @@ export function withUser(
 ) {
   return async (req: Request) => {
     const db = getDb();
+    if (opts.write && !sameOrigin(req)) return json({ error: "Cross-site requests aren't allowed." }, 403);
     if (!db) return json({ error: "Accounts aren't configured on this deployment." }, 503);
     const user = await getSessionUser();
     if (!user) return json({ error: "Sign in to sync your taste across devices." }, 401);

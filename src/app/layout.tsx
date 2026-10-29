@@ -9,6 +9,9 @@ const newsreader = Newsreader({ variable: "--font-newsreader", subsets: ["latin"
 const gochi = Gochi_Hand({ variable: "--font-gochi", weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://dishwise.bhanusadhu.com"),
+  openGraph: { type: "website", siteName: "Dishwise" },
+  twitter: { card: "summary_large_image" },
   title: { default: "Dishwise: what should I order?", template: "%s · Dishwise" },
   description: "Dishwise reads a restaurant menu and marks it up for your taste: the dishes you'll love circled, the reasons underlined, the conflicts crossed out.",
   applicationName: "Dishwise",

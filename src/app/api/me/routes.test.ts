@@ -39,6 +39,14 @@ describe("/api/me routes", () => {
     expect((await me.DELETE(req("DELETE"))).status).toBe(401);
   });
 
+  it("rejects cross-site writes", async () => {
+    state.user = { id: "u1", email: null, name: null };
+    const evil = new Request("http://test/api/me/profile", { method: "PUT", body: JSON.stringify(emptyProfile()), headers: { origin: "https://evil.example", host: "test" } });
+    expect((await profile.PUT(evil)).status).toBe(403);
+    const ok = new Request("http://test/api/me/profile", { method: "PUT", body: JSON.stringify(emptyProfile()), headers: { origin: "http://test", host: "test" } });
+    expect((await profile.PUT(ok)).status).toBe(200);
+  });
+
   it("validates input", async () => {
     state.user = { id: "u1", email: null, name: null };
     expect((await profile.PUT(req("PUT", { version: 1, spiceTolerance: 11 }))).status).toBe(400);

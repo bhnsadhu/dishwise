@@ -113,11 +113,17 @@ const signedIn = () => snap.account.status === "signed-in";
 
 // ---- actions --------------------------------------------------------------------------------
 
-async function refreshAccount() {
+async function refreshAccount(): Promise<AccountState> {
   const me = await api<{ user: { email: string | null; name: string | null } | null; profile: TasteProfile | null; feedback: Feedback[] }>("/api/me");
-  if (!me.ok || !me.data) return set({ account: { status: me.status === 401 ? "guest" : "unavailable" } });
+  if (!me.ok || !me.data) {
+    set({ account: { status: me.status === 401 ? "guest" : "unavailable" } });
+    return snap.account;
+  }
   const { user } = me.data;
-  if (!user) return set({ account: { status: "guest" } });
+  if (!user) {
+    set({ account: { status: "guest" } });
+    return snap.account;
+  }
   let { profile, feedback } = me.data;
 
   // First sign-in on this device: merge guest data into the account.
@@ -138,6 +144,7 @@ async function refreshAccount() {
     feedback,
     account: { status: "signed-in", email: user.email, name: user.name },
   });
+  return snap.account;
 }
 
 function start() {

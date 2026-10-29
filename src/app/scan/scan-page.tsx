@@ -31,6 +31,9 @@ const toRow = (c: Partial<Candidate>): Row => ({
   flags: c.flags ?? [],
 });
 
+const MAX_ITEMS = 250;
+const TOO_MANY = `Dishwise reads up to ${MAX_ITEMS} dishes per menu, so the rest were left out. Split a very long menu into sections.`;
+
 const FLAG_NOTES: Record<Candidate["flags"][number], string> = {
   "low-confidence": "hard to read, check the spelling",
   "no-price": "no price found",
@@ -76,8 +79,9 @@ export function ScanPage() {
         );
         setRows([toRow({})]);
       } else {
-        setRows(parsed.items.map(toRow));
-        if (parsed.items.length <= 2 && parsed.ignored.length >= 4) {
+        setRows(parsed.items.slice(0, MAX_ITEMS).map(toRow));
+        if (parsed.items.length > MAX_ITEMS) setError(TOO_MANY);
+        else if (parsed.items.length <= 2 && parsed.ignored.length >= 4) {
           setError("Only a couple of dishes were readable. For a better read, get closer so the menu fills the photo, or add the rest below.");
         }
       }
@@ -98,7 +102,8 @@ export function ScanPage() {
     const items = parsed.items.length
       ? parsed.items
       : pasted.split(/\n/).map((l) => l.trim()).filter(Boolean).slice(0, 250).map((name) => ({ name, flags: [] as Candidate["flags"] }));
-    setRows((items.length ? items : [{}]).map(toRow));
+    setRows((items.length ? items.slice(0, MAX_ITEMS) : [{}]).map(toRow));
+    setError(items.length > MAX_ITEMS ? TOO_MANY : null);
     setTitle((t) => t || "My menu");
     setStage({ kind: "review", source: "manual", ignored: parsed.items.length ? parsed.ignored : [], columns: 1 });
   }
@@ -268,7 +273,7 @@ export function ScanPage() {
           </ol>
 
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <button type="button" className="link-pen" onClick={() => setRows((rs) => [...rs, toRow({})])}>
+            <button type="button" className="link-pen" disabled={rows.length >= MAX_ITEMS} onClick={() => setRows((rs) => [...rs, toRow({})])}>
               + add a dish
             </button>
             <button type="button" className="tag-btn primary" onClick={submit}>
