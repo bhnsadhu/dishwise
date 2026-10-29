@@ -36,6 +36,8 @@ export interface Contribution {
   text: string;
   /** Where the underlying dish attribute came from. "you" = from the user's own feedback. */
   basis: Source | "you" | "menu";
+  /** Machine-readable link to the evidence, e.g. "ing:pork", "flv:rich", "cui:japanese", "rated:<name>". */
+  ref?: string;
 }
 
 export type SafetyStatus =
@@ -180,6 +182,7 @@ export function scoreDish(
       points: stated ? -60 : -35,
       text: stated ? `Lists ${groups}, which you avoid` : `Usually contains ${groups}, which you avoid`,
       basis: stated ? "stated" : "inferred",
+      ref: `group:${safety.conflicts[0].group}`,
     });
   } else if (safety.status === "labeled") {
     push({ kind: "diet", points: 6, text: safety.notes[0].replace(/\.$/, ""), basis: "stated" });
@@ -190,10 +193,10 @@ export function scoreDish(
     const c = dish.cuisine.value;
     const f = byStrength(dish.cuisine.source);
     if (profile.cuisines.includes(c)) {
-      push({ kind: "cuisine", points: 10 * f, text: `${cuisineLabel(c)}, a cuisine you love`, basis: dish.cuisine.source });
+      push({ kind: "cuisine", points: 10 * f, text: `${cuisineLabel(c)}, a cuisine you love`, basis: dish.cuisine.source, ref: `cui:${c}` });
     } else {
       const near = profile.cuisines.find((u) => CUISINE_NEIGHBOURS[u]?.includes(c));
-      if (near) push({ kind: "cuisine", points: 4 * f, text: `${cuisineLabel(c)} — close to ${cuisineLabel(near)}, which you like`, basis: dish.cuisine.source });
+      if (near) push({ kind: "cuisine", points: 4 * f, text: `${cuisineLabel(c)} — close to ${cuisineLabel(near)}, which you like`, basis: dish.cuisine.source, ref: `cui:${near}` });
     }
   }
 
@@ -203,12 +206,12 @@ export function scoreDish(
     for (const fav of profile.favoriteFoods) {
       const favN = normalize(fav);
       if (phraseRegex(favN, "").test(nameN)) {
-        push({ kind: "favorite", points: 14, text: `It's ${fav.toLowerCase()} — one of your favourites`, basis: "stated" });
+        push({ kind: "favorite", points: 14, text: `It's ${fav.toLowerCase()} — one of your favourites`, basis: "stated", ref: `fav:${fav}` });
         break;
       }
       const favArch = matchArchetype(fav);
       if (favArch && dish.archetype?.id === favArch.id) {
-        push({ kind: "favorite", points: 12, text: `A take on ${favArch.label.toLowerCase()}, one of your favourites`, basis: "inferred" });
+        push({ kind: "favorite", points: 12, text: `A take on ${favArch.label.toLowerCase()}, one of your favourites`, basis: "inferred", ref: `fav:${fav}` });
         break;
       }
     }
@@ -225,6 +228,7 @@ export function scoreDish(
       points: p,
       text: ing.source === "stated" ? `Has ${ingredientLabel(ing.value).toLowerCase()}` : `Usually has ${ingredientLabel(ing.value).toLowerCase()}`,
       basis: ing.source,
+      ref: `ing:${ing.value}`,
     });
   });
 
@@ -238,6 +242,7 @@ export function scoreDish(
       points: p,
       text: ing.source === "stated" ? `Contains ${ingredientLabel(ing.value).toLowerCase()}, which you dislike` : `May contain ${ingredientLabel(ing.value).toLowerCase()}, which you dislike`,
       basis: ing.source,
+      ref: `ing:${ing.value}`,
     });
   }
 
@@ -247,13 +252,13 @@ export function scoreDish(
     .sort((a, b) => byStrength(b.source) - byStrength(a.source));
   diminishing(likedF.map((f) => 6 * byStrength(f.source)), 0.75, 16).forEach((p, idx) => {
     const f = likedF[idx];
-    push({ kind: "flavor-like", points: p, text: `${flavorLabel(f.value)}, a flavour you enjoy`, basis: f.source });
+    push({ kind: "flavor-like", points: p, text: `${flavorLabel(f.value)}, a flavour you enjoy`, basis: f.source, ref: `flv:${f.value}` });
   });
   let dislikeF = 0;
   for (const f of dish.flavors.filter((x) => profile.dislikedFlavors.includes(x.value))) {
     const p = Math.max(-20 - dislikeF, f.source === "stated" ? -9 : -5);
     dislikeF += p;
-    push({ kind: "flavor-dislike", points: p, text: `${flavorLabel(f.value)}, which you'd rather avoid`, basis: f.source });
+    push({ kind: "flavor-dislike", points: p, text: `${flavorLabel(f.value)}, which you'd rather avoid`, basis: f.source, ref: `flv:${f.value}` });
   }
 
   // --- Spice ---------------------------------------------------------------------------------
@@ -267,9 +272,10 @@ export function scoreDish(
           points: -(s - t) * (dish.spice.source === "stated" ? 12 : 8),
           text: dish.spice.source === "stated" ? "Hotter than you like" : "Probably hotter than you like",
           basis: dish.spice.source,
+          ref: "spice",
         });
       } else if (t >= 3 && s >= 2) {
-        push({ kind: "spice", points: dish.spice.source === "stated" ? 6 : 4, text: "Brings the heat you enjoy", basis: dish.spice.source });
+        push({ kind: "spice", points: dish.spice.source === "stated" ? 6 : 4, text: "Brings the heat you enjoy", basis: dish.spice.source, ref: "spice" });
       }
     } else if (t <= 1) {
       unknowns.push("Heat level isn't listed");
@@ -289,7 +295,7 @@ export function scoreDish(
       } as const;
       const p = table[profile.budget][tier];
       const label = { low: "One of the lower-priced dishes here", mid: "Mid-priced for this menu", high: "Among the pricier dishes here" }[tier];
-      push({ kind: "budget", points: p, text: label, basis: "menu" });
+      push({ kind: "budget", points: p, text: label, basis: "menu", ref: "budget" });
     }
   }
 
@@ -319,6 +325,7 @@ export function scoreDish(
         points,
         text: points > 0 ? `You've rated dishes with ${drivers.join(" & ")} highly` : `You've rated dishes with ${drivers.join(" & ")} poorly`,
         basis: "you",
+        ref: "history",
       });
     }
   }
@@ -345,6 +352,7 @@ export function scoreDish(
           ? `Similar to ${best.name}, which you saved`
           : `Similar to ${best.name}, which you rated ${best.rating}★`,
       basis: "you",
+      ref: `rated:${best.name}`,
     });
   }
 

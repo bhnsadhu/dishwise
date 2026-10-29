@@ -170,6 +170,7 @@ describe("recommend — cold start, missing data, explanations", () => {
     const like = don.contributions.find((c) => c.kind === "ingredient-like")!;
     expect(like.text).toBe("Has salmon");
     expect(like.basis).toBe("stated");
+    expect(like.ref).toBe("ing:salmon");
   });
 
   it("diversifies picks rather than showing near-duplicates", () => {
