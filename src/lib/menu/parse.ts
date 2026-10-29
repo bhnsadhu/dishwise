@@ -193,6 +193,11 @@ function nameDescSplit(s: string): [string, string] | null {
 }
 
 const BULLET = /^[*•·●▪■★◆◇○\-–—]+\s*/;
+/** Badges that delivery apps and menu sites put between dishes. */
+const UI_TAG = /^(popular|most (ordered|liked|popular)|#\d+ most (liked|ordered)|new!?|chef'?s (pick|choice)|best ?seller|recommended|sold out|unavailable|add( to (cart|order))?|customi[sz]e|\d{1,3}% \(\d+\))$/i;
+const CALORIES = /(?:\s*[·•|,–-]\s*)?\b\d{2,4}\s*(?:k?cal(?:ories)?)\b\.?/gi;
+/** "Margherita Pizza $16 tomato, basil" → name, price, description. Price must look like money. */
+const MID_PRICE = new RegExp(`^(.{2,60}?)\\s+[·•|]?\\s*(${CUR}\\s?${NUM}|\\d{1,4}[.,]\\d{2})\\s*[·•|]?\\s+(\\S.{2,})$`);
 
 function looksLikeDescription(s: string): boolean {
   return /^[\p{Ll}(]/u.test(s) || /,/.test(s) || words(s).length > 7;
@@ -285,8 +290,15 @@ export function parseMenuText(input: OcrLine[] | string): ParseResult {
   const ignored: string[] = [];
   const cleaned: { text: string; conf: number; index: number }[] = [];
   for (const { line, index } of ordered) {
-    const text = line.text.replace(/\s+/g, " ").trim().replace(BULLET, "").replace(/\s+—\s*$/, "");
+    let text = line.text.replace(/\s+/g, " ").trim().replace(BULLET, "").replace(CALORIES, "").replace(/[\s·•|]+$/, "").replace(/\s+—\s*$/, "").trim();
     if (!text) continue;
+    if (UI_TAG.test(text)) {
+      ignored.push(text);
+      continue;
+    }
+    // Price in the middle of the line: move it to the end so "Name — description $price" parses normally.
+    const mid = text.match(MID_PRICE);
+    if (mid && isTitleLike(mid[1]) && !PRICE_TAIL.test(text) && /^[\p{Ll}(]|,/u.test(mid[3])) text = `${mid[1]}${NAME_DESC_SEP}${mid[3]} ${mid[2]}`;
     const conf = (line.confidence ?? 90) / 100;
     if (BOILERPLATE.some((re) => re.test(text))) {
       ignored.push(text);
