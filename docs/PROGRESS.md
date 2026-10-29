@@ -11,7 +11,9 @@
 ## Deployed
 - Production (approved 2026-10-29): https://dishwise.bhanusadhu.com (also https://dishwise-alpha.vercel.app) via manual `vercel deploy --prod` (no Git auto-deploy).
 
+## Done in Neon (2026-10-29)
+- Trusted domains: dishwise.bhanusadhu.com, dishwise-alpha.vercel.app, dishwise-bhanu-sadhu-s-projects.vercel.app. Email sign-up on, email verification off, localhost allowed.
+
 ## Needs the owner
-- Neon Console → Auth → Configuration → Domains: add `https://dishwise-alpha.vercel.app` and `https://dishwise.bhanusadhu.com` so sign-in works in production (localhost is pre-approved).
 - A test account to run the signed-in E2E test (`E2E_EMAIL`, `E2E_PASSWORD`).
 - Sign-off on the wordmark (currently the name set in Gloock).

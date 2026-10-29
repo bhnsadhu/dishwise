@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
  * One-time production finish-up, run by the owner (double-click "Finish Dishwise setup.command"):
- *   1. Adds the production domains to Neon Auth's trusted domains (Neon API, key typed by you, never stored).
+ *   1. (Done in the Neon console; NEON_DOMAINS=1 re-runs it) Adds the production domains to Neon Auth's trusted domains.
  *   2. Runs the real signed-in E2E test on production with credentials you type (never stored).
  */
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { createInterface } from "node:readline";
 
-const DOMAINS = ["https://dishwise.bhanusadhu.com", "https://dishwise-alpha.vercel.app"];
+const DOMAINS = ["https://dishwise.bhanusadhu.com", "https://dishwise-alpha.vercel.app", "https://dishwise-bhanu-sadhu-s-projects.vercel.app"];
 const SITE = "https://dishwise.bhanusadhu.com";
 const API = "https://console.neon.tech/api/v2";
 
@@ -135,7 +135,8 @@ async function accountTest() {
   return code === 0;
 }
 
-const domainsOk = await trustDomains();
+// Trusted domains were added in the Neon console on 2026-10-29; set NEON_DOMAINS=1 to (re)check via the API.
+const domainsOk = process.env.NEON_DOMAINS ? await trustDomains() : (console.log(green("\n✓ Neon trusted domains already set (Neon Console → Auth → Domains).")), true);
 const accountOk = await accountTest();
 console.log(bold("\nSummary"));
 console.log(`  Neon trusted domains: ${domainsOk ? green("done") : red("not done")}`);
