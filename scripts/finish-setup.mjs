@@ -65,11 +65,12 @@ async function trustDomains() {
   }
   let key = process.env.NEON_API_KEY;
   if (!key) {
-    console.log("This needs a Neon API key. I'll open the page where you create one.");
-    console.log(dim("  If Neon asks you to log in, use \"Continue with Vercel\" (your database lives in Vercel's Neon org)."));
-    console.log(dim("  Click \"Create new API key\", name it anything, copy it.\n"));
-    await ask("Press Enter to open Neon… ");
-    open("https://console.neon.tech/app/settings/api-keys");
+    console.log("This needs a Neon API key from the Neon org that Vercel created for Dishwise.");
+    console.log(dim("  Don't sign in to Neon with GitHub/Google: that's a separate personal Neon account that can't see this database."));
+    console.log(dim("  Instead: Vercel → dishwise → Storage → dishwise-db → \"Open in Neon\" (I'll open Vercel for you),"));
+    console.log(dim("  then in Neon: Settings → API keys → Create new API key, and copy it.\n"));
+    await ask("Press Enter to open Vercel Storage… ");
+    open("https://vercel.com/bhanu-sadhu-s-projects/dishwise/stores");
     key = await ask("Paste the API key here (hidden) and press Enter: ", { hidden: true });
   }
   if (!key) {
@@ -81,7 +82,8 @@ async function trustDomains() {
   if (!branches.ok) {
     console.log(red(`Neon said ${branches.status}: ${branches.body?.message ?? branches.text.slice(0, 200)}`));
     if (branches.status === 401) console.log("That key wasn't accepted. Create a new one and try again.");
-    if (branches.status === 404) console.log("The key can't see this project. Make a key while the Vercel org is selected in Neon (top-left org switcher).");
+    if (branches.status === 404 || branches.status === 403)
+      console.log("That key can't see the Dishwise database. It probably came from a personal Neon login (GitHub/Google). Sign out of Neon, open it from Vercel → Storage → dishwise-db → \"Open in Neon\", and create the key there.");
     return false;
   }
   const branch = branches.body.branches.find((b) => b.default) ?? branches.body.branches[0];
