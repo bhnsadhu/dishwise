@@ -2,7 +2,7 @@
 
 **What should I order here?** Dishwise learns what you like to eat, reads a restaurant menu (photo, sample, or typed), and ranks every dish for you — with the reasons behind each score and honest flags for anything it can't verify.
 
-> Status: feature-complete, not yet publicly deployed. See [docs/PROGRESS.md](docs/PROGRESS.md).
+> Live: https://dishwise-alpha.vercel.app · Status: [docs/PROGRESS.md](docs/PROGRESS.md)
 
 ## How it works
 1. **Taste profile** — cuisines, favourite foods, liked/disliked ingredients and flavours, spice tolerance, diet, restrictions, budget. All optional.
@@ -29,7 +29,7 @@ Accounts need Neon env vars (see `.env.example`); `vercel env pull .env.local` f
 [Architecture & scoring](docs/ARCHITECTURE.md) · [Design](docs/DESIGN.md) · [Evaluation](docs/EVALUATION.md) · [Decisions](docs/DECISIONS.md) · [Costs](COSTS.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
 ## Deploying (Vercel Hobby + Neon Free)
-The Vercel project `dishwise` exists with Neon connected, but **no Git connection and no deployment yet**.
+The Vercel project `dishwise` has Neon connected and deploys manually (no Git connection).
 1. Add the cookie secret to Vercel: `vercel env add NEON_AUTH_COOKIE_SECRET production` (value: `openssl rand -base64 32`). Repeat for `preview` if wanted.
 2. Deploy: `vercel deploy --prod`, or connect the GitHub repo in the Vercel dashboard so every push to `main` deploys.
 3. Custom domain: `vercel domains add dishwise.bhanusadhu.com`, then add the DNS record Vercel shows (a `CNAME` for `dishwise` → `cname.vercel-dns.com`) at your DNS provider.

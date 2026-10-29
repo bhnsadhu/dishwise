@@ -1,0 +1,8 @@
+.env*
+!.env.example
+.agents
+.claude
+skills-lock.json
+test-results
+playwright-report
+*.traineddata
