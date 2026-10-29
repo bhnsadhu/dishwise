@@ -45,3 +45,6 @@ next-env.d.ts
 /.agents/
 /.claude/skills/
 skills-lock.json
+
+# Tesseract language data cached by node OCR runs
+*.traineddata
