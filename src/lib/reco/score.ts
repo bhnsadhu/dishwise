@@ -95,7 +95,9 @@ function diminishing(values: number[], decay: number, cap: number): number[] {
   });
 }
 
-const SIGNATURE_RE = /(?<![a-z])(house|signature|chef'?s|famous|specialty|speciality|our classic|award[\s-]winning)(?![a-z])/;
+/** "House" signals a signature dish only in the name ("House Ramen"); in a description it usually means house-made. */
+const SIGNATURE_NAME_RE = /(?<![a-z])(house|signature|chef'?s|famous|specialty|speciality)(?![a-z])/;
+const SIGNATURE_DESC_RE = /(?<![a-z])(signature|famous|specialty|speciality|our classic|award[\s-]winning|chef'?s (?:special|favou?rite|choice|pick))(?![a-z])/;
 
 export function menuContext(dishes: EnrichedDish[]): MenuContext {
   const prices = dishes
@@ -357,8 +359,7 @@ export function scoreDish(
   }
 
   // --- Menu-intrinsic signals (cold-start tie breakers; small on purpose) ---------------------
-  const allN = normalize(`${dish.name} ${dish.description ?? ""}`);
-  const sig = allN.match(SIGNATURE_RE);
+  const sig = normalize(dish.name).match(SIGNATURE_NAME_RE) ?? normalize(dish.description ?? "").match(SIGNATURE_DESC_RE);
   if (sig) push({ kind: "menu-signal", points: 5, text: `The menu calls it "${sig[1]}"`, basis: "menu" });
   const course = dish.course?.value;
   if (course === "main") push({ kind: "menu-signal", points: 3, text: "A main course", basis: dish.course!.source });

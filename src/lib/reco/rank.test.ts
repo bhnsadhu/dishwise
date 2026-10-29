@@ -123,6 +123,14 @@ describe("recommend — cold start, missing data, explanations", () => {
     expect(r.picks[0].dish.course?.value).toBe("main");
   });
 
+  it("treats 'house' as a signature only in the dish name, not 'house-made' in a description", () => {
+    const r = recommend(enrichMenu([{ name: "House Burger" }, { name: "Paneer Curry", description: "house paneer, spinach" }, { name: "Stew", description: "our signature braise" }]), profile());
+    const sig = (name: string) => byName(r, name).contributions.some((c) => c.kind === "menu-signal" && c.text.startsWith("The menu calls it"));
+    expect(sig("House Burger")).toBe(true);
+    expect(sig("Paneer Curry")).toBe(false);
+    expect(sig("Stew")).toBe(true);
+  });
+
   it("handles dishes with nothing but a name", () => {
     const dishes = enrichMenu([{ name: "Mystery Plate" }, { name: "?" }, { name: "Soup of the Day", priceText: "MP" }]);
     const r = recommend(dishes, profile({ restrictions: ["peanuts"], spiceTolerance: 0, budget: "value" }));

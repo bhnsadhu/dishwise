@@ -148,7 +148,7 @@ const SECTION_COURSES: [RegExp, Course][] = [
   [/(dessert|sweet|pudding|dolci|postre)/, "dessert"],
   [/(side|extras|accompaniment|contorni)/, "side"],
   [/(drink|beverage|cocktail|wine|beer|juice|coffee|tea)/, "drink"],
-  [/(main|entree|entrée|large plate|pasta|pizza|noodle|curr|taco|burger|grill|bowl|rice|sandwich|plate|secondi|primi|specials)/, "main"],
+  [/(main|entree|entrée|large plate|pasta|pizza|noodle|ramen|pho|udon|soba|curr|taco|burger|grill|bowl|rice|don\b|sandwich|plate|secondi|primi|specials|tandoor|platos)/, "main"],
 ];
 
 const NAME_COURSES: [RegExp, Course][] = [
