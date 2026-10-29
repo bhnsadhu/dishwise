@@ -100,7 +100,7 @@ export function MarkedMenu({
               return (
                 <li key={d.key} className="grid grid-cols-[46px_minmax(0,1fr)_auto] gap-x-3 py-2.5">
                   <div
-                    className={`pt-0.5 text-right font-hand tabular-nums leading-none ${held ? "text-[22px] text-red-pen" : rank ? "text-[24px] text-pen" : r.score < 55 ? "text-[17px] text-muted/70" : "text-[20px] text-pen"}`}
+                    className={`pt-0.5 text-right font-hand tabular-nums leading-none ${held ? "text-[22px] text-red-pen" : rank ? "text-[24px] text-pen" : r.score < 55 ? "text-[17px] text-muted" : "text-[20px] text-pen"}`}
                     aria-hidden="true"
                   >
                     {held ? "✕" : r.score}
@@ -141,7 +141,7 @@ export function MarkedMenu({
                       {variety && reasons.length > 0 && "; picked for variety"}
                     </p>
                   ) : marks.inferred.length > 0 && marks.inferred[0].points > 0 ? (
-                    <p className="col-start-2 col-end-4 mt-0.5 font-hand text-[17px] leading-tight text-pen/75">
+                    <p className="col-start-2 col-end-4 mt-0.5 font-hand text-[17px] leading-tight text-pen">
                       <span className="mk-inf">{marks.inferred[0].text.toLowerCase()}</span>
                     </p>
                   ) : null}

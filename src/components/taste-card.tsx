@@ -59,6 +59,13 @@ function setTri(p: TasteProfile, kind: "Ingredients" | "Flavors", id: string, v:
   return { ...p, [L]: liked, [D]: disliked } as TasteProfile;
 }
 
+/** Shown first when the list is collapsed: a mix of the most taste-defining picks, not just proteins. */
+const FEATURED = ["chicken", "beef", "pork", "salmon", "shrimp", "tofu", "egg", "cheese", "mushroom", "chili", "cilantro", "garlic", "avocado", "olives"];
+const ORDERED_INGREDIENTS = [
+  ...FEATURED.map((id) => PICKABLE_INGREDIENTS.find((i) => i.id === id)!).filter(Boolean),
+  ...PICKABLE_INGREDIENTS.filter((i) => !FEATURED.includes(i.id)),
+];
+
 const FAVORITE_SUGGESTIONS = ["ramen", "tacos", "pizza", "curry", "dumplings", "burger", "pho", "sushi", "pasta", "falafel"];
 const HEAT_LABELS = ["no heat", "mild", "medium", "hot", "very hot"];
 
@@ -66,7 +73,7 @@ export function TasteCard({ compactIngredients = false }: { compactIngredients?:
   const { profile, setProfile } = useStore();
   const [fav, setFav] = useState("");
   const [showAll, setShowAll] = useState(!compactIngredients);
-  const ingredients = showAll ? PICKABLE_INGREDIENTS : PICKABLE_INGREDIENTS.slice(0, 14);
+  const ingredients = showAll ? ORDERED_INGREDIENTS : ORDERED_INGREDIENTS.slice(0, FEATURED.length);
 
   const addFavorite = (raw: string) => {
     const v = raw.trim().toLowerCase().slice(0, 40);

@@ -14,7 +14,7 @@ export function Stars({ value, onChange, label = "Your rating", size = "md" }: {
             aria-checked={value === n}
             aria-label={`${n} star${n > 1 ? "s" : ""}`}
             onClick={() => onChange(value === n ? null : n)}
-            className={`grid place-items-center ${size === "sm" ? "h-8 w-7 text-lg" : "h-10 w-9 text-2xl"} leading-none transition-colors ${on ? "text-pen" : "text-muted/40 hover:text-pen/60"}`}
+            className={`grid place-items-center ${size === "sm" ? "h-8 w-7 text-lg" : "h-10 w-9 text-2xl"} leading-none transition-colors ${on ? "text-pen" : "text-[#8a857a] hover:text-pen"}`}
           >
             ★
           </button>

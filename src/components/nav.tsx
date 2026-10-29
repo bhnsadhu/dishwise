@@ -21,7 +21,7 @@ export function Nav() {
 export function NavBar({ path = "", accountStatus = "loading" }: { path?: string; accountStatus?: string }) {
   return (
     <header className="wrap flex flex-wrap items-center justify-between gap-x-6 gap-y-2 pb-4 pt-[max(18px,env(safe-area-inset-top))]">
-      <Link href="/" className="flex items-baseline gap-2 text-table-ink" aria-label="Dishwise home">
+      <Link href="/" className="flex items-baseline gap-2 text-table-ink">
         <span className="font-display text-[28px] leading-none">Dishwise</span>
         <span className="hidden font-hand text-[17px] text-table-muted sm:inline">what should I order?</span>
       </Link>
