@@ -3,7 +3,8 @@ import { expect, test } from "@playwright/test";
 test.describe("API authorization", () => {
   test("rejects unauthenticated access to personal data", async ({ request }) => {
     const me = await request.get("/api/me");
-    expect([401, 503]).toContain(me.status());
+    expect([200, 503]).toContain(me.status());
+    if (me.status() === 200) expect(await me.json()).toEqual({ user: null, profile: null, feedback: [] });
     for (const [method, path] of [
       ["PUT", "/api/me/profile"],
       ["PUT", "/api/me/feedback"],

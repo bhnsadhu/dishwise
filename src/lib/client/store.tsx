@@ -114,9 +114,10 @@ const signedIn = () => snap.account.status === "signed-in";
 // ---- actions --------------------------------------------------------------------------------
 
 async function refreshAccount() {
-  const me = await api<{ user: { email: string | null; name: string | null }; profile: TasteProfile | null; feedback: Feedback[] }>("/api/me");
+  const me = await api<{ user: { email: string | null; name: string | null } | null; profile: TasteProfile | null; feedback: Feedback[] }>("/api/me");
   if (!me.ok || !me.data) return set({ account: { status: me.status === 401 ? "guest" : "unavailable" } });
   const { user } = me.data;
+  if (!user) return set({ account: { status: "guest" } });
   let { profile, feedback } = me.data;
 
   // First sign-in on this device: merge guest data into the account.

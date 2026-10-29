@@ -30,8 +30,10 @@ describe("/api/me routes", () => {
     expect((await me.GET(req("GET"))).status).toBe(503);
   });
 
-  it("rejects unauthenticated reads and writes", async () => {
-    expect((await me.GET(req("GET"))).status).toBe(401);
+  it("returns an empty guest state for reads and rejects unauthenticated writes", async () => {
+    const guest = await me.GET(req("GET"));
+    expect(guest.status).toBe(200);
+    expect(await guest.json()).toEqual({ user: null, profile: null, feedback: [] });
     expect((await profile.PUT(req("PUT", emptyProfile()))).status).toBe(401);
     expect((await feedback.PUT(req("PUT", {}))).status).toBe(401);
     expect((await me.DELETE(req("DELETE"))).status).toBe(401);
