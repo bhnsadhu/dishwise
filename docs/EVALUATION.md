@@ -70,13 +70,13 @@ The engine has no training data, so evaluation is behavioural: tests assert prop
 - Picks are diversified (no four ramens), deterministic, and list mains before desserts.
 
 ## Production checks (https://dishwise.bhanusadhu.com, 2026-10-29)
-- **E2E against production** (`BASE_URL=https://dishwise.bhanusadhu.com npm run test:e2e`): 68 passed, 2 skipped (the signed-in test), across desktop Chrome and Pixel 7.
+- **E2E against production** (`BASE_URL=https://dishwise.bhanusadhu.com npm run test:e2e`): 108 passed, 2 skipped (the real-Neon account test), across desktop Chrome and Pixel 7.
 - **Accessibility:** axe WCAG 2.1 A/AA reports 0 violations on all 9 pages, the open dish sheet and the scan review. The first run found a label/name mismatch on the logo and low-contrast margin scores; both were fixed.
 - **Lighthouse (mobile):** Accessibility 100, Best Practices 100, SEO 100. Before the fix, Best Practices was 96 because a guest's `/api/me` logged a 401.
 - **Performance trace** (mobile, 4× CPU, Fast 4G, cold cache): LCP 643 ms (TTFB 21 ms), CLS 0.00.
 
 ## End-to-end (`npm run test:e2e`)
-There are 35 scenarios (journeys, details, accessibility, security), each run on desktop Chrome and a Pixel 7 viewport. They cover:
+There are 55 scenarios (journeys, details, accounts, accessibility, console/metadata, security), each run on desktop Chrome and a Pixel 7 viewport. They cover:
 
 - the home page with no sign-up;
 - the guest taste card persisting across reloads and changing rankings;
@@ -90,7 +90,19 @@ There are 35 scenarios (journeys, details, accessibility, security), each run on
 - no horizontal scrolling on any page;
 - unauthenticated API requests getting 401, with `no-store` on personal responses.
 
-**Skipped:** the signed-in round-trip across two browser sessions. It needs a test account (`E2E_EMAIL`, `E2E_PASSWORD`), which only the owner should create. Server-side persistence and cross-user isolation are covered by integration tests against real Postgres (PGlite) running the shipped migrations.
+**Accounts:** 8 scenarios run with the auth and account APIs faked inside the browser, so no request reaches Neon:
+- sign-up merging guest data;
+- write-through of taste and ratings;
+- loading on a fresh device;
+- wrong password;
+- sign-up that needs email confirmation;
+- sign-out;
+- a failed sync being shown;
+- delete with confirmation.
+
+They found and fixed two bugs: a frozen form after a wrong password, and false "account created" copy.
+
+**Skipped:** the signed-in round-trip across two browser sessions against real Neon Auth. It needs a test account (`E2E_EMAIL`, `E2E_PASSWORD`), which only the owner should create. Server-side persistence and cross-user isolation are covered by integration tests against real Postgres (PGlite) running the shipped migrations.
 
 ## What to measure once real people use it
 These are privacy-friendly aggregate counts, not tracking:
