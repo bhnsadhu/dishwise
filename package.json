@@ -15,7 +15,8 @@
     "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
     "eval:ocr": "node tests/ocr/eval.ts",
     "fixtures:ocr": "node tests/ocr/render.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "finish-setup": "node scripts/finish-setup.mjs"
   },
   "dependencies": {
     "@neondatabase/auth": "^0.6.0-beta",

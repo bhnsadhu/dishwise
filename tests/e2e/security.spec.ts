@@ -39,13 +39,13 @@ test("signed-in data persists across sessions", async ({ browser }) => {
   };
   const a = await signIn();
   await a.page.goto("/taste");
-  const word = a.page.getByRole("button", { name: /^lamb: / });
+  const word = a.page.getByRole("button", { name: /^beef: / });
   if (!(await word.getAttribute("aria-label"))?.includes("love")) await word.click();
   await a.page.waitForTimeout(1500);
   await a.ctx.close();
 
   const b = await signIn();
   await b.page.goto("/taste");
-  await expect(b.page.getByRole("button", { name: "lamb: love" })).toBeVisible();
+  await expect(b.page.getByRole("button", { name: "beef: love" })).toBeVisible();
   await b.ctx.close();
 });
