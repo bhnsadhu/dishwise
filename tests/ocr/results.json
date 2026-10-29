@@ -1,0 +1,153 @@
+{
+  "ranAt": "2026-10-29T08:46:51.352Z",
+  "tesseract": "tesseract.js 7 (eng, LSTM)",
+  "rows": [
+    {
+      "id": "clean",
+      "note": "Clear printed single-column menu",
+      "ms": 647,
+      "cer": 0,
+      "ocrConfidence": 95,
+      "fromOcr": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 7,
+        "expected": 7
+      },
+      "fromTruth": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 7,
+        "expected": 7
+      }
+    },
+    {
+      "id": "two-column",
+      "note": "Two-column layout",
+      "ms": 317,
+      "cer": 0,
+      "ocrConfidence": 95,
+      "fromOcr": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 6,
+        "expected": 6
+      },
+      "fromTruth": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 6,
+        "expected": 6
+      }
+    },
+    {
+      "id": "odd-prices",
+      "note": "Dot leaders, euro decimal commas, size ranges and market price",
+      "ms": 266,
+      "cer": 0.01990049751243781,
+      "ocrConfidence": 86,
+      "fromOcr": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 6,
+        "expected": 6
+      },
+      "fromTruth": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 6,
+        "expected": 6
+      }
+    },
+    {
+      "id": "price-own-line",
+      "note": "Name, description, and price each on their own line",
+      "ms": 296,
+      "cer": 0,
+      "ocrConfidence": 95,
+      "fromOcr": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 3,
+        "expected": 3
+      },
+      "fromTruth": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 3,
+        "expected": 3
+      }
+    },
+    {
+      "id": "names-only",
+      "note": "Incomplete menu: names and prices, no descriptions",
+      "ms": 165,
+      "cer": 0,
+      "ocrConfidence": 95,
+      "fromOcr": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 4,
+        "expected": 4
+      },
+      "fromTruth": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 4,
+        "expected": 4
+      }
+    },
+    {
+      "id": "degraded",
+      "note": "Same as 'clean' but blurred, tilted 2°, low contrast and smaller, like a quick phone photo",
+      "ms": 360,
+      "cer": 0.1018867924528302,
+      "ocrConfidence": 87,
+      "fromOcr": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 0,
+        "found": 5,
+        "expected": 5
+      },
+      "fromTruth": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 5,
+        "expected": 5
+      }
+    },
+    {
+      "id": "blank",
+      "note": "No text at all (failed scan)",
+      "ms": 158,
+      "cer": 0,
+      "ocrConfidence": 95,
+      "fromOcr": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 0,
+        "expected": 0
+      },
+      "fromTruth": {
+        "precision": 1,
+        "recall": 1,
+        "priceAccuracy": 1,
+        "found": 0,
+        "expected": 0
+      }
+    }
+  ]
+}

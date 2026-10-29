@@ -11,6 +11,57 @@ export interface OcrLine {
   bbox?: { x0: number; y0: number; x1: number; y1: number };
 }
 
+interface Box {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+/** Minimal shape of Tesseract's block → paragraph → line → word output. */
+export interface TesseractBlockLike {
+  paragraphs: { lines: { text: string; confidence: number; bbox: Box; words?: { text: string; confidence: number; bbox: Box }[] }[] }[];
+}
+
+/**
+ * Flatten Tesseract output into lines, splitting a line wherever words are separated by a gap much
+ * wider than the text is tall. Tesseract often merges side-by-side columns into one long line;
+ * splitting lets readingOrder() find the gutter. A price left alone by a split is re-attached to
+ * the text on its left so "Name …… $12" stays one line.
+ */
+export function linesFromTesseract(blocks: TesseractBlockLike[]): OcrLine[] {
+  const out: OcrLine[] = [];
+  for (const b of blocks)
+    for (const p of b.paragraphs)
+      for (const l of p.lines) {
+        const words = (l.words ?? []).filter((w) => w.text.trim());
+        if (words.length < 2) {
+          out.push({ text: l.text.replace(/\s+/g, " ").trim(), confidence: l.confidence, bbox: l.bbox });
+          continue;
+        }
+        const h = Math.max(1, l.bbox.y1 - l.bbox.y0);
+        const segs: (typeof words)[] = [[words[0]]];
+        for (let i = 1; i < words.length; i++) {
+          const gap = words[i].bbox.x0 - words[i - 1].bbox.x1;
+          if (gap > h * 2.5) segs.push([words[i]]);
+          else segs.at(-1)!.push(words[i]);
+        }
+        const merged: (typeof words)[] = [];
+        for (const seg of segs) {
+          const text = seg.map((w) => w.text).join(" ");
+          if (merged.length && PRICE_ONLY.test(text)) merged.at(-1)!.push(...seg);
+          else merged.push(seg);
+        }
+        for (const seg of merged) {
+          out.push({
+            text: seg.map((w) => w.text).join(" "),
+            confidence: seg.reduce((a, w) => a + w.confidence, 0) / seg.length,
+            bbox: { x0: seg[0].bbox.x0, y0: Math.min(...seg.map((w) => w.bbox.y0)), x1: seg.at(-1)!.bbox.x1, y1: Math.max(...seg.map((w) => w.bbox.y1)) },
+          });
+        }
+      }
+  return out;
+}
+
 export type CandidateFlag = "low-confidence" | "no-price" | "multiple-prices" | "long-name";
 
 export interface Candidate {
@@ -84,6 +135,40 @@ function looksLikeDescription(s: string): boolean {
   return /^[\p{Ll}(]/u.test(s) || /,/.test(s) || words(s).length > 7;
 }
 
+/**
+ * Right-aligned prices are often recognised as a separate block. Re-attach each price-only line to
+ * the nearest text line on its left whose vertical centre is within one line-height.
+ */
+export function attachRowPrices(lines: OcrLine[]): OcrLine[] {
+  if (!lines.every((l) => l.bbox)) return lines;
+  const isPrice = (l: OcrLine) => PRICE_ONLY.test(l.text.trim()) || MARKET_TAIL.test(` ${l.text.trim()}`) && letters(l.text) <= 12;
+  const texts = lines.map((l) => ({ ...l, bbox: { ...l.bbox! } }));
+  const absorbed = new Set<number>();
+  const cy = (l: OcrLine) => (l.bbox!.y0 + l.bbox!.y1) / 2;
+  texts.forEach((p, pi) => {
+    if (!isPrice(p)) return;
+    const h = Math.max(1, p.bbox.y1 - p.bbox.y0);
+    let best = -1;
+    let bestScore = Infinity;
+    texts.forEach((t, ti) => {
+      if (ti === pi || absorbed.has(ti) || isPrice(t) || t.bbox.x1 > p.bbox.x0 + 2) return;
+      const dy = Math.abs(cy(t) - cy(p));
+      if (dy > h * 1.1) return;
+      const score = dy * 4 + (p.bbox.x0 - t.bbox.x1) / 10;
+      if (score < bestScore) [best, bestScore] = [ti, score];
+    });
+    if (best < 0) return;
+    const t = texts[best];
+    // Skip if the text line already ends with a price.
+    if (PRICE_TAIL.test(t.text)) return;
+    t.text = `${t.text} ${p.text.trim()}`;
+    t.bbox = { x0: t.bbox.x0, y0: Math.min(t.bbox.y0, p.bbox.y0), x1: p.bbox.x1, y1: Math.max(t.bbox.y1, p.bbox.y1) };
+    t.confidence = Math.min(t.confidence ?? 90, p.confidence ?? 90);
+    absorbed.add(pi);
+  });
+  return texts.filter((_, i) => !absorbed.has(i));
+}
+
 /** Order lines for reading, splitting into columns when a clear vertical gutter exists. */
 export function readingOrder(lines: OcrLine[]): { ordered: { line: OcrLine; index: number }[]; columns: number } {
   const indexed = lines.map((line, index) => ({ line, index }));
@@ -128,7 +213,7 @@ export function readingOrder(lines: OcrLine[]): { ordered: { line: OcrLine; inde
 }
 
 export function parseMenuText(input: OcrLine[] | string): ParseResult {
-  const raw: OcrLine[] = typeof input === "string" ? input.split(/\r?\n/).map((text) => ({ text })) : input;
+  const raw: OcrLine[] = typeof input === "string" ? input.split(/\r?\n/).map((text) => ({ text })) : attachRowPrices(input);
   const { ordered, columns } = readingOrder(raw);
 
   const ignored: string[] = [];
