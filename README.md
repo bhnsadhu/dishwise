@@ -27,3 +27,11 @@ Accounts need Neon env vars (see `.env.example`); `vercel env pull .env.local` f
 
 ## Docs
 [Architecture & scoring](docs/ARCHITECTURE.md) · [Design](docs/DESIGN.md) · [Evaluation](docs/EVALUATION.md) · [Decisions](docs/DECISIONS.md) · [Costs](COSTS.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+
+## Deploying (Vercel Hobby + Neon Free)
+The Vercel project `dishwise` exists with Neon connected, but **no Git connection and no deployment yet**.
+1. Add the cookie secret to Vercel: `vercel env add NEON_AUTH_COOKIE_SECRET production` (value: `openssl rand -base64 32`). Repeat for `preview` if wanted.
+2. Deploy: `vercel deploy --prod`, or connect the GitHub repo in the Vercel dashboard so every push to `main` deploys.
+3. Custom domain: `vercel domains add dishwise.bhanusadhu.com`, then add the DNS record Vercel shows (a `CNAME` for `dishwise` → `cname.vercel-dns.com`) at your DNS provider.
+4. In the Neon console → Auth, add the production URL(s) as trusted origins so sign-in works on the custom domain.
+5. Migrations are already applied; rerun `npm run db:migrate` after schema changes.
