@@ -30,13 +30,13 @@ A dish's **raw score** is the exact sum of additive, explainable **contributions
 | Liked flavour, disliked flavour | +6 / +3.6 diminishing, cap +16; −9 / −5, cap −20 |
 | Hotter than tolerance | −12 / −8 per level over |
 | Budget (tertile of this menu's prices) | −7 … +6 |
-| Learned taste from ratings | ±25 max (see below) |
+| Learned taste from ratings | ±20 max (see below) |
 | Most similar rated dish | 16 × (rating−3)/2 × cosine |
 | Menu signals (cold start) | “house/signature” +5, main +3, side −4, drink −8, well described +2 |
 
 **Score** = `100 / (1 + e^(−raw/18))`. It is a monotonic 0–100 *compatibility index*: raw 0 → 50, +18 → 73, +40 → 90. It is **not** a probability of enjoyment, and it has not been calibrated against real outcomes.
 
-**Learning.** Each rating becomes c = (rating − 3) / 2 ∈ [−1, 1]. Saved-but-unrated dishes count as a half-weight 4★. For every feature f of the rated dish (ingredients, flavours, cuisine, archetype, heat bucket), the learned weight is `w_f = Σ c·x_f / (Σ x_f + 1.5)`. One 5★ rating moves a feature to +0.4, and three consistent ratings reach about +0.67. A candidate's history contribution is `30 × (unit dish vector · w)`, capped at ±25.
+**Learning.** Each rating becomes c = (rating − 3) / 2 ∈ [−1, 1]. Saved-but-unrated dishes count as a half-weight 4★. For every feature f of the rated dish (ingredients, flavours, cuisine, archetype, heat bucket), the learned weight is `w_f = Σ c·x_f / (Σ x_f + 1.5)`. One 5★ rating moves a feature to +0.4, and three consistent ratings reach about +0.67. A candidate's history contribution is `22 × (unit dish vector · w)`, capped at ±20.
 
 **Safety.** The user's diet exclusions and restrictions are matched against the dish's allergen groups:
 - `conflict`: stated on the menu.

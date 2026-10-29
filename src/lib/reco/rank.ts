@@ -85,7 +85,10 @@ export function recommend(
   const heldBack = ranked.filter((r) => r.safety.status === "conflict" || r.safety.status === "likely-conflict");
   const eligible = ranked.filter((r) => !heldBack.includes(r));
   const food = eligible.filter((r) => r.dish.course?.value !== "drink");
-  const picks = diversify(food.length > 0 ? food : eligible, vecs, opts.picks ?? 5, opts.lambda ?? 0.72);
+  const chosen = diversify(food.length > 0 ? food : eligible, vecs, opts.picks ?? 5, opts.lambda ?? 0.72);
+  // Present the meal first: desserts and sides go after mains/starters (stable within groups).
+  const courseOrder = (r: RankedDish) => ({ dessert: 2, side: 1 })[r.dish.course?.value as "dessert" | "side"] ?? 0;
+  const picks = chosen.map((r, i) => ({ r, i })).sort((a, b) => courseOrder(a.r) - courseOrder(b.r) || a.i - b.i).map((x) => x.r);
 
   const stage = learned.examples.length > 0 ? "learning" : profileSignal(profile) > 0 ? "profile" : "cold-start";
   return { ranked, picks, heldBack, stage, learned };

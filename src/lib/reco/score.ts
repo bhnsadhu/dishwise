@@ -313,7 +313,7 @@ export function scoreDish(
       dot += v;
       terms.push({ key: k, v });
     }
-    const points = Math.max(-25, Math.min(25, 30 * dot));
+    const points = Math.max(-20, Math.min(20, 22 * dot));
     if (Math.abs(points) >= 1) {
       terms.sort((a, b) => (points > 0 ? b.v - a.v : a.v - b.v));
       const drivers = terms

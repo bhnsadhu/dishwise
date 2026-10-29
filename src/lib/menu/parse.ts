@@ -265,3 +265,12 @@ export function parseMenuText(input: OcrLine[] | string): ParseResult {
 
   return { items: items.filter((c) => letters(c.name) >= 2), sections, ignored, columns };
 }
+
+/** Parse a price typed by the user in the review form ("12", "$12.50", "9,50", "MP"). */
+export function parsePriceInput(raw: string): { priceCents?: number; priceText?: string } {
+  const t = raw.trim();
+  if (!t) return {};
+  if (MARKET_TAIL.test(` ${t}`)) return { priceText: t.slice(0, 40) };
+  if (PRICE_ONLY.test(t)) return { priceCents: parsePriceCents(t.split(/\s*(?:\/|\|)\s*/)[0]), priceText: t };
+  return { priceText: t.slice(0, 40) };
+}

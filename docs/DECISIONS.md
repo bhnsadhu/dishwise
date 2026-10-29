@@ -8,3 +8,6 @@
 | 2026-10-29 | OCR and ranking run in the browser | $0 cost, photos never leave the device, instant feedback. |
 | 2026-10-29 | Profiles stored as validated JSON (zod) rather than one table per preference | Profiles are always read and written whole. A JSON column keeps the schema small while zod still enforces shape. |
 | 2026-10-29 | Portfolio-first scope | Optimize for recruiting impact per effort (user direction). |
+| 2026-10-29 | Visual direction **C · Marked-Up Menu** approved by user | Most original, menu-native, makes stated-vs-inferred honesty visible; see docs/DESIGN.md |
+| 2026-10-29 | Neon provisioned via Vercel Marketplace (free plan, Neon Auth on); Vercel project created **without** Git connection | Keeps $0; avoids auto-deploying unfinished work on every push |
+| 2026-10-29 | Pages are static shells + client components; signed-in data via authenticated `/api/me/*` route handlers | Engine runs client-side anyway; keeps Cache Components simple (no session reads in layouts) |

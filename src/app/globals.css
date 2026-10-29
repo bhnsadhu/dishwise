@@ -1,26 +1,172 @@
 @import "tailwindcss";
 
+/* Direction C · Marked-Up Menu — see docs/DESIGN.md. Paper cards on a bistro tablecloth; Dishwise writes in ballpoint. */
+@theme {
+  --color-table: #203d36;
+  --color-table-2: #1a332d;
+  --color-table-ink: #e9efe9;
+  --color-table-muted: #a9bdb4;
+  --color-paper: #fbfbf7;
+  --color-paper-2: #f3f2ec;
+  --color-ink: #1e1d1a;
+  --color-muted: #6b675e;
+  --color-pen: #2347c5;
+  --color-red-pen: #c4362b;
+  --color-rule: #dedbd2;
+
+  --font-display: var(--font-gloock), Georgia, "Times New Roman", serif;
+  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-hand: var(--font-gochi), "Comic Sans MS", "Bradley Hand", cursive;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-table);
+  background-image: repeating-linear-gradient(45deg, var(--color-table) 0 14px, var(--color-table-2) 14px 28px);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+:focus-visible {
+  outline: 2px dashed var(--color-pen);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-pen) 22%, transparent);
+}
+
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  /* A sheet of paper on the table */
+  .paper {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgb(0 0 0 / 0.2), 0 18px 40px -18px rgb(0 0 0 / 0.6);
+    padding: clamp(18px, 3.2vw, 34px);
+  }
+  .paper-tilt-l { transform: rotate(-0.8deg); }
+  .paper-tilt-r { transform: rotate(0.6deg); }
+
+  .hand { font-family: var(--font-hand); color: var(--color-pen); }
+  .hand-red { font-family: var(--font-hand); color: var(--color-red-pen); }
+
+  .kicker {
+    font: italic 400 15px/1.35 var(--font-serif);
+    color: var(--color-muted);
+  }
+
+  /* Centred menu section head with hairlines */
+  .sec {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font: 400 13px/1 var(--font-serif);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-muted);
+    margin: 22px 0 6px;
+  }
+  .sec::before,
+  .sec::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-rule);
+  }
+
+  /* Paper-tag button, used on the tablecloth and on paper */
+  .tag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 18px;
+    font: 600 16px/1.1 var(--font-serif);
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 3px;
+    box-shadow: 2px 2px 0 var(--color-ink);
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+    text-decoration: none;
+  }
+  .tag-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--color-ink); }
+  .tag-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--color-ink); }
+  .tag-btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .tag-btn.primary { background: var(--color-pen); color: #fff; border-color: var(--color-pen); box-shadow: 2px 2px 0 var(--color-ink); }
+
+  .link-pen {
+    color: var(--color-pen);
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+  }
+
+  /* Underline marks on menu text */
+  .mk { text-decoration-line: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; background: none; color: inherit; }
+  .mk-pos { text-decoration-color: var(--color-pen); color: var(--color-ink); }
+  .mk-neg { text-decoration-color: var(--color-red-pen); text-decoration-style: wavy; }
+  .mk-bad { text-decoration-line: line-through; text-decoration-color: var(--color-red-pen); }
+  .mk-inf { text-decoration-line: underline; text-decoration-style: dotted; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+
+  /* Pen strokes that draw on */
+  .pen-stroke path {
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: pen-draw 650ms ease-out forwards;
+  }
+  .pen-stroke.drawn path { animation: none; stroke-dashoffset: 0; }
+
+  /* Paper form fields */
+  .field {
+    width: 100%;
+    min-width: 0;
+    font: 400 16px/1.35 var(--font-serif);
+    color: var(--color-ink);
+    background: transparent;
+    border: 0;
+    border-bottom: 1.5px solid var(--color-rule);
+    padding: 6px 2px;
+    border-radius: 0;
+  }
+  .field:focus { outline: none; border-bottom-color: var(--color-pen); }
+  .field::placeholder { color: color-mix(in srgb, var(--color-muted) 70%, transparent); font-style: italic; }
+  .label { font: 400 12px/1.2 var(--font-serif); text-transform: uppercase; letter-spacing: 0.14em; color: var(--color-muted); }
+}
+
+@keyframes pen-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pen-stroke path { animation: none; stroke-dashoffset: 0; }
+  .tag-btn { transition: none; }
 }

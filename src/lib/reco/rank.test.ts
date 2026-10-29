@@ -180,6 +180,13 @@ describe("recommend — cold start, missing data, explanations", () => {
     expect(r.picks.length).toBe(5);
   });
 
+  it("lists desserts and sides after the meal in picks", () => {
+    const r = recommend(menu("lantern-noodle-bar"), profile({ likedIngredients: ["cream", "sesame"], likedFlavors: ["sweet", "creamy"] }));
+    const order = r.picks.map((p) => p.dish.course?.value);
+    const firstDessert = order.indexOf("dessert");
+    if (firstDessert >= 0) expect(order.slice(firstDessert).every((c) => c === "dessert" || c === "side")).toBe(true);
+  });
+
   it("is deterministic", () => {
     const p = profile({ cuisines: ["mexican"], likedFlavors: ["smoky"] });
     expect(recommend(menu("casa-comal"), p).ranked.map((d) => d.dish.key)).toEqual(
