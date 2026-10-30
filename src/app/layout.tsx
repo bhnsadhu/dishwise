@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
 import { Suspense } from "react";
 import { AppShell, ShellBars } from "@/components/app-shell";
+import { THEME_SCRIPT } from "@/components/theme-toggle";
 import "./globals.css";
 
 const figtree = Figtree({ variable: "--font-figtree", subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"] });
@@ -25,7 +26,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${figtree.variable} antialiased`}>
+    <html lang="en" className={`${figtree.variable} antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-card focus:px-3 focus:py-2">
           Skip to content

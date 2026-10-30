@@ -29,3 +29,15 @@ test("no violations on the scan review screen", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Check your dishes" })).toBeVisible();
   expect(await scan(page)).toEqual([]);
 });
+
+test.describe("dark theme", () => {
+  test.use({ colorScheme: "dark" });
+  for (const path of ["/", "/taste", "/m/nonna-fig", "/scan", "/notebook", "/how", "/account"]) {
+    test(`no WCAG A/AA violations on ${path} in dark mode`, async ({ page }) => {
+      await page.goto(path);
+      await page.waitForLoadState("networkidle");
+      expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("dark");
+      expect(await scan(page)).toEqual([]);
+    });
+  }
+});

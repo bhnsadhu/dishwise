@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { REPO_URL } from "@/components/app-shell";
 import { CoverArt, coverGround } from "@/components/cover-art";
 import { GithubMark, Icon, Mark } from "@/components/icons";
+import { ThemeToggleIcon } from "@/components/theme-toggle";
 import { MatchPill, heldReason } from "@/components/match";
 import { useStore } from "@/lib/client/store";
 import { emptyProfile, type TasteProfile } from "@/lib/domain/schemas";
@@ -32,8 +33,8 @@ function LiveDemo() {
       <div className="grid h-28 grid-cols-[auto_1fr] items-center gap-4 px-5" style={{ background: coverGround(menu.cuisine) }}>
         <CoverArt cuisine={menu.cuisine} className="h-24 w-auto" />
         <div>
-          <p className="text-[19px] font-extrabold leading-tight text-[#1c1913]">{menu.title}</p>
-          <p className="text-[13px] font-semibold text-[#1c1913]/70">Sample menu · {menu.items.length} dishes</p>
+          <p className="text-[19px] font-extrabold leading-tight text-ink">{menu.title}</p>
+          <p className="text-[13px] font-semibold text-ink/80">Sample menu · {menu.items.length} dishes</p>
         </div>
       </div>
       <div className="grid gap-1 p-5 pt-4">
@@ -147,11 +148,14 @@ export function Home() {
           <Mark />
           Dishwise
         </span>
-        <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-2 rounded-full border border-ink/25 px-3.5 text-[15px] font-semibold text-ink">
-          <GithubMark size={18} />
-          Repository
-          <span className="sr-only"> on GitHub (opens in a new tab)</span>
-        </a>
+        <span className="flex items-center gap-2">
+          <ThemeToggleIcon />
+          <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-2 rounded-full border border-ink/25 px-3.5 text-[15px] font-semibold text-ink">
+            <GithubMark size={18} />
+            Repository
+            <span className="sr-only"> on GitHub (opens in a new tab)</span>
+          </a>
+        </span>
       </div>
 
       <section className="page mt-5 grid items-center gap-8 md:mt-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">

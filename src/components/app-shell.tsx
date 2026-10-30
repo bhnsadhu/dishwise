@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/lib/client/store";
+import { ThemeToggle } from "./theme-toggle";
 import { GithubMark, Icon, Mark, type IconName } from "./icons";
 
 export const REPO_URL = "https://github.com/bhnsadhu/dishwise";
@@ -45,6 +46,7 @@ export function ShellBars({ path = "", signedIn = false }: { path?: string; sign
                 </Link>
               );
             })}
+            <ThemeToggle />
             <a
               href={REPO_URL}
               target="_blank"

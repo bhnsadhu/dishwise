@@ -125,3 +125,19 @@ test("the source code is one click from the home page", async ({ page }) => {
   await expect(link).toHaveCount(1);
   await expect(link).toHaveAttribute("href", "https://github.com/bhnsadhu/dishwise");
 });
+
+test("theme follows the system, can be switched, and the choice sticks", async ({ browser }) => {
+  const ctx = await browser.newContext({ colorScheme: "dark" });
+  const page = await ctx.newPage();
+  const theme = () => page.evaluate(() => document.documentElement.dataset.theme);
+  await page.goto("/");
+  expect(await theme()).toBe("dark");
+  await page.getByRole("button", { name: /^(Light mode|Switch to light mode)$/ }).filter({ visible: true }).click();
+  expect(await theme()).toBe("light");
+  await page.reload();
+  expect(await theme()).toBe("light");
+  await page.getByRole("button", { name: /^(Dark mode|Switch to dark mode)$/ }).filter({ visible: true }).click();
+  expect(await theme()).toBe("dark");
+  expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe("rgb(21, 19, 15)");
+  await ctx.close();
+});

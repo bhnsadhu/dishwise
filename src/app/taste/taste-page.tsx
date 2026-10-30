@@ -23,14 +23,14 @@ function Preview() {
     <section aria-labelledby="preview-h" className="card overflow-hidden">
       <div className="flex items-center gap-3 px-4 py-3" style={{ background: coverGround(menu.cuisine) }}>
         <CoverArt cuisine={menu.cuisine} className="h-14 w-auto" />
-        <div className="min-w-0 text-[#1c1913]">
+        <div className="min-w-0 text-ink">
           <h2 id="preview-h" className="text-[15px] font-extrabold">
             Live preview
           </h2>
           <label className="sr-only" htmlFor="preview-menu">
             Preview menu
           </label>
-          <select id="preview-menu" value={menuId} onChange={(e) => setMenuId(e.target.value)} className="mt-0.5 max-w-full rounded-lg border border-black/10 bg-white/80 px-2 py-1 text-[13.5px] font-semibold text-[#1c1913]">
+          <select id="preview-menu" value={menuId} onChange={(e) => setMenuId(e.target.value)} className="mt-0.5 max-w-full rounded-lg border border-line bg-card px-2 py-1 text-[13.5px] font-semibold text-ink">
             {SAMPLE_MENUS.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.title}
