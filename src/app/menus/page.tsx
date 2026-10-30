@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
-import { MenusPage } from "./menus-page";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Menus" };
-
+/** Menus now live on the home screen. */
 export default function Page() {
-  return <MenusPage />;
+  permanentRedirect("/");
 }

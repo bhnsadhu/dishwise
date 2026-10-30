@@ -1,20 +1,16 @@
 import Link from "next/link";
+import { CoverArt } from "@/components/cover-art";
 
 export default function NotFound() {
   return (
-    <div className="wrap pt-6">
-      <div className="paper mx-auto max-w-xl text-center">
-        <p className="font-hand text-[22px] text-pen">not on the menu</p>
-        <h1 className="mt-1 font-display text-[40px] leading-tight">Page not found</h1>
-        <p className="mt-2 text-muted">That page doesn&apos;t exist. It may have moved, or the link has a typo.</p>
-        <div className="mt-5 flex flex-wrap justify-center gap-3">
-          <Link href="/" className="tag-btn">
-            Home
-          </Link>
-          <Link href="/menus" className="tag-btn primary">
-            Open a menu
-          </Link>
-        </div>
+    <div className="page pt-10">
+      <div className="card mx-auto grid max-w-lg justify-items-center gap-3 p-8 text-center">
+        <CoverArt className="h-24 w-auto" />
+        <h1 className="text-[30px] font-black tracking-[-0.03em]">Page not found</h1>
+        <p className="text-sub">That page isn&apos;t on the menu. It may have moved, or the link has a typo.</p>
+        <Link href="/" className="btn btn-primary mt-2">
+          Back to home
+        </Link>
       </div>
     </div>
   );

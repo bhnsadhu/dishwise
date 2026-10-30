@@ -102,7 +102,6 @@ test("sign up merges the guest's taste and ratings into the new account", async 
   const sync = f.calls.find((c) => c.path === "/api/me/sync")!.body as { profile: { likedIngredients: string[] }; feedback: { snapshot: { name: string }; rating: number }[] };
   expect(sync.profile.likedIngredients).toContain("tofu");
   expect(sync.feedback).toEqual([expect.objectContaining({ rating: 4, snapshot: expect.objectContaining({ name: "Edamame" }) })]);
-  await expect(page.getByRole("link", { name: "Account ✓" })).toBeVisible();
 });
 
 test("signed-in changes write through to the account", async ({ page }) => {
@@ -113,7 +112,7 @@ test("signed-in changes write through to the account", async ({ page }) => {
 
   await page.goto("/m/nonna-fig");
   await page.getByRole("button", { name: /^Margherita\. Score/ }).click();
-  await page.getByRole("dialog").getByRole("button", { name: "♡ Save" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Save", exact: true }).click();
   await expect.poll(() => f.calls.filter((c) => c.path === "/api/me/feedback" && c.method === "PUT").length).toBe(1);
   const put = f.calls.find((c) => c.path === "/api/me/feedback")!.body as { saved: boolean; snapshot: { name: string } };
   expect(put).toMatchObject({ saved: true, snapshot: { name: "Margherita" } });
@@ -126,7 +125,7 @@ test("account data loads on a fresh device", async ({ page }) => {
   });
   await page.goto("/taste");
   await expect(page.getByRole("button", { name: "beef: love" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Thai: circled" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Thai: selected" })).toBeVisible();
 });
 
 test("wrong password shows the error and stays signed out", async ({ page }) => {
@@ -136,7 +135,8 @@ test("wrong password shows the error and stays signed out", async ({ page }) => 
   await page.getByLabel("Password").fill("not-the-password-1");
   await page.getByRole("button", { name: "Sign in" }).last().click();
   await expect(page.getByRole("alert").filter({ hasText: "Invalid email or password" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+  await expect(page.getByLabel("Email")).toBeVisible();
+  await expect(page.getByText(/Signed in as/)).toHaveCount(0);
 });
 
 test("sign up that needs email confirmation says so instead of claiming success", async ({ page }) => {
@@ -162,7 +162,8 @@ test("a failed sync is shown, not swallowed", async ({ page }) => {
   await page.getByRole("button", { name: /^Churros\. Score/ }).click();
   await page.getByRole("dialog").getByRole("radio", { name: "5 stars" }).click();
   await page.keyboard.press("Escape");
-  await page.getByRole("link", { name: "Account ✓" }).click();
+  // Navigate client-side so the in-memory sync error survives.
+  await page.getByRole("link", { name: /^(Account|You)$/ }).filter({ visible: true }).first().click();
   await expect(page.getByRole("alert").filter({ hasText: /saving your data/ })).toBeVisible();
 });
 

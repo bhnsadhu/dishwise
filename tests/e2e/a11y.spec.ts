@@ -18,6 +18,7 @@ test("no violations with the dish sheet open", async ({ page }) => {
   await page.goto("/m/lantern-noodle-bar");
   await page.getByRole("button", { name: /^Pork Gyoza\. Score/ }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByRole("dialog").evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)));
   expect(await scan(page)).toEqual([]);
 });
 

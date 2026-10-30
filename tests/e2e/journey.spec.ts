@@ -5,12 +5,14 @@ const scoreOf = async (page: Page, dish: string) => {
   return Number(label?.match(/Score (\d+)/)?.[1]);
 };
 
-test("home shows a marked-up example menu without sign-up", async ({ page }) => {
+test("home shows a ranked example menu without sign-up", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "What should I order?" })).toBeVisible();
-  await expect(page.getByText("marked for an example taste")).toBeVisible();
-  await expect(page.getByRole("button", { name: /pick number 1/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Held back/ }).first()).toBeVisible();
+  await expect(page.getByText(/Ranked for an example taste/)).toBeVisible();
+  await expect(page.getByText(/^\d+% match$/).first()).toBeVisible();
+  await expect(page.getByText(/^(Contains|Usually has) shellfish$/)).toBeVisible();
+  await page.getByRole("link", { name: "See the whole menu ranked" }).click();
+  await expect(page.getByRole("heading", { name: "Lantern Noodle Bar" })).toBeVisible();
 });
 
 test("guest taste card persists and changes the ranking", async ({ page }) => {
@@ -32,9 +34,9 @@ test("allergy restriction holds back conflicting dishes and asks to confirm", as
   await page.locator("label", { hasText: /^shellfish$/ }).click();
   await expect(page.getByRole("checkbox", { name: "shellfish" })).toBeChecked();
   await page.goto("/m/lantern-noodle-bar");
-  await expect(page.getByRole("heading", { name: /Held back/ })).toBeVisible();
+  await expect(page.getByText(/(Contains|Usually has) shellfish/).filter({ visible: true }).first()).toBeVisible();
   await expect(page.getByRole("button", { name: /^Shrimp Tempura\. Held back/ })).toBeVisible();
-  await expect(page.getByText(/confirm with the staff/i)).toBeVisible();
+  await expect(page.getByText(/confirm with the staff/i).filter({ visible: true }).first()).toBeVisible();
 });
 
 test("rating a dish re-ranks and the dish lands in the notebook", async ({ page }) => {
@@ -45,12 +47,13 @@ test("rating a dish re-ranks and the dish lands in the notebook", async ({ page 
   await expect(dialog.getByRole("heading", { name: "Palak Paneer" })).toBeVisible();
   await expect(dialog.getByText("Why this score")).toBeVisible();
   await dialog.getByRole("radio", { name: "5 stars" }).click();
-  await dialog.getByRole("button", { name: "♡ Save" }).click();
+  await dialog.getByRole("button", { name: "Save", exact: true }).click();
+  await expect(dialog.getByRole("button", { name: "Saved", exact: true })).toHaveAttribute("aria-pressed", "true");
   await page.keyboard.press("Escape");
   expect(await scoreOf(page, "Palak Paneer")).toBeGreaterThan(before);
 
   await page.goto("/notebook");
-  await expect(page.getByRole("heading", { name: /Saved/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Saved dishes/ })).toBeVisible();
   await expect(page.getByText("Palak Paneer").first()).toBeVisible();
   await page.getByRole("button", { name: "Forget Palak Paneer" }).first().click();
   await expect(page.getByText("nothing here yet")).toBeVisible();
@@ -63,7 +66,7 @@ test("typed menu goes through review and gets ranked", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Check your dishes" })).toBeVisible();
   await expect(page.getByLabel("Dish 1 name")).toHaveValue("Spicy Pork Ramen");
   await page.getByLabel("Dish 2 name").fill("Garden Salad Bowl");
-  await page.getByRole("button", { name: /Mark up this menu/ }).click();
+  await page.getByRole("button", { name: /Rank these dishes/ }).click();
   await expect(page).toHaveURL(/\/m\/local-/);
   await expect(page.getByRole("button", { name: /^Spicy Pork Ramen\. Score/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /^Garden Salad Bowl\. Score/ })).toBeVisible();
@@ -78,7 +81,7 @@ test("photo upload runs real OCR in the browser and finds dishes and prices", as
   expect(names).toEqual(expect.arrayContaining(["Charred Corn Soup", "Roast Chicken", "Mushroom Risotto"]));
   const idx = names.indexOf("Roast Chicken");
   await expect(page.getByLabel(`Dish ${idx + 1} price`)).toHaveValue("$24");
-  await page.getByRole("button", { name: /Mark up this menu/ }).click();
+  await page.getByRole("button", { name: /Rank these dishes/ }).click();
   await expect(page.getByRole("button", { name: /^Roast Chicken\. Score/ })).toBeVisible();
 });
 
@@ -98,12 +101,13 @@ test("taste words work from the keyboard", async ({ page }) => {
   await expect(page.getByRole("button", { name: "tofu: avoid" })).toBeVisible();
 });
 
-test("pen strokes don't animate with reduced motion", async ({ browser }) => {
+test("the dish sheet doesn't slide in with reduced motion", async ({ browser }) => {
   const ctx = await browser.newContext({ reducedMotion: "reduce" });
   const page = await ctx.newPage();
-  await page.goto("/");
-  const anim = await page.locator(".pen-stroke path").first().evaluate((el) => getComputedStyle(el).animationName);
-  expect(anim).toBe("none");
+  await page.goto("/m/lantern-noodle-bar");
+  await page.getByRole("button", { name: /^Edamame\. Score/ }).click();
+  const duration = await page.getByRole("dialog").evaluate((el) => parseFloat(getComputedStyle(el).animationDuration));
+  expect(duration).toBeLessThanOrEqual(0.001);
   await ctx.close();
 });
 

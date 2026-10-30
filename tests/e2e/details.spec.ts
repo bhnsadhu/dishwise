@@ -5,25 +5,24 @@ const scoreOf = async (page: Page, dish: string) => {
   return Number(label?.match(/Score (\d+)/)?.[1]);
 };
 
-test("home switches between the example taste and yours", async ({ page }) => {
+test("home ranks for an example taste until you set your own", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText(/Ranked for an example taste/)).toBeVisible();
   await page.goto("/taste");
   await page.getByRole("button", { name: "olives: no preference" }).click();
   await page.goto("/");
-  await expect(page.getByText("marked for your taste")).toBeVisible();
-  await page.getByRole("button", { name: "Show the example" }).click();
-  await expect(page.getByText("marked for an example taste")).toBeVisible();
-  await page.getByRole("button", { name: "Show my taste" }).click();
-  await expect(page.getByText("marked for your taste")).toBeVisible();
+  await expect(page.getByText("Ranked for your taste")).toBeVisible();
+  await expect(page.getByText(/Ranked for an example taste/)).toHaveCount(0);
 });
 
 test("clearing the taste card asks first, then resets everything", async ({ page }) => {
   await page.goto("/taste");
   await page.getByRole("button", { name: "Korean: no preference" }).click();
   await page.getByRole("radio", { name: "Vegan" }).click();
-  await page.getByRole("button", { name: "Clear card" }).click();
+  await page.getByRole("button", { name: "Reset taste" }).click();
   await page.getByRole("button", { name: "Keep it" }).click();
-  await expect(page.getByRole("button", { name: "Korean: circled" })).toBeVisible();
-  await page.getByRole("button", { name: "Clear card" }).click();
+  await expect(page.getByRole("button", { name: "Korean: selected" })).toBeVisible();
+  await page.getByRole("button", { name: "Reset taste" }).click();
   await page.getByRole("button", { name: "Yes, clear it" }).click();
   await expect(page.getByRole("button", { name: "Korean: no preference" })).toBeVisible();
   await expect(page.getByRole("radio", { name: "No set diet" })).toHaveAttribute("aria-checked", "true");
@@ -51,7 +50,8 @@ test("favourite dishes can be added and removed", async ({ page }) => {
   await page.getByLabel("Add a favourite dish").press("Enter");
   await expect(page.getByRole("button", { name: "Remove ramen" })).toBeVisible();
   await page.goto("/m/lantern-noodle-bar");
-  await expect(page.getByRole("button", { name: /Ramen\. Score \d+, pick number 1/ })).toBeVisible();
+  const picks = page.getByRole("region", { name: "Top picks for you" }).filter({ visible: true }).first();
+  await expect(picks.getByRole("listitem").first()).toContainText("Ramen");
   await page.goto("/taste");
   await page.getByRole("button", { name: "Remove ramen" }).click();
   await expect(page.getByRole("button", { name: "Remove ramen" })).toHaveCount(0);
@@ -60,18 +60,19 @@ test("favourite dishes can be added and removed", async ({ page }) => {
 test("manual form: validation, skipped lines, saved menu list and removal", async ({ page }) => {
   await page.goto("/scan?mode=type");
   await page.getByRole("button", { name: "or fill in a form" }).click();
-  await page.getByRole("button", { name: /Mark up this menu/ }).click();
+  await page.getByRole("button", { name: /Rank these dishes/ }).click();
   await expect(page.getByRole("alert").filter({ hasText: "Add at least one dish name" })).toBeVisible();
 
   await page.getByLabel("Restaurant").fill("Test Kitchen");
   await page.getByLabel("Dish 1 name").fill("Mushroom Toast");
   await page.getByLabel("Dish 1 price").fill("$12.50");
   await page.getByRole("button", { name: "Remove dish 3" }).click();
-  await page.getByRole("button", { name: /Mark up this menu/ }).click();
+  await page.getByRole("button", { name: /Rank these dishes/ }).click();
   await expect(page.getByRole("heading", { name: "Test Kitchen" })).toBeVisible();
-  await expect(page.getByText("12.50")).toBeVisible();
+  await expect(page.getByText("$12.50").filter({ visible: true }).first()).toBeVisible();
 
   await page.goto("/menus");
+  await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("link", { name: /Test Kitchen/ })).toBeVisible();
   await page.getByRole("button", { name: "Remove Test Kitchen" }).click();
   await expect(page.getByRole("link", { name: /Test Kitchen/ })).toHaveCount(0);
@@ -132,4 +133,13 @@ test("dish sheet closes with Escape and by clicking outside, and traps focus", a
   await page.getByRole("button", { name: /^Edamame\. Score/ }).click();
   await page.mouse.click(5, 5);
   await expect(dialog).toBeHidden();
+});
+
+test("tapping anywhere on a dish card opens it", async ({ page }) => {
+  await page.goto("/m/lantern-noodle-bar");
+  const card = page.locator("li").filter({ has: page.getByRole("button", { name: /^Edamame\. Score/ }) });
+  await card.scrollIntoViewIfNeeded();
+  const box = (await card.boundingBox())!;
+  await page.mouse.click(box.x + box.width - 12, box.y + box.height - 12);
+  await expect(page.getByRole("dialog").getByRole("heading", { name: "Edamame" })).toBeVisible();
 });

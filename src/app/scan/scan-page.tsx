@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@/components/icons";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { useStore } from "@/lib/client/store";
@@ -125,50 +126,74 @@ export function ScanPage() {
   }
 
   return (
-    <div className="wrap grid gap-6 pt-2">
-      <Link href="/menus" className="text-table-ink underline-offset-4 hover:underline">
-        ← Menus
+    <div className="page grid gap-6 pt-4 md:pt-8">
+      <Link href="/" className="link hidden items-center gap-1 md:inline-flex">
+        <Icon name="back" size={18} />
+        Home
       </Link>
 
       {(stage.kind === "pick" || stage.kind === "type") && (
-        <section className="paper mx-auto w-full max-w-2xl" aria-labelledby="scan-h">
-          <div className="flex flex-wrap gap-x-6 gap-y-2 border-b border-rule pb-3" role="tablist" aria-label="How to add a menu">
+        <section className="mx-auto grid w-full max-w-2xl gap-6" aria-labelledby="scan-h">
+          <header className="grid gap-1">
+            <h1 id="scan-h" className="text-[30px] font-black tracking-[-0.03em] md:text-[40px]">
+              Add a menu
+            </h1>
+            <p className="text-[16px] text-sub">Take a photo, or paste the text from a website or delivery app.</p>
+          </header>
+          <div className="grid grid-cols-2 gap-1.5 rounded-2xl bg-surf p-1.5" role="tablist" aria-label="How to add a menu">
             {(["pick", "type"] as const).map((k) => (
-              <button key={k} role="tab" type="button" aria-selected={stage.kind === k} onClick={() => setStage({ kind: k })} className={`relative font-display text-[24px] ${stage.kind === k ? "text-ink" : "text-muted"}`}>
+              <button
+                key={k}
+                role="tab"
+                type="button"
+                aria-selected={stage.kind === k}
+                onClick={() => setStage({ kind: k })}
+                className={`flex min-h-12 items-center justify-center gap-2 rounded-xl text-[15px] font-bold transition-colors ${stage.kind === k ? "bg-card text-ink shadow-[var(--shadow)]" : "text-sub hover:text-ink"}`}
+              >
+                <Icon name={k === "pick" ? "camera" : "paste"} size={19} />
                 {k === "pick" ? "Photo" : "Type or paste"}
-                {stage.kind === k && <span className="absolute -bottom-[13px] left-0 right-0 h-[2px] bg-pen" />}
               </button>
             ))}
           </div>
-          <h1 id="scan-h" className="sr-only">
-            Add a menu
-          </h1>
 
           {error && (
-            <p role="alert" className="mt-4 font-hand text-[19px] text-red-pen">
+            <p role="alert" className="flex gap-2 rounded-2xl bg-no-soft p-4 text-[15px] text-no">
+              <Icon name="alert" size={19} className="mt-0.5" />
               {error}
             </p>
           )}
 
           {stage.kind === "pick" ? (
-            <div className="mt-5 grid gap-4">
-              <p className="text-muted">Lay the menu flat, fill the frame, avoid glare. English menus work best. The photo is read in your browser and never uploaded.</p>
-              <div className="flex flex-wrap gap-3">
-                <button type="button" className="tag-btn primary sm:hidden" onClick={() => cameraRef.current?.click()}>
-                  Take a photo
-                </button>
-                <button type="button" className="tag-btn" onClick={() => fileRef.current?.click()}>
-                  Choose a photo
-                </button>
+            <div className="grid gap-4">
+              <div className="card grid justify-items-center gap-4 border-dashed p-8 text-center">
+                <span className="grid h-16 w-16 place-items-center rounded-2xl bg-brand-soft text-brand-text">
+                  <Icon name="camera" size={30} />
+                </span>
+                <div>
+                  <p className="text-[18px] font-bold">Photograph the menu</p>
+                  <p className="mx-auto mt-1 max-w-[42ch] text-[14.5px] text-sub">Lay it flat, fill the frame, avoid glare. English menus work best. The photo is read in your browser and never uploaded.</p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2.5">
+                  <button type="button" className="btn btn-primary md:hidden" onClick={() => cameraRef.current?.click()}>
+                    <Icon name="camera" size={19} />
+                    Take a photo
+                  </button>
+                  <button type="button" className="btn btn-primary hidden md:inline-flex" onClick={() => fileRef.current?.click()}>
+                    Choose a photo
+                  </button>
+                  <button type="button" className="btn btn-secondary md:hidden" onClick={() => fileRef.current?.click()}>
+                    Choose a photo
+                  </button>
+                </div>
               </div>
               <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="sr-only" aria-label="Take a photo of a menu" onChange={(e) => handleFile(e.target.files?.[0])} />
               <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/bmp,image/gif" className="sr-only" aria-label="Choose a menu photo" data-testid="menu-file" onChange={(e) => handleFile(e.target.files?.[0])} />
-              <p className="text-sm text-muted">The first scan downloads the text reader (about 4 MB) and it&apos;s cached after that. Reading takes a few seconds.</p>
+              <p className="text-[13.5px] text-sub">The first scan downloads the text reader (about 4 MB) and it&apos;s cached after that. Reading takes a few seconds.</p>
             </div>
           ) : (
-            <div className="mt-5 grid gap-3">
-              <label htmlFor="paste" className="text-muted">
-                Paste a menu from a website, or write one dish per line. Prices and descriptions are optional.
+            <div className="grid gap-3">
+              <label htmlFor="paste" className="text-[15px] text-sub">
+                Paste a menu from a website or delivery app, or write one dish per line. Prices and descriptions are optional.
               </label>
               <textarea
                 id="paste"
@@ -177,13 +202,22 @@ export function ScanPage() {
                 rows={9}
                 maxLength={20000}
                 placeholder={"Spicy Miso Ramen  $17\nmiso broth, ground pork, chili oil\nGyoza  $9"}
-                className="w-full rounded-sm border border-rule bg-paper-2 p-3 font-serif text-[16px] leading-relaxed"
+                className="field font-mono text-[14.5px]"
               />
-              <div className="flex flex-wrap gap-3">
-                <button type="button" className="tag-btn primary" onClick={parsePasted} disabled={!pasted.trim()}>
-                  Read these dishes →
+              <div className="flex flex-wrap items-center gap-3">
+                <button type="button" className="btn btn-primary" onClick={parsePasted} disabled={!pasted.trim()}>
+                  Read these dishes
+                  <Icon name="forward" size={18} />
                 </button>
-                <button type="button" className="link-pen" onClick={() => { setRows([toRow({}), toRow({}), toRow({})]); setTitle("My menu"); setStage({ kind: "review", source: "manual", ignored: [], columns: 1 }); }}>
+                <button
+                  type="button"
+                  className="link"
+                  onClick={() => {
+                    setRows([toRow({}), toRow({}), toRow({})]);
+                    setTitle("My menu");
+                    setStage({ kind: "review", source: "manual", ignored: [], columns: 1 });
+                  }}
+                >
                   or fill in a form
                 </button>
               </div>
@@ -193,44 +227,45 @@ export function ScanPage() {
       )}
 
       {stage.kind === "reading" && (
-        <section className="paper mx-auto grid w-full max-w-2xl gap-4" aria-live="polite" aria-busy="true">
-          <h1 className="font-display text-[30px]">Reading your menu…</h1>
+        <section className="card mx-auto grid w-full max-w-2xl gap-5 p-6" aria-live="polite" aria-busy="true">
+          <h1 className="text-[26px] font-extrabold tracking-[-0.02em]">Reading your menu…</h1>
           <div className="grid gap-2">
-            <p className="font-hand text-[20px] text-pen">{stage.progress.status}</p>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-rule" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(stage.progress.progress * 100)}>
-              <div className="h-full bg-pen transition-[width]" style={{ width: `${Math.round(stage.progress.progress * 100)}%` }} />
+            <p className="font-semibold text-brand-text">{stage.progress.status}</p>
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-surf" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(stage.progress.progress * 100)}>
+              <div className="h-full rounded-full bg-brand transition-[width]" style={{ width: `${Math.round(stage.progress.progress * 100)}%` }} />
             </div>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={stage.preview} alt="The photo being read, in grayscale" className="max-h-80 w-auto justify-self-center rounded-sm border border-rule object-contain" />
+          <img src={stage.preview} alt="The photo being read, in grayscale" className="max-h-80 w-auto justify-self-center rounded-xl border border-line object-contain" />
         </section>
       )}
 
       {stage.kind === "review" && (
-        <section className="paper mx-auto grid w-full max-w-3xl gap-5" aria-labelledby="review-h">
-          <div>
-            <h1 id="review-h" className="font-display text-[32px] leading-tight">
+        <section className="mx-auto grid w-full max-w-3xl gap-6" aria-labelledby="review-h">
+          <header className="grid gap-1">
+            <h1 id="review-h" className="text-[30px] font-black tracking-[-0.03em] md:text-[38px]">
               {stage.source === "scan" ? "Check what we read" : "Check your dishes"}
             </h1>
-            <p className="mt-1 text-muted">
+            <p className="text-[15.5px] text-sub">
               {stage.source === "scan"
                 ? `Found ${rows.filter((r) => r.name).length} dish${rows.length === 1 ? "" : "es"}${stage.columns > 1 ? ` across ${stage.columns} columns` : ""}${stage.ms ? ` in ${(stage.ms / 1000).toFixed(1)}s` : ""}. Fix anything misread. Dishwise only uses what's here.`
                 : "Edit anything before ranking."}
             </p>
-            {stage.lowRes && <p className="mt-1 font-hand text-[18px] text-red-pen">that photo is small, so a closer shot will read better</p>}
-            {error && (
-              <p role="alert" className="mt-2 font-hand text-[19px] text-red-pen">
-                {error}
-              </p>
-            )}
-          </div>
+            {stage.lowRes && <p className="text-[14.5px] font-semibold text-warn">That photo is small, so a closer shot will read better.</p>}
+          </header>
+          {error && (
+            <p role="alert" className="flex gap-2 rounded-2xl bg-warn-soft p-4 text-[15px] text-warn">
+              <Icon name="alert" size={19} className="mt-0.5" />
+              {error}
+            </p>
+          )}
 
-          <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_200px]">
-            <label className="grid gap-1">
+          <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_220px]">
+            <label className="grid gap-1.5">
               <span className="label">Restaurant</span>
-              <input className="field font-display text-[22px]" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} />
+              <input className="field text-[17px] font-bold" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} />
             </label>
-            <label className="grid gap-1">
+            <label className="grid gap-1.5">
               <span className="label">Cuisine (optional)</span>
               <select className="field" value={cuisine} onChange={(e) => setCuisine(e.target.value as CuisineId | "")}>
                 <option value="">Not sure</option>
@@ -243,52 +278,65 @@ export function ScanPage() {
             </label>
           </div>
 
-          <ol className="m-0 grid list-none gap-4 p-0">
+          <ol className="grid gap-3">
             {rows.map((r, i) => (
-              <li key={r.id} className="grid gap-x-3 gap-y-1 border-b border-rule pb-4 sm:grid-cols-[28px_minmax(0,1fr)_110px_auto]">
-                <span className="hidden pt-2 font-hand text-[18px] text-muted sm:block">{i + 1}</span>
-                <div className="grid min-w-0 gap-1">
+              <li key={r.id} className="card grid gap-2 p-4 sm:grid-cols-[minmax(0,1fr)_130px]">
+                <div className="grid min-w-0 gap-2">
                   <label className="sr-only" htmlFor={`name-${r.id}`}>
                     Dish {i + 1} name
                   </label>
-                  <input id={`name-${r.id}`} className="field font-semibold" value={r.name} maxLength={120} placeholder="Dish name" onChange={(e) => update(r.id, { name: e.target.value })} />
+                  <input id={`name-${r.id}`} className="field font-bold" value={r.name} maxLength={120} placeholder="Dish name" onChange={(e) => update(r.id, { name: e.target.value })} />
                   <label className="sr-only" htmlFor={`desc-${r.id}`}>
                     Dish {i + 1} description
                   </label>
-                  <input id={`desc-${r.id}`} className="field text-[15px] italic text-muted" value={r.description} maxLength={600} placeholder="Description (optional)" onChange={(e) => update(r.id, { description: e.target.value })} />
-                  {r.section && <span className="text-xs uppercase tracking-[0.12em] text-muted">under “{r.section}”</span>}
-                  {r.flags.length > 0 && <span className="font-hand text-[17px] text-red-pen">{r.flags.map((f) => FLAG_NOTES[f]).join(" · ")}</span>}
+                  <input id={`desc-${r.id}`} className="field text-[15px]" value={r.description} maxLength={600} placeholder="Description (optional)" onChange={(e) => update(r.id, { description: e.target.value })} />
                 </div>
-                <div>
+                <div className="grid content-start gap-2">
                   <label className="sr-only" htmlFor={`price-${r.id}`}>
                     Dish {i + 1} price
                   </label>
                   <input id={`price-${r.id}`} className="field tabular-nums" value={r.price} maxLength={40} placeholder="Price" inputMode="decimal" onChange={(e) => update(r.id, { price: e.target.value })} />
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => setRows((rs) => rs.filter((x) => x.id !== r.id))} aria-label={`Remove dish ${i + 1}`}>
+                    <Icon name="trash" size={16} />
+                    Remove
+                  </button>
                 </div>
-                <button type="button" className="link-pen justify-self-start pt-2 text-sm text-muted sm:justify-self-end" onClick={() => setRows((rs) => rs.filter((x) => x.id !== r.id))} aria-label={`Remove dish ${i + 1}`}>
-                  remove
-                </button>
+                {(r.section || r.flags.length > 0) && (
+                  <div className="flex flex-wrap gap-2 sm:col-span-2">
+                    {r.section && <span className="rounded-md bg-surf px-2 py-0.5 text-[12.5px] font-semibold text-sub">Under “{r.section}”</span>}
+                    {r.flags.map((f) => (
+                      <span key={f} className="inline-flex items-center gap-1 rounded-md bg-warn-soft px-2 py-0.5 text-[12.5px] font-semibold text-warn">
+                        <Icon name="alert" size={13} />
+                        {FLAG_NOTES[f]}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </li>
             ))}
           </ol>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <button type="button" className="link-pen" disabled={rows.length >= MAX_ITEMS} onClick={() => setRows((rs) => [...rs, toRow({})])}>
-              + add a dish
+          <div className="sticky bottom-[84px] z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-bar p-3 backdrop-blur-md md:bottom-4">
+            <button type="button" className="btn btn-secondary btn-sm" disabled={rows.length >= MAX_ITEMS} onClick={() => setRows((rs) => [...rs, toRow({})])}>
+              <Icon name="plus" size={17} />
+              Add a dish
             </button>
-            <button type="button" className="tag-btn primary" onClick={submit}>
-              Mark up this menu →
+            <button type="button" className="btn btn-primary" onClick={submit}>
+              Rank these dishes
+              <Icon name="forward" size={18} />
             </button>
           </div>
 
           {stage.ignored.length > 0 && (
-            <details className="text-[15px]">
-              <summary className="cursor-pointer text-muted">{stage.ignored.length} line{stage.ignored.length === 1 ? "" : "s"} we skipped (headers, notes, noise)</summary>
-              <ul className="m-0 mt-2 grid list-none gap-1 p-0">
+            <details className="card p-4 text-[15px]">
+              <summary className="cursor-pointer font-semibold text-sub">
+                {stage.ignored.length} line{stage.ignored.length === 1 ? "" : "s"} we skipped (headers, notes, noise)
+              </summary>
+              <ul className="mt-3 grid gap-2">
                 {stage.ignored.map((line, i) => (
                   <li key={i} className="flex items-baseline justify-between gap-3">
-                    <span className="min-w-0 break-words text-muted">{line}</span>
-                    <button type="button" className="link-pen shrink-0 text-sm" onClick={() => setRows((rs) => [...rs, toRow({ name: line })])}>
+                    <span className="min-w-0 break-words text-sub">{line}</span>
+                    <button type="button" className="link shrink-0 text-[14px]" onClick={() => setRows((rs) => [...rs, toRow({ name: line })])}>
                       add as dish
                     </button>
                   </li>
