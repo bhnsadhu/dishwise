@@ -71,14 +71,20 @@ export function GithubMark({ size = 19, className = "" }: { size?: number; class
   );
 }
 
-/** Provisional mark: a bowl with a check. Owner to approve final branding. */
-export function Mark({ size = 30 }: { size?: number }) {
+/**
+ * The Dishwise mark (approved 2026-10-30): a solid bowl on a saffron tile, with a tick rising from it
+ * like steam. Plain SVG with explicit colours so the favicon, touch icon and share image can reuse it.
+ */
+export function MarkSvg({ size, brand, ink, radius = 9.5 }: { size: number; brand: string; ink: string; radius?: number }) {
   return (
-    <span className="grid flex-none place-items-center rounded-[9px] bg-brand text-brand-ink" style={{ width: size, height: size }} aria-hidden="true">
-      <svg viewBox="0 0 24 24" width={size * 0.62} height={size * 0.62} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 12h16a8 8 0 0 1-16 0z" />
-        <path d="M9.5 9.5l2 2 4-4.5" />
-      </svg>
-    </span>
+    <svg viewBox="0 0 32 32" width={size} height={size} aria-hidden="true" style={{ flex: "none" }}>
+      <rect width="32" height="32" rx={radius} fill={brand} />
+      <path d="M6.5 16.5h19a9.5 9.5 0 0 1-19 0z" fill={ink} />
+      <path d="M11.6 10.4l3.1 3 6.2-6.6" fill="none" stroke={ink} strokeWidth={2.8} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
+}
+
+export function Mark({ size = 30 }: { size?: number }) {
+  return <MarkSvg size={size} brand="var(--brand)" ink="var(--brand-ink)" />;
 }

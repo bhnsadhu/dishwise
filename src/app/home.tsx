@@ -8,24 +8,16 @@ import { GithubMark, Icon, Mark } from "@/components/icons";
 import { ThemeToggleIcon } from "@/components/theme-toggle";
 import { MatchPill, heldReason } from "@/components/match";
 import { useStore } from "@/lib/client/store";
-import { emptyProfile, type TasteProfile } from "@/lib/domain/schemas";
 import { ingredientLabel } from "@/lib/domain/ingredients";
 import { cuisineLabel, flavorLabel, groupLabel } from "@/lib/domain/vocab";
-import { enrichMenu } from "@/lib/menu/enrich";
-import { SAMPLE_MENUS, sampleMenuById } from "@/lib/menu/samples";
-import { recommend } from "@/lib/reco/rank";
+import { SAMPLE_MENUS } from "@/lib/menu/samples";
+import { DEMO_MENU, demoRecommendation } from "@/lib/reco/demo";
 import { commonReasons, topReasons } from "@/lib/reco/reasons";
-
-/** Clearly labelled example taste for the live demo card. */
-const EXAMPLE: TasteProfile = { ...emptyProfile(), likedIngredients: ["pork", "mushroom", "egg"], likedFlavors: ["rich", "umami"], spiceTolerance: 1, restrictions: ["shellfish"] };
-const DEMO_MENU = "lantern-noodle-bar";
 
 function LiveDemo() {
   const { profile, profileTouched, feedback, hydrated } = useStore();
   const mine = hydrated && profileTouched;
-  const menu = sampleMenuById(DEMO_MENU)!;
-  const dishes = useMemo(() => enrichMenu(menu.items, { menuKey: menu.id, menuCuisine: menu.cuisine }), [menu]);
-  const rec = useMemo(() => recommend(dishes, mine ? profile : EXAMPLE, mine ? feedback : []), [dishes, mine, profile, feedback]);
+  const { menu, rec } = useMemo(() => (mine ? demoRecommendation(profile, feedback) : demoRecommendation()), [mine, profile, feedback]);
   const common = commonReasons(rec);
   const held = rec.heldBack[0];
   return (

@@ -29,7 +29,7 @@ Explainable, honest personal ranking of a specific menu: every reason points to 
 - $0 infrastructure (Vercel Hobby, Neon Free); no paid APIs.
 
 ## Brand Commitments
-- Name: Dishwise. Wordmark and icon are provisional and owner-approved changes are pending.
+- Name: Dishwise. Wordmark and icon approved by the owner on 2026-10-30: "Dishwise" in Figtree beside a saffron tile with a solid bowl and a rising tick.
 - Must not imitate DoorDash or any real brand's logo, colors or trade dress; the owner wants that level of consumer-app polish, not its identity.
 
 ## Evidence on Hand

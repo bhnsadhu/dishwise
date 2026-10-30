@@ -22,7 +22,7 @@ Dark mode follows the system until the user picks a theme in the top bar. The ch
 ## Type
 - **Figtree** (Google Fonts, `next/font`) for everything, weights 400–900.
 - Display headings are 800–900 weight with tight tracking. Body text is 16 px with a line height of 1.45.
-- The wordmark is "Dishwise" in Figtree 800 next to a saffron bowl-and-tick tile. Both are **provisional** until the owner signs them off.
+- **Wordmark** (approved 2026-10-30): "Dishwise" in Figtree 800 beside the mark, a saffron tile holding a solid bowl with a tick rising from it like steam. One SVG (`MarkSvg` in `icons.tsx`) drives the top bar, favicon, Apple touch icon and share image, so the mark reads at 16 px.
 
 ## Components
 | Component | Rule |
