@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { REPO_URL } from "@/components/app-shell";
 import { CoverArt, coverGround } from "@/components/cover-art";
-import { Icon, Mark } from "@/components/icons";
+import { GithubMark, Icon, Mark } from "@/components/icons";
 import { MatchPill, heldReason } from "@/components/match";
 import { useStore } from "@/lib/client/store";
 import { emptyProfile, type TasteProfile } from "@/lib/domain/schemas";
@@ -148,7 +148,7 @@ export function Home() {
           Dishwise
         </span>
         <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-2 rounded-full border border-ink/25 px-3.5 text-[15px] font-semibold text-ink">
-          <Icon name="code" size={17} />
+          <GithubMark size={18} />
           Repository
           <span className="sr-only"> on GitHub (opens in a new tab)</span>
         </a>

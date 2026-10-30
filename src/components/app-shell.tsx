@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/lib/client/store";
-import { Icon, Mark, type IconName } from "./icons";
+import { GithubMark, Icon, Mark, type IconName } from "./icons";
 
 export const REPO_URL = "https://github.com/bhnsadhu/dishwise";
 
@@ -51,7 +51,7 @@ export function ShellBars({ path = "", signedIn = false }: { path?: string; sign
               rel="noopener noreferrer"
               className="ml-2 flex min-h-10 items-center gap-2 rounded-full border border-ink/25 px-3.5 text-[15px] font-semibold text-ink transition-colors hover:bg-surf"
             >
-              <Icon name="code" size={19} />
+              <GithubMark size={19} />
               Repository
               <span className="sr-only"> on GitHub (opens in a new tab)</span>
             </a>

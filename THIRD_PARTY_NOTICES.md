@@ -11,6 +11,9 @@
 ## Runtime dependencies
 Next.js, React (MIT), Tailwind CSS (MIT), Drizzle ORM (Apache-2.0), @neondatabase/serverless (MIT), Zod (MIT). Full license texts are in `node_modules/<package>/LICENSE`.
 
+## Icons
+GitHub mark: path from [Simple Icons](https://github.com/simple-icons/simple-icons) (CC0-1.0). The GitHub logo is a trademark of GitHub, Inc.; it only labels the link to this project's repository and implies no endorsement.
+
 ## Data
 The ingredient lexicon, dish archetypes and sample menus in `src/lib/` were written for Dishwise. The sample restaurants are fictional.
 
