@@ -58,3 +58,6 @@ skills-lock.json
 
 # local design mockups
 /output/
+
+# launch video renders (frames are large)
+/brag-output*/
