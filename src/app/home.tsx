@@ -147,9 +147,9 @@ export function Home() {
           <Mark />
           Dishwise
         </span>
-        <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-1.5 rounded-full border border-line px-3 text-[14px] font-semibold">
+        <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-2 rounded-full border-2 border-brand px-3.5 text-[15px] font-semibold text-ink">
           <Icon name="code" size={17} />
-          Code
+          Repository
           <span className="sr-only"> on GitHub (opens in a new tab)</span>
         </a>
       </div>
