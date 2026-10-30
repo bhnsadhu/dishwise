@@ -11,3 +11,5 @@
 | 2026-10-29 | Visual direction **C · Marked-Up Menu** approved by user | Most original, menu-native, makes stated-vs-inferred honesty visible; see docs/DESIGN.md |
 | 2026-10-29 | Neon provisioned via Vercel Marketplace (free plan, Neon Auth on); Vercel project created **without** Git connection | Keeps $0; avoids auto-deploying unfinished work on every push |
 | 2026-10-29 | Pages are static shells + client components; signed-in data via authenticated `/api/me/*` route handlers | Engine runs client-side anyway; keeps Cache Components simple (no session reads in layouts) |
+| 2026-10-29 | Replaced direction C with **Saffron**, a consumer-app design (owner-approved from mockups) | Recruiters and diners should see a product they'd use at the table, not a concept piece; see docs/DESIGN.md |
+| 2026-10-29 | Light/dark theme follows the system, with a manual toggle | Diners often read menus in dim restaurants; set before first paint so there is no flash |

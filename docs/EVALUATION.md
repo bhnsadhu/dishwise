@@ -69,24 +69,25 @@ The engine has no training data, so evaluation is behavioural: tests assert prop
   - vegetarians never get meat in their picks.
 - Picks are diversified (no four ramens), deterministic, and list mains before desserts.
 
-## Production checks (https://dishwise.bhanusadhu.com, 2026-10-29)
-- **E2E against production** (`BASE_URL=https://dishwise.bhanusadhu.com npm run test:e2e`): 108 passed, 2 skipped (the real-Neon account test), across desktop Chrome and Pixel 7.
-- **Accessibility:** axe WCAG 2.1 A/AA reports 0 violations on all 9 pages, the open dish sheet and the scan review. The first run found a label/name mismatch on the logo and low-contrast margin scores; both were fixed.
-- **Lighthouse (mobile):** Accessibility 100, Best Practices 100, SEO 100. Before the fix, Best Practices was 96 because a guest's `/api/me` logged a 401.
-- **Performance trace** (mobile, 4× CPU, Fast 4G, cold cache): LCP 643 ms (TTFB 21 ms), CLS 0.00.
+## Production checks (https://dishwise.bhanusadhu.com)
+- **E2E against production** (`BASE_URL=https://dishwise.bhanusadhu.com npm run test:e2e`), 2026-10-30, after the redesign and dark mode: 128 passed, 2 skipped (the real-Neon account test), across desktop Chrome and Pixel 7.
+- **Accessibility:** axe WCAG 2.1 A/AA reports 0 violations on all 9 pages, the open dish dialog and the scan review, plus 7 pages in dark mode. The first run found a label/name mismatch on the logo and low-contrast margin scores; both were fixed.
+- **Lighthouse (mobile, 2026-10-29, before the redesign):** Accessibility 100, Best Practices 100, SEO 100. Before the fix, Best Practices was 96 because a guest's `/api/me` logged a 401.
+- **Performance trace** (2026-10-29, before the redesign; mobile, 4× CPU, Fast 4G, cold cache): LCP 643 ms (TTFB 21 ms), CLS 0.00.
 
 ## End-to-end (`npm run test:e2e`)
-There are 55 scenarios (journeys, details, accounts, accessibility, console/metadata, security), each run on desktop Chrome and a Pixel 7 viewport. They cover:
+There are 65 scenarios (journeys, details, accounts, accessibility, console/metadata, security), each run on desktop Chrome and a Pixel 7 viewport. They cover:
 
 - the home page with no sign-up;
-- the guest taste card persisting across reloads and changing rankings;
+- the guest taste profile persisting across reloads and changing rankings;
 - an allergy holding a dish back;
-- rating re-ranking dishes and appearing in the notebook;
+- rating re-ranking dishes and appearing in Saved;
 - typed menu → review → results;
 - a **real photo upload with in-browser OCR** finding dishes and prices;
 - rejecting a non-image file;
-- keyboard use of the taste card;
+- keyboard use of the taste editor;
 - reduced motion;
+- the light/dark toggle, and the choice surviving a reload;
 - no horizontal scrolling on any page;
 - unauthenticated API requests getting 401, with `no-store` on personal responses.
 
@@ -112,12 +113,12 @@ They found and fixed two bugs: a frozen form after a wrong password, and false "
 
 All matched expectations. The live database was then checked directly: one user, two sessions, the profile (tofu + beef liked, cilantro disliked, heat 3), Edamame rated 4★, and Margherita saved. Account deletion was not run on production; it is covered by the faked-backend E2E and the PGlite integration tests.
 
-**Skipped in the automated suite:** the signed-in round-trip against real Neon Auth. It needs owner credentials (E2E_EMAIL, E2E_PASSWORD), and the manual check above covers the same path. It needs a test account (`E2E_EMAIL`, `E2E_PASSWORD`), which only the owner should create. Server-side persistence and cross-user isolation are covered by integration tests against real Postgres (PGlite) running the shipped migrations.
+**Skipped in the automated suite:** the signed-in round-trip against real Neon Auth. It needs a test account (`E2E_EMAIL`, `E2E_PASSWORD`), which only the owner should create, and the manual check above covers the same path. Server-side persistence and cross-user isolation are covered by integration tests against real Postgres (PGlite) running the shipped migrations.
 
 ## What to measure once real people use it
 These are privacy-friendly aggregate counts, not tracking:
 
-- time from landing to first marked-up menu;
+- time from landing to first ranked menu;
 - the share of OCR'd fields edited during review (correction rate);
 - the share of picks opened, saved or rated;
 - the average rating of dishes that were picks versus dishes that weren't (the real test of the ranking).

@@ -1,21 +1,20 @@
 # Progress
 
 ## Done
-- **Design**: direction C "Marked-Up Menu" approved and implemented across every page (docs/DESIGN.md).
-- **Engine**: enrichment with stated/inferred provenance, additive explainable scoring, rating-based learning, dietary safety, MMR diversity, evidence refs, pen-mark mapping.
-- **Menu input**: in-browser Tesseract.js OCR with preprocessing, column- and price-aware parsing, an editable review step, and the typed/pasted path through the same parser.
-- **Product**: home, taste card with live preview, menus, results with dish sheet, notebook, account, How it works.
+- **Design**: "Saffron" consumer-app design across every page, with a phone tab bar, a laptop top bar, a dish dialog and light/dark themes (docs/DESIGN.md). It replaced the earlier "Marked-Up Menu" direction on 2026-10-29.
+- **Engine**: enrichment with stated/inferred provenance, additive explainable scoring, rating-based learning, dietary safety, MMR diversity, evidence refs.
+- **Menu input**: in-browser Tesseract.js OCR with preprocessing, column- and price-aware parsing, an editable review step, and the typed/pasted path (including menus pasted from delivery apps) through the same parser.
+- **Product**: home with a live ranked example, scan, results with dish dialog, taste editor, Saved, account, How it works.
 - **Data**: Neon Postgres (free, via Vercel Marketplace) with Drizzle migrations applied; Neon Auth; user-scoped DAL; guest localStorage with merge on first sign-in; account and data deletion.
-- **Tests**: 96 unit/integration tests, 108 Playwright E2E runs on production (2 skipped, need a real test account), an OCR evaluation, and a real-photo check (docs/EVALUATION.md).
+- **Tests**: 99 unit/integration tests; 128 Playwright E2E runs passing on production (2 skipped, need a real test account); an OCR evaluation; a real-photo check (docs/EVALUATION.md).
 
 ## Deployed
-- Production (approved 2026-10-29): https://dishwise.bhanusadhu.com (also https://dishwise-alpha.vercel.app) via manual `vercel deploy --prod` (no Git auto-deploy).
+- Production: https://dishwise.bhanusadhu.com (also https://dishwise-alpha.vercel.app), via manual `vercel deploy --prod` (no Git auto-deploy).
+- Neon Auth trusted domains: dishwise.bhanusadhu.com, dishwise-alpha.vercel.app, dishwise-bhanu-sadhu-s-projects.vercel.app.
 
-## Verified (2026-10-29)
-- Real accounts on production: sign-up with guest merge, cross-session sync, sign-out, wrong-password recovery; confirmed in the live database.
-
-## Done in Neon (2026-10-29)
-- Trusted domains: dishwise.bhanusadhu.com, dishwise-alpha.vercel.app, dishwise-bhanu-sadhu-s-projects.vercel.app. Email sign-up on, email verification off, localhost allowed.
+## Verified
+- 2026-10-29: real accounts on production (sign-up with guest merge, cross-session sync, sign-out, wrong-password recovery), confirmed in the live database.
+- 2026-10-30: full E2E suite against production after the redesign and dark mode.
 
 ## Needs the owner
-- Sign-off on the wordmark (currently the name set in Gloock).
+- Sign-off on the wordmark and logo tile (currently "Dishwise" in Figtree 800 beside a saffron bowl-and-tick tile).

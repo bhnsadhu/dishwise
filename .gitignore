@@ -55,3 +55,6 @@ skills-lock.json
 
 # third-party menu photos for local OCR checks (licensed CC; not redistributed)
 /tests/ocr/real/
+
+# local design mockups
+/output/
