@@ -118,3 +118,10 @@ test("no page scrolls sideways", async ({ page }) => {
     expect(overflow, path).toBeLessThanOrEqual(0);
   }
 });
+
+test("the source code is one click from the home page", async ({ page }) => {
+  await page.goto("/");
+  const link = page.getByRole("link", { name: /code on GitHub/i }).filter({ visible: true });
+  await expect(link).toHaveCount(1);
+  await expect(link).toHaveAttribute("href", "https://github.com/bhnsadhu/dishwise");
+});

@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useStore } from "@/lib/client/store";
 import { Icon, Mark, type IconName } from "./icons";
 
+export const REPO_URL = "https://github.com/bhnsadhu/dishwise";
+
 const TABS: { href: string; label: string; icon: IconName; match: (p: string) => boolean }[] = [
   { href: "/", label: "Home", icon: "home", match: (p) => p === "/" || p.startsWith("/m/") || p === "/menus" },
   { href: "/scan", label: "Scan", icon: "camera", match: (p) => p === "/scan" },
@@ -43,6 +45,16 @@ export function ShellBars({ path = "", signedIn = false }: { path?: string; sign
                 </Link>
               );
             })}
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-2 flex min-h-10 items-center gap-2 rounded-full border border-line px-3.5 text-[15px] font-semibold text-ink transition-colors hover:bg-surf"
+            >
+              <Icon name="code" size={19} />
+              View code
+              <span className="sr-only"> on GitHub (opens in a new tab)</span>
+            </a>
           </nav>
         </div>
       </header>

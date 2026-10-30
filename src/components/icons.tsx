@@ -21,6 +21,7 @@ const PATHS = {
   book: "M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z M5 16a4 4 0 0 1 4-4h10",
   logout: "M10 5H5v14h5 M14 8l4 4-4 4 M18 12H9",
   search: "M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14 M20 20l-3.5-3.5",
+  code: "M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16",
 } as const;
 
 export type IconName = keyof typeof PATHS;

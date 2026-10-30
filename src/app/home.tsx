@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import { REPO_URL } from "@/components/app-shell";
 import { CoverArt, coverGround } from "@/components/cover-art";
 import { Icon, Mark } from "@/components/icons";
 import { MatchPill, heldReason } from "@/components/match";
@@ -146,6 +147,11 @@ export function Home() {
           <Mark />
           Dishwise
         </span>
+        <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-1.5 rounded-full border border-line px-3 text-[14px] font-semibold">
+          <Icon name="code" size={17} />
+          Code
+          <span className="sr-only"> on GitHub (opens in a new tab)</span>
+        </a>
       </div>
 
       <section className="page mt-5 grid items-center gap-8 md:mt-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14">
