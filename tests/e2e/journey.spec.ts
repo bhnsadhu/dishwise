@@ -26,7 +26,8 @@ test("guest taste card persists and changes the ranking", async ({ page }) => {
   await expect(page.getByRole("button", { name: "salmon: love" })).toBeVisible();
 
   await page.goto("/m/lantern-noodle-bar");
-  expect(await scoreOf(page, "Salmon Teriyaki Don")).toBeGreaterThan(before);
+  // The saved profile loads from localStorage after first render, so wait for the re-rank.
+  await expect.poll(() => scoreOf(page, "Salmon Teriyaki Don")).toBeGreaterThan(before);
 });
 
 test("allergy restriction holds back conflicting dishes and asks to confirm", async ({ page }) => {
