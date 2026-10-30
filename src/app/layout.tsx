@@ -43,10 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <footer className="page hidden border-t border-line pb-10 pt-6 text-sm text-sub md:block">
           <p>
             Sample restaurants are fictional. Dishwise reads menus; it can&apos;t see the kitchen, so always confirm allergies with the restaurant. Menu photos are read on your
-            device and never uploaded.{" "}
-            <a className="link" href="https://github.com/bhnsadhu/dishwise">
-              Source on GitHub
-            </a>
+            device and never uploaded.
           </p>
         </footer>
       </body>
