@@ -13,6 +13,13 @@ describe("enrichDish", () => {
     expect(ing(d, "egg")?.because).toContain("description");
   });
 
+  it("reads edamame as soybeans, not soy sauce", () => {
+    const d = enrichDish({ name: "Edamame", description: "Steamed soybeans, flaky sea salt" });
+    expect(ing(d, "soybean")?.source).toBe("stated");
+    expect(ing(d, "soy-sauce")).toBeUndefined();
+    expect(group(d, "soy")?.source).toBe("stated");
+  });
+
   it("marks archetype-derived ingredients as inferred, with a reason", () => {
     const d = enrichDish({ name: "Pad Thai" });
     const peanut = ing(d, "peanut");

@@ -36,6 +36,7 @@ export const INGREDIENTS: IngredientDef[] = [
   { id: "mussels", label: "Mussels & clams", terms: ["mussel", "mussels", "clam", "clams", "oyster", "oysters", "scallop", "scallops"], groups: ["shellfish"] },
   { id: "squid", label: "Squid", terms: ["squid", "calamari", "octopus"], groups: ["shellfish"], pickable: true },
   { id: "tofu", label: "Tofu", terms: ["tofu", "bean curd"], groups: ["soy"], pickable: true },
+  { id: "soybean", label: "Edamame", terms: ["edamame", "soybean", "soybeans", "soya beans"], groups: ["soy"] },
   { id: "egg", label: "Egg", terms: ["egg", "eggs", "omelette", "omelet", "frittata", "aioli", "mayo", "mayonnaise", "hollandaise"], groups: ["egg"], flavors: ["rich"], pickable: true },
   { id: "paneer", label: "Paneer", terms: ["paneer"], groups: ["dairy"], flavors: ["creamy"], pickable: true },
   { id: "chickpea", label: "Chickpeas", terms: ["chickpea", "chickpeas", "garbanzo", "chana", "falafel", "hummus"], pickable: true },
@@ -86,7 +87,7 @@ export const INGREDIENTS: IngredientDef[] = [
   { id: "curry-spices", label: "Warm spices", terms: ["cumin", "turmeric", "garam masala", "masala", "curry", "cardamom", "fenugreek", "tikka", "tandoori", "korma", "sumac", "baharat", "ras el hanout", "berbere"], flavors: ["savory"] },
 
   // Sauces, condiments & sweet
-  { id: "soy-sauce", label: "Soy sauce & miso", terms: ["soy", "soy sauce", "shoyu", "tamari", "miso", "teriyaki", "edamame", "hoisin", "ponzu", "black bean sauce"], groups: ["soy"], flavors: ["umami", "savory"] },
+  { id: "soy-sauce", label: "Soy sauce & miso", terms: ["soy", "soy sauce", "shoyu", "tamari", "miso", "teriyaki", "hoisin", "ponzu", "black bean sauce"], groups: ["soy"], flavors: ["umami", "savory"] },
   { id: "sesame", label: "Sesame", terms: ["sesame", "tahini", "furikake", "gomae"], groups: ["sesame"], flavors: ["savory"] },
   { id: "peanut", label: "Peanuts", terms: ["peanut", "peanuts", "peanut butter", "satay", "groundnut"], groups: ["peanuts"], flavors: ["rich"] },
   { id: "tree-nut", label: "Nuts", terms: ["almond", "almonds", "almond milk", "cashew", "cashews", "walnut", "walnuts", "pistachio", "pistachios", "hazelnut", "hazelnuts", "pecan", "pecans", "pine nut", "pine nuts", "macadamia", "praline", "marzipan", "frangipane", "nutella"], groups: ["tree-nuts"], flavors: ["rich"] },

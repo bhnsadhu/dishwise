@@ -6,7 +6,7 @@
 - **Menu input**: in-browser Tesseract.js OCR with preprocessing, column- and price-aware parsing, an editable review step, and the typed/pasted path (including menus pasted from delivery apps) through the same parser.
 - **Product**: home with a live ranked example, scan, results with dish dialog, taste editor, Saved, account, How it works.
 - **Data**: Neon Postgres (free, via Vercel Marketplace) with Drizzle migrations applied; Neon Auth; user-scoped DAL; guest localStorage with merge on first sign-in; account and data deletion.
-- **Tests**: 99 unit/integration tests; 128 Playwright E2E runs passing on production (2 skipped, need a real test account); an OCR evaluation; a real-photo check (docs/EVALUATION.md).
+- **Tests**: 100 unit/integration tests; 128 Playwright E2E runs passing on production (2 skipped, need a real test account); an OCR evaluation; a real-photo check (docs/EVALUATION.md).
 
 ## Deployed
 - Production: https://dishwise.bhanusadhu.com (also https://dishwise-alpha.vercel.app), via manual `vercel deploy --prod` (no Git auto-deploy).

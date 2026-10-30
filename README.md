@@ -45,7 +45,7 @@ More in [docs/DECISIONS.md](docs/DECISIONS.md) and [PRODUCT.md](PRODUCT.md).
 - **Stack:** Next.js (App Router) · React · TypeScript · Tailwind CSS · Neon Postgres + Drizzle · Neon Auth · Tesseract.js · Vitest · Playwright. Hosted on Vercel Hobby and Neon Free for $0 ([COSTS.md](COSTS.md)).
 
 ## Quality
-- **99** unit and integration tests, including property checks over 40 random profiles (every score is in 0–100 and equals its listed reasons) and Postgres integration tests (PGlite) running the shipped migrations.
+- **100** unit and integration tests, including property checks over 40 random profiles (every score is in 0–100 and equals its listed reasons) and Postgres integration tests (PGlite) running the shipped migrations.
 - **128** Playwright E2E runs passing against production on desktop Chrome and a Pixel 7. They include real in-browser OCR on an uploaded photo, guest-to-account merge, and API authorization.
 - **0** axe WCAG 2.1 A/AA violations on every page in light mode and on seven pages in dark mode. The app supports keyboard use, 44 px touch targets and `prefers-reduced-motion`.
 
