@@ -49,7 +49,7 @@ export function ShellBars({ path = "", signedIn = false }: { path?: string; sign
               href={REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-2 flex min-h-10 items-center gap-2 rounded-full border-2 border-brand px-3.5 text-[15px] font-semibold text-ink transition-colors hover:bg-brand-soft"
+              className="ml-2 flex min-h-10 items-center gap-2 rounded-full border border-ink/25 px-3.5 text-[15px] font-semibold text-ink transition-colors hover:bg-surf"
             >
               <Icon name="code" size={19} />
               Repository
