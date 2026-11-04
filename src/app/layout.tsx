@@ -9,7 +9,7 @@ const figtree = Figtree({ variable: "--font-figtree", subsets: ["latin"], weight
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dishwise.bhanusadhu.com"),
-  openGraph: { type: "website", siteName: "Dishwise" },
+  openGraph: { type: "website", siteName: "Dishwise", url: "/" },
   twitter: { card: "summary_large_image" },
   title: { default: "Dishwise: what should I order?", template: "%s · Dishwise" },
   description: "Snap a restaurant menu and Dishwise ranks every dish for your taste, explains why, and flags what you avoid. Free, private, no sign-up.",
