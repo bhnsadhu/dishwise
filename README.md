@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/brand/icon.png" width="96" height="96" alt="Dishwise's mark: a bowl with a tick"></p>
+
 # Dishwise
 
 **What should I order here?** Dishwise reads a restaurant menu (photo, pasted text, or a sample), ranks every dish against your taste, shows exactly why each dish scored what it did, and learns from what you rate.
@@ -77,7 +79,7 @@ Once real people use it, these privacy-friendly aggregate counts would test the 
 - English menus only. Chalkboards, handwriting and heavily angled photos still need a lot of correction in the review step.
 - Scores are a compatibility index, not a calibrated probability that you'll enjoy a dish.
 
-## Development
+## Run it locally
 ```bash
 npm install
 npm run dev          # http://localhost:3000 (guest-only without env)
@@ -93,3 +95,7 @@ Accounts need Neon env vars (see `.env.example`); `vercel env pull .env.local` f
 [Architecture & scoring](docs/ARCHITECTURE.md) · [Design](docs/DESIGN.md) · [Evaluation](docs/EVALUATION.md) · [Decisions](docs/DECISIONS.md) · [Progress](docs/PROGRESS.md) · [Costs](COSTS.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
 Sample restaurants are fictional. Cover illustrations were drawn for this project.
+
+---
+
+Designed and built by me, [Bhanu Sadhu](https://bhanusadhu.com).
