@@ -39,9 +39,24 @@ Dishwise aims for **a confident pick in under a minute, with reasons you can che
 More in [docs/DECISIONS.md](docs/DECISIONS.md) and [PRODUCT.md](PRODUCT.md).
 
 ## Engineering highlights
+```mermaid
+flowchart LR
+  photo["Menu photo, pasted text, or sample"] --> ocr["Tesseract.js OCR<br/>in the browser"]
+  ocr --> parse["Parser<br/>prices, sections, columns"]
+  parse --> review["Review step<br/>fix misreads"]
+  review --> enrich["Enrichment<br/>stated or inferred attributes"]
+  enrich --> score["Additive scorer<br/>reasons sum to the score"]
+  taste["Taste profile + learned weights"] --> score
+  score --> rank["Ranking<br/>conflicts held back, MMR picks"]
+  rank --> ratings["1-5 star ratings"]
+  ratings -->|"update weights"| taste
+  taste -.->|"synced when signed in"| neon[("Neon Postgres")]
+```
+Everything up to the ranking runs on the device; the database only stores the taste profile and ratings of signed-in users.
+
 - **Scoring** ([`src/lib/reco`](src/lib/reco)): a raw score is the exact sum of contributions, each with points, text, a source and an evidence reference. It is folded into 0–100 with a logistic curve (raw 0 → 50). Learned weights use a shrunk average, `w = Σ c·x / (Σ x + 1.5)`, so one rating nudges and three consistent ratings move further. Top picks use Maximal Marginal Relevance. Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - **Menu parsing** ([`src/lib/menu/parse.ts`](src/lib/menu/parse.ts)): price formats (`$12`, `€9,50`, `18 / 26`, `MP`, dot leaders), sections, two-column layouts found from an empty vertical gutter in a histogram of line positions, deskewing, re-attaching right-aligned prices, and restoring dropped decimals.
-- **OCR evaluation** (`npm run eval:ocr`): seven rendered menus with exact ground truth, scoring the OCR error rate and parser precision/recall separately. Each fix in [docs/EVALUATION.md](docs/EVALUATION.md) was driven by inspecting raw Tesseract output.
+- **OCR evaluation** (`npm run eval:ocr`): seven rendered menus with exact ground truth, scoring the OCR error rate and parser precision/recall separately. The first run found 0 dishes on the degraded and two-column menus (degraded character error 90.6%). After three fixes, each driven by raw Tesseract output, five clean layouts parse at 1.00 precision and recall, and the degraded photo (blur, tilt, low contrast) still finds every dish at 10.2% character error, but reads no price correctly, which is why the review step exists. Details in [docs/EVALUATION.md](docs/EVALUATION.md).
 - **Stack:** Next.js (App Router) · React · TypeScript · Tailwind CSS · Neon Postgres + Drizzle · Neon Auth · Tesseract.js · Vitest · Playwright. Hosted on Vercel Hobby and Neon Free for $0 ([COSTS.md](COSTS.md)).
 
 ## Quality
@@ -49,7 +64,14 @@ More in [docs/DECISIONS.md](docs/DECISIONS.md) and [PRODUCT.md](PRODUCT.md).
 - **128** Playwright E2E runs passing against production on desktop Chrome and a Pixel 7. They include real in-browser OCR on an uploaded photo, guest-to-account merge, and API authorization.
 - **0** axe WCAG 2.1 A/AA violations on every page in light mode and on seven pages in dark mode. The app supports keyboard use, 44 px touch targets and `prefers-reduced-motion`.
 
-Dishwise has no real-user data yet, so there are no satisfaction or accuracy claims. [docs/EVALUATION.md](docs/EVALUATION.md) lists what to measure once there is.
+Dishwise has no real-user data yet, so there are no satisfaction or accuracy claims.
+
+## What to measure next
+Once real people use it, these privacy-friendly aggregate counts would test the product, not just the code:
+- time from landing to the first ranked menu (the "under a minute" goal);
+- the share of OCR'd fields edited during review (how much the scanner really costs the user);
+- the share of picks opened, saved or rated;
+- the average rating of dishes that were picks against dishes that weren't, the real test of the ranking.
 
 ## Known limits
 - English menus only. Chalkboards, handwriting and heavily angled photos still need a lot of correction in the review step.
