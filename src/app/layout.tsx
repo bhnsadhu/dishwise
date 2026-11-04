@@ -37,13 +37,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<ShellBars />}>
           <AppShell />
         </Suspense>
-        <main id="main" className="pb-28 md:pb-16">
+        <main id="main" className="pb-10 md:pb-16">
           {children}
         </main>
-        <footer className="page hidden border-t border-line pb-10 pt-6 text-sm text-sub md:block">
-          <p>
+        {/* On a phone the footer clears the tab bar and carries only the credit. */}
+        <footer className="page grid gap-2 border-t border-line pb-28 pt-6 text-sm text-sub md:pb-10">
+          <p className="hidden md:block">
             Sample restaurants are fictional. Dishwise reads menus; it can&apos;t see the kitchen, so always confirm allergies with the restaurant. Menu photos are read on your
             device and never uploaded.
+          </p>
+          <p>
+            Designed and built by{" "}
+            <a href="https://bhanusadhu.com" className="font-semibold text-ink hover:underline">
+              Bhanu Sadhu
+            </a>
+            .
           </p>
         </footer>
       </body>
