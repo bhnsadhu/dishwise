@@ -100,6 +100,7 @@ The engine has no training data, so evaluation is behavioural: tests assert prop
 - Picks are diversified (no four ramens), deterministic, and list mains before desserts.
 
 ## Production checks (https://dishwise.bhanusadhu.com)
+- **E2E against production after the PaddleOCR switch** (2026-11-05, the "Verify production" GitHub Action): 132 passed, 2 skipped (the real-Neon account test), on desktop Chrome and Pixel 7. That includes real in-browser OCR, the angled phone photo, and the PaddleOCR → Tesseract fallback. The first run had 1 failure: a budget test read the score before the saved taste loaded (a known race, now polled), not a scanner problem.
 - **E2E against production** (`BASE_URL=https://dishwise.bhanusadhu.com npm run test:e2e`), 2026-10-30, after the redesign and dark mode: 128 passed, 2 skipped (the real-Neon account test), across desktop Chrome and Pixel 7.
 - **Accessibility:** axe WCAG 2.1 A/AA reports 0 violations on all 9 pages, the open dish dialog and the scan review, plus 7 pages in dark mode. The first run found a label/name mismatch on the logo and low-contrast margin scores; both were fixed.
 - **Lighthouse (mobile, 2026-10-29, before the redesign):** Accessibility 100, Best Practices 100, SEO 100. Before the fix, Best Practices was 96 because a guest's `/api/me` logged a 401.
