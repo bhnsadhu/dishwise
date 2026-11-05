@@ -46,13 +46,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             Sample restaurants are fictional. Dishwise reads menus; it can&apos;t see the kitchen, so always confirm allergies with the restaurant. Menu photos are read on your
             device and never uploaded.
           </p>
-          <p>
-            Designed and built by{" "}
-            <a href="https://bhanusadhu.com" className="font-semibold text-ink hover:underline">
-              Bhanu Sadhu
-            </a>
-            .
-          </p>
         </footer>
       </body>
     </html>

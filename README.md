@@ -95,7 +95,3 @@ Accounts need Neon env vars (see `.env.example`); `vercel env pull .env.local` f
 [Architecture & scoring](docs/ARCHITECTURE.md) · [Design](docs/DESIGN.md) · [Evaluation](docs/EVALUATION.md) · [Decisions](docs/DECISIONS.md) · [Progress](docs/PROGRESS.md) · [Costs](COSTS.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
 Sample restaurants are fictional. Cover illustrations were drawn for this project.
-
----
-
-Designed and built by me, [Bhanu Sadhu](https://bhanusadhu.com).
