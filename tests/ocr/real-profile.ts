@@ -12,8 +12,8 @@ import { parseMenuText } from "../../src/lib/menu/parse.ts";
 import { openPreprocessor } from "./browser-preprocess.ts";
 
 const VARIANTS: { name: string; detection?: Record<string, unknown> }[] = [
-  { name: "app default (long side <= 1600)", detection: PADDLE_DETECTION },
-  { name: "preset default (short side >= 736, no cap)", detection: {} },
+  { name: "app default (preset: short side >= 736, no cap)", detection: PADDLE_DETECTION },
+  { name: "long side <= 1600", detection: { limitType: "max", maxSideLength: 1600 } },
   { name: "long side <= 1280", detection: { limitType: "max", maxSideLength: 1280 } },
   { name: "long side <= 960", detection: { limitType: "max", maxSideLength: 960 } },
 ];

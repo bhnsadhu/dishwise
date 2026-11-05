@@ -37,11 +37,11 @@ export interface PaddleOptions {
 }
 
 /**
- * Run text detection on at most 1600 px (long side). The preset's default never downscales, so a
- * 2000 px photo was detected at full size; on the real-photo profile 1600 px found the same boxes
- * about 40% faster, while 960 px lost almost half the lines on a far-away board.
+ * Detection settings: the preset's own (short side at least 736 px, never downscaled). Capping
+ * the long side at 1600 px was tried: with 4 threads it saved only ~0.3 s per photo and found 2
+ * fewer dishes on two real menus; 960 px lost almost half the lines on a far-away board.
  */
-export const PADDLE_DETECTION = { limitType: "max", maxSideLength: 1600 };
+export const PADDLE_DETECTION: Record<string, unknown> = {};
 
 // paddleocr declares a narrower ORT shape than onnxruntime-web's overloaded types; they are the same module at runtime.
 type PaddleOrt = NonNullable<Parameters<typeof PaddleOcrService.createInstance>[0]>["ort"];
