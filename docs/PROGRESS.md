@@ -9,7 +9,7 @@
 - **Tests**: 112 unit/integration tests; 128 Playwright E2E runs passing on production (2 skipped, need a real test account); an OCR evaluation; a real-photo check (docs/EVALUATION.md).
 
 ## Deployed
-- Production: https://dishwise.bhanusadhu.com (also https://dishwise-alpha.vercel.app), via manual `vercel deploy --prod` (no Git auto-deploy).
+- Production: https://dishwise.bhanusadhu.com (also https://dishwise-alpha.vercel.app), via manual `vercel deploy --prod` or the one-click **Deploy to production** GitHub Action (Actions tab → Run workflow; needs the `VERCEL_TOKEN` repository secret). No auto-deploy on push.
 - Neon Auth trusted domains: dishwise.bhanusadhu.com, dishwise-alpha.vercel.app, dishwise-bhanu-sadhu-s-projects.vercel.app.
 
 ## Verified

@@ -1,0 +1,53 @@
+# One-click production deploy: GitHub → Actions → "Deploy to production" → Run workflow.
+# Runs only when clicked (no auto-deploy on push). Needs one repository secret, VERCEL_TOKEN.
+name: Deploy to production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Not secrets: they only say which Vercel team and project to deploy to.
+      VERCEL_ORG_ID: team_sgXlCD8WkPYSmBNOHl5CGcMf
+      VERCEL_PROJECT_ID: prj_jr720rWlWmJ9TgaJG3wxqARhScDU
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Check for a Vercel token
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::Add a repository secret named VERCEL_TOKEN (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck, lint and unit tests
+        run: npm run check
+
+      - name: Deploy to Vercel (production)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          url=$(npx --yes vercel@65.11.0 deploy --prod --yes --token="$VERCEL_TOKEN")
+          echo "Deployed: $url"
+          echo "### Deployed to production" >> "$GITHUB_STEP_SUMMARY"
+          echo "$url · https://dishwise.bhanusadhu.com" >> "$GITHUB_STEP_SUMMARY"
