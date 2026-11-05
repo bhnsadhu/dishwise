@@ -39,9 +39,22 @@ jobs:
           ENGINE: tesseract
         run: node tests/ocr/real-run.ts
 
+      - name: Profile PaddleOCR (1 thread, with raw boxes)
+        env:
+          THREADS: "1"
+          BOXES: "1"
+        run: node tests/ocr/real-profile.ts
+
+      - name: Profile PaddleOCR (4 threads)
+        env:
+          THREADS: "4"
+        run: node tests/ocr/real-profile.ts
+
       - name: Keep the results
         uses: actions/upload-artifact@v4
         with:
           name: real-photo-results
-          path: tests/ocr/real/results-*.json
+          path: |
+            tests/ocr/real/results-*.json
+            tests/ocr/real/profile-*.json
           retention-days: 30

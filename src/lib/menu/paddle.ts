@@ -5,7 +5,7 @@
  */
 import type * as Ort from "onnxruntime-web";
 import { PaddleOcrService } from "paddleocr";
-import { linesFromBoxes, type OcrLine } from "./parse.ts";
+import { linesFromBoxes, type OcrLine, type PaddleBoxLike } from "./parse.ts";
 
 export const PADDLE_PRESET = "PP-OCRv6_tiny";
 /** In assets/ocr/pp-ocrv6-tiny/; see THIRD_PARTY_NOTICES.md for provenance and checksums. */
@@ -25,13 +25,21 @@ export interface PixelImage {
 
 export interface PaddleEngine {
   /** `onProgress` reports 0–1: detection is the first 30%, recognising each line the rest. */
-  recognize(img: PixelImage, onProgress?: (fraction: number) => void): Promise<{ lines: OcrLine[]; confidence: number; text: string }>;
+  recognize(
+    img: PixelImage,
+    onProgress?: (fraction: number) => void,
+  ): Promise<{ lines: OcrLine[]; confidence: number; text: string; boxes: PaddleBoxLike[]; ms: { det: number; rec: number } }>;
+}
+
+/** Detection overrides (see paddleocr's DetectionRuntimeOptions), e.g. `{ limitType: "max", maxSideLength: 1600 }`. */
+export interface PaddleOptions {
+  detection?: Record<string, unknown>;
 }
 
 // paddleocr declares a narrower ORT shape than onnxruntime-web's overloaded types; they are the same module at runtime.
 type PaddleOrt = NonNullable<Parameters<typeof PaddleOcrService.createInstance>[0]>["ort"];
 
-export async function createPaddle(ort: typeof Ort, det: ArrayBuffer, rec: ArrayBuffer, dictText: string): Promise<PaddleEngine> {
+export async function createPaddle(ort: typeof Ort, det: ArrayBuffer, rec: ArrayBuffer, dictText: string, options: PaddleOptions = {}): Promise<PaddleEngine> {
   const service = await PaddleOcrService.createInstance({
     ort: ort as unknown as PaddleOrt,
     modelPreset: PADDLE_PRESET,
@@ -41,22 +49,26 @@ export async function createPaddle(ort: typeof Ort, det: ArrayBuffer, rec: Array
   return {
     async recognize(img, onProgress) {
       const data = img.data instanceof Uint8Array ? img.data : new Uint8Array(img.data.buffer, img.data.byteOffset, img.data.byteLength);
+      const t0 = performance.now();
+      let tRec = 0;
       const results = await service.recognize(
         { width: img.width, height: img.height, data },
         {
-          onProgress: onProgress
-            ? (e) => {
-                const f = e.progress.total ? e.progress.current / e.progress.total : 0;
-                onProgress(e.type === "det" ? 0.3 * f : 0.3 + 0.7 * f);
-              }
-            : undefined,
+          ...(options.detection ? { detection: options.detection } : {}),
+          onProgress: (e) => {
+            if (e.type === "rec" && !tRec) tRec = performance.now();
+            const f = e.progress.total ? e.progress.current / e.progress.total : 0;
+            onProgress?.(e.type === "det" ? 0.3 * f : 0.3 + 0.7 * f);
+          },
         },
       );
+      const t1 = performance.now();
+      const ms = { det: Math.round((tRec || t1) - t0), rec: Math.round(tRec ? t1 - tRec : 0) };
       const lines = linesFromBoxes(results);
       // Character-weighted mean, comparable to Tesseract's page confidence (0–100).
       const chars = results.reduce((a, r) => a + r.text.length, 0);
       const confidence = chars ? (results.reduce((a, r) => a + r.confidence * r.text.length, 0) / chars) * 100 : 0;
-      return { lines, confidence, text: lines.map((l) => l.text).join("\n") };
+      return { lines, confidence, text: lines.map((l) => l.text).join("\n"), boxes: results, ms };
     },
   };
 }
