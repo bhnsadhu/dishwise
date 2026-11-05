@@ -86,16 +86,29 @@ Run on the live site by the "Real menu photos" GitHub Action (2-core Linux runne
 | Sawadee Thai set menu (descriptions set smaller on the same line) | **32 rows**, names and descriptions split | **14 rows**: names and descriptions fused, several curries missing. A regression. | 4.6 s → 12.6 s |
 | St Ives hand-written chalkboard | 11 rows, mostly garbled | 10 rows, still mostly garbled; a few lines readable ("STEAK Served with Mushrooms, Grilled Tomatoes, Onion Rings, and chunky Fries") | 3.1 s → 5.0 s |
 
-What this shows:
+What this showed:
 - PaddleOCR reads far more text on hard photos (the far-away board: 1 → 49 rows) and separates two-column dishes better.
-- **It is a regression on Sawadee.** Tesseract returns word boxes, and the parser splits a name from a description where the type gets smaller. PaddleOCR returns one box per line, so a name and a smaller description on the same line arrive fused.
-- **It is 2–5× slower**: up to 31 s on the dense bistro menu on a 2-core runner, with ONNX Runtime on one thread (the site isn't cross-origin isolated). Phones haven't been timed and may be slower still.
+- **It was a regression on Sawadee.** Tesseract returns word boxes, and the parser splits a name from a description where the type gets smaller. PaddleOCR returns one box per line, so a name and a smaller description on the same line arrived fused.
+- **It was 2–5× slower**: up to 31 s on the dense bistro menu, with ONNX Runtime on one thread because the site wasn't cross-origin isolated.
+
+#### After the fixes (2026-11-05, same Action, same photos)
+Two changes, both driven by this run: a `splitFusedNameDescription` step in the parser (tested by replaying Sawadee's recorded boxes, `tests/ocr/real-boxes/sawadee.json`) plus ignoring centred titles when looking for a column gutter, and cross-origin isolation so ONNX Runtime uses up to 4 threads.
+
+| Photo | PaddleOCR before → after | Time before → after | Tesseract (unchanged engine) |
+| --- | --- | --- | --- |
+| Penarth tasting menu | 26 → 26 rows | 8.6 s → **4.1 s** | 25 rows, 3.1 s |
+| Lido café board | 49 → 49 rows | 10.1 s → **5.1 s** | 1 row, 2.5 s |
+| Petit Pois bistro | 46 → 46 rows | 30.8 s → **10.6 s** | 41 rows, 6.0 s |
+| Sawadee Thai set menu | **14 → 31 rows**, every name and description apart, both columns in order | 12.6 s → **5.0 s** | 32 rows, 4.0 s |
+| St Ives chalkboard | 10 → 10 rows | 5.0 s → **2.9 s** | 11 rows, 2.4 s |
+
+One Sawadee dish keeps a description word in its name ("Tao-hu Khing Beancurd"). Profiling also tried capping detection at 1600, 1280 and 960 px: with 4 threads the gain was at most ~0.3 s a photo at 1600 px, and every cap found fewer dishes on some photo (960 px lost almost half the café board), so detection stays at the preset's size.
 
 ### Known limits
 - The fixtures are rendered, not photographed. They imitate blur, tilt, perspective, shadow, grain and JPEG loss, but not glare, curled paper, handwriting or occlusion.
 - Tesseract (now only the fallback) doesn't read the degraded or phone-photo prices at all.
 - PP-OCRv6 tiny is the smallest PaddleOCR model and is weaker on accented Latin text than the 31 MB "small" model.
-- With PaddleOCR, a dish name and a smaller-set description on the same line come out fused (Sawadee), and dense menus take up to ~30 s (see the real-photo table).
+- PaddleOCR is still 1.3–1.8× slower than Tesseract on these photos (up to ~11 s for the dense bistro menu on a 4-core runner). Phones haven't been timed. Safari and older browsers that don't support cross-origin isolation run it on one thread.
 - Only English menus have been tested.
 
 ## Recommendation engine (`npm test`)
