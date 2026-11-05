@@ -2,145 +2,146 @@
 
 # Dishwise
 
-**What should I order here?** Dishwise reads a restaurant menu from a photo or pasted text, ranks every dish against your taste, shows exactly why each dish scored what it did, and learns from what you rate.
+**A menu reader that picks your dish and shows its work.** Point your phone at a menu, and Dishwise ranks every dish for your taste, explains each score point by point, and gets sharper with every rating.
 
-**[Try it → dishwise.bhanusadhu.com](https://dishwise.bhanusadhu.com)** · free, no sign-up, and menu photos never leave your device.
+**[Try it → dishwise.bhanusadhu.com](https://dishwise.bhanusadhu.com)** · works as a guest, costs nothing, and the photo is read on your phone.
 
-![Dishwise on a laptop: a sample menu ranked against one diner's taste, with top picks and a reason under every dish](docs/screenshots/desktop-results.png)
+![Dishwise on a laptop: a sample noodle-bar menu with a match score and a reason on every dish, and top picks on the right](docs/screenshots/desktop-results.png)
 
 <p align="center">
   <img src="docs/screenshots/phone-results-light.png" width="36%" alt="Phone: top picks for a sample menu" />
   &nbsp;
-  <img src="docs/screenshots/phone-dish-dark.png" width="36%" alt="Phone, dark mode: why Spicy Miso Ramen scored 95%, reason by reason" />
+  <img src="docs/screenshots/phone-dish-dark.png" width="36%" alt="Phone, dark mode: the reasons behind one dish's score" />
 </p>
 
 ## The problem
 
-Menus are long, vague and written for everyone. A diner with a strong taste, a diet or an allergy ends up guessing, asking staff, or ordering the same safe dish every time. Review apps rate restaurants, not dishes for *you*, and a general AI chat answers confidently without showing where the answer came from.
+You're at the table, the light is dim, the server is waiting, and the menu has forty items. If you avoid shellfish, hate cilantro or only want something mild, the menu rarely says enough, so you guess or play it safe. Restaurant ratings tell you whether a place is good, not which dish suits you. A chatbot can suggest something, but you can't see why it chose it or whether it knew about your allergy.
 
-Goal: **a confident pick in under a minute, with reasons you can check.**
+The bar Dishwise sets itself: **a pick you trust in under a minute.**
 
 ## How it works
 
-1. **Taste profile.** Cuisines, favourite dishes, liked and avoided ingredients and flavours, heat tolerance, diet, allergies, budget. Every field is optional.
-2. **Menu in.** Scan a photo (OCR runs in the browser), paste text from a restaurant site or delivery app, or open a fictional sample. A review step lets you fix anything the scanner misread.
-3. **Enrichment.** Every dish attribute is tagged **stated** (the menu says so) or **inferred** (from a typical recipe). Anything else stays unknown and is never guessed.
-4. **Ranking.** A deterministic scorer adds up evidence-backed points into a 0–100 match. Diet and allergy conflicts are held back, and the top picks are diversified so the short list isn't five ramens.
-5. **Learning.** A 1–5★ rating updates feature weights, so similar dishes move on this menu and on every menu after it.
+1. **Say what you like.** Cuisines, favourite dishes, ingredients to seek or skip, heat tolerance, diet, allergies, budget. All optional; an empty profile still gets sensible picks.
+2. **Give it the menu.** Snap a photo, paste the text from a website or delivery app, or open one of five sample menus. You confirm the scanned dishes before anything is ranked.
+3. **Read the menu closely.** Each dish's ingredients, flavours and heat are pulled from its description and marked as either *on the menu* or *typical recipe*. What it can't tell stays blank.
+4. **Rank and explain.** Every dish gets a 0–100 match built from visible reasons. Dishes that clash with your diet or allergies are moved aside with a warning, and the top picks are spread across the menu.
+5. **Rate and improve.** Star a dish after you eat it. The weights behind that rating carry over to every menu you open next.
 
-![Dish dialog: every point behind a 95% match, each labelled by its source (on the menu, a typical recipe, or your ratings)](docs/screenshots/desktop-dish.png)
+![Dish dialog: each reason behind the score with its points and source](docs/screenshots/desktop-dish.png)
 
 ## Product decisions
 
-| Decision | Trade-off |
+| Decision | What it cost, and why it was worth it |
 | --- | --- |
-| **An explainable additive scorer, not an ML model** | The reasons sum exactly to the score, it works on the first visit with zero data, and it's easy to test. It gives up whatever accuracy a model trained on real outcomes could reach, but no such data exists yet. |
-| **"Stated" vs "inferred" on every attribute** | Menus are incomplete. Labelling a guess as "typical recipe" costs a little confidence in the UI but earns trust, which matters most for allergies. |
-| **Never say "safe"** | A conflict is held back with "Contains / usually has X — confirm with staff". A test fails if any note says "safe", "allergen-free" or "guarantee". |
-| **No collaborative filtering** | It needs many real users. Simulating them would fake the personalisation. |
-| **OCR and ranking on the device** | $0 to run, photos stay private, results are instant. The cost is a ~9 MB first download (OCR models + ONNX Runtime), cached after that. |
-| **No sign-up wall** | Everything works as a guest. An account only syncs taste and ratings across devices, and guest data merges in on first sign-in. |
-
-More in [docs/DECISIONS.md](docs/DECISIONS.md) and [PRODUCT.md](PRODUCT.md).
+| **Hand-tuned rules instead of a trained model** | No model to train means no learned accuracy. But there's no real outcome data to train on yet, and rules give a score you can read line by line on the very first visit. |
+| **Mark every fact as "on the menu" or "typical recipe"** | It makes the app look less sure of itself. That honesty is the point: an allergy decision should know whether the menu said it or Dishwise assumed it. |
+| **Refuse to call anything "safe"** | Some users would like a green light. Dishwise can't see the kitchen, so it says "contains" or "usually has", and tells you to check with staff. |
+| **Everything runs on the phone** | A first scan downloads about 9 MB of OCR models. In return the photo never leaves the device, results need no server, and hosting stays free. |
+| **Guests get the full product** | No accounts means nothing to retain users with. But a recruiter or a hungry diner can try it in seconds, and signing in later just syncs what they already did. |
+| **Scrapped a finished design** | The first look, pen marks on a paper menu, was original but felt like a concept piece. It was replaced with "Saffron", a consumer-app design built to be used at a table. |
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-  photo["Menu photo, pasted text, or sample"] --> ocr["PaddleOCR (ONNX, WASM)<br/>in a Web Worker"]
-  ocr --> parse["Parser<br/>prices, sections, columns"]
-  parse --> review["Review step<br/>fix misreads"]
-  review --> enrich["Enrichment<br/>stated or inferred"]
-  enrich --> score["Additive scorer<br/>reasons sum to the score"]
-  taste["Taste profile + learned weights"] --> score
-  score --> rank["Ranking<br/>conflicts held back, MMR picks"]
-  rank --> ratings["1–5★ ratings"]
-  ratings -->|"update weights"| taste
-  taste -.->|"synced when signed in"| neon[("Neon Postgres")]
+  subgraph browser["In the browser"]
+    direction LR
+    input["Photo, pasted text,<br/>or sample menu"] --> ocr["PaddleOCR on ONNX Runtime<br/>Web Worker, Tesseract fallback"]
+    ocr --> parse["Parser<br/>columns, prices, sections"]
+    parse --> check["You confirm the dishes"]
+    check --> enrich["Enrichment<br/>on menu vs typical recipe"]
+    enrich --> rank["Scorer + ranker<br/>reasons, warnings, diverse picks"]
+    profile["Taste profile<br/>+ learned weights"] --> rank
+    rank -->|"star ratings"| profile
+  end
+  profile -.->|"only when signed in"| api["Next.js API routes"] --> db[("Neon Postgres")]
 ```
 
-Everything up to the ranking runs in the browser. The database stores only the taste profile and ratings of signed-in users. Scoring details are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+The server never sees a menu. It only stores the profile, saved dishes and ratings of people who choose to sign in. Full scoring tables are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Hard problems
 
-**Reading real menus, not clean ones.** The first OCR engine, Tesseract.js, read **0%** of prices on a blurred menu and on an angled, shadowed two-column phone photo (26.6% character error). Swapping in **PaddleOCR (PP-OCRv6 tiny)** in the browser and adding flat-field lighting correction took both to **100%** of dishes, prices and descriptions, across all nine test menus (worst character error 0.3%, one accent). Tesseract stays as a fallback. → [`src/lib/menu`](src/lib/menu), [docs/EVALUATION.md](docs/EVALUATION.md)
+**Getting prices off a crooked photo.** The first engine, Tesseract.js, read **none** of the prices on a blurred menu or on a two-column menu shot at an angle with a shadow across it. Moving to PaddleOCR in the browser, plus a lighting-flattening step that divides out the paper's uneven brightness, raised that to **every** dish, price and description on all nine test menus. Tesseract is still there if PaddleOCR can't load. → [`src/lib/menu`](src/lib/menu)
 
-**A regression the real photos caught.** On five openly licensed real menu photos, PaddleOCR found far more (a far-away café board went from **1 → 49** rows) but fused dish names with their descriptions on a Thai set menu (**32 → 14** rows). A `splitFusedNameDescription` step, tested by replaying that photo's recorded boxes, brought it back to **31** rows with every name and description apart.
+**Two columns that OCR reads as one.** Menus put dishes side by side, and OCR returns them as one long line. The parser builds a histogram of where text sits across the page, finds the empty vertical gap between columns, and splits there. It skips centred titles that would hide the gap, and pulls right-aligned prices back to their dish.
 
-**Making the browser model fast enough.** PaddleOCR took up to **30.8 s** on a dense bistro menu because ONNX Runtime ran on one thread. Serving the site cross-origin isolated (COOP + COEP) lets it use up to 4 threads: **10.6 s**. A 1600 px detection cap was tried and dropped, since it saved ~0.3 s but lost dishes on two real menus.
+**A better engine that made one menu worse.** On five real menu photos, PaddleOCR read a distant café board almost perfectly (**1 → 49** rows) but merged dish names into their descriptions on a Thai menu (**32 → 14** rows). A new splitting step, tested by replaying that photo's exact text boxes, recovered it to **31** rows.
 
-**Scores you can audit.** A raw score is the exact sum of contributions, each with points, text, a source and an evidence reference, folded into 0–100 with a logistic curve. Learned weights use a shrunk average, `w = Σ c·x / (Σ x + 1.5)`, so one rating nudges and three consistent ratings move further. Top picks use Maximal Marginal Relevance. → [`src/lib/reco`](src/lib/reco)
+**Speed on a single thread.** In-browser OCR took **30.8 s** on a dense bistro menu because the runtime could only use one thread. Serving the site cross-origin isolated unlocks up to four: **10.6 s**. Capping image size was also tested and rejected: it saved about 0.3 s but lost dishes.
+
+**A score that adds up.** Each dish's score is a sum of contributions, each with points, a sentence and a source, squeezed into 0–100 by a logistic curve. Ratings feed a shrunk average, so one 5★ moves an ingredient's weight to about **+0.4** and three agreeing ratings to about **+0.67**: enough to matter, not enough for one dinner to take over. → [`src/lib/reco`](src/lib/reco)
 
 ## Results
 
-- **130** unit and integration tests. They include a property check over **40** randomised profiles (every score is in 0–100 and equals the sum of its listed reasons), a test that no note ever says "safe", and Postgres integration tests (PGlite) running the shipped migrations.
-- **132** Playwright E2E runs passing against production on desktop Chrome and a Pixel 7, including real in-browser OCR on an uploaded photo, the PaddleOCR → Tesseract fallback, guest-to-account merge and API authorization. 2 are skipped because they need a real test account; that path was verified by hand on production.
-- **0** axe WCAG 2.1 A/AA violations on all 9 pages, the dish dialog and the scan review, plus 7 pages in dark mode. Keyboard use, 44 px touch targets and `prefers-reduced-motion` are supported.
-- **Lighthouse (mobile):** Accessibility, Best Practices and SEO all **100**. LCP **643 ms**, CLS **0.00** on a throttled mobile trace. Both were measured before the redesign.
+- **130** unit and integration tests. One runs **40** random taste profiles over every sample dish and checks that each score is within 0–100 and equals the sum of its reasons. Another fails the build if any note says "safe", "allergen-free" or "guarantee". The data layer is tested against real Postgres (PGlite) running the shipped migrations.
+- **132** end-to-end runs pass against the live site on desktop Chrome and a Pixel 7: real photo scanning, the OCR fallback, a guest's data merging into a new account, and API access rules. Two runs that need a real account are skipped; that flow was checked by hand on production.
+- **0** accessibility violations (axe, WCAG 2.1 A/AA) across all nine pages, the dish dialog and the scan review, and seven pages in dark mode.
+- **$0** a month to run. Vercel's free tier covers roughly **11,000** first-time scanners a month before the model downloads hit its bandwidth limit ([COSTS.md](COSTS.md)).
 
-Not measured yet: Dishwise has no real-user data, so there are no satisfaction or real-world accuracy claims.
+What isn't proven: nobody outside testing has used it yet, so there is no evidence the picks are *good*, only that they are consistent, explained and careful.
 
 ## How it was built
 
-1. **Oct 29: engine first.** Recommendation engine, menu parser and evidence links, then Neon Postgres + Neon Auth, a Playwright suite and the first production deploy, all on day one.
-2. **Oct 29: real-world hardening.** Real menu photos, menus pasted from delivery apps, account-flow coverage, and a by-hand real-account check confirmed in the live database. E2E found and fixed accessibility issues and a frozen form after a wrong password.
-3. **Oct 29–30: from concept to consumer app.** The first "Marked-Up Menu" design was replaced by "Saffron", a consumer-app design for diners at the table and recruiters on laptops, plus dark mode and the bowl-and-tick mark.
-4. **Nov 5: OCR engine swap.** PaddleOCR in the browser with Tesseract as fallback, judged on a rendered-menu evaluation.
-5. **Nov 5: production loop.** One-click deploy, production E2E and real-photo checks as GitHub Actions. The real-photo run exposed the Thai-menu regression and the slow single thread, and both were fixed the same day.
+1. **Oct 29: engine before pixels.** Scoring, parsing and evidence links came first, then the database, sign-in, an end-to-end suite and a first deploy, all in one day.
+2. **Oct 29: hardened on real input.** Real menu photos, text pasted from delivery apps, and account flows. Tests caught a frozen form after a wrong password, and a real sign-up was checked directly in the production database.
+3. **Oct 29–30: redesign.** The paper-menu concept gave way to the "Saffron" consumer-app design, with dark mode for dim restaurants and the bowl-and-tick logo.
+4. **Nov 5: new eyes.** PaddleOCR replaced Tesseract as the main engine after winning the nine-menu evaluation.
+5. **Nov 5: tested where it runs.** Deploys, live-site test runs and real-photo checks became one-click GitHub Actions. The first real-photo run exposed the Thai-menu regression and the slow single thread, and both were fixed that day.
 
 ## Tech stack
 
 | Layer | Technology |
 | --- | --- |
-| Frontend | Next.js (App Router), React, TypeScript, Tailwind CSS |
-| OCR | PaddleOCR PP-OCRv6 tiny on ONNX Runtime Web (WASM, Web Worker); Tesseract.js fallback |
-| Data & auth | Neon Postgres, Drizzle ORM, Neon Auth; guest data in localStorage |
+| App | Next.js (App Router), React, TypeScript, Tailwind CSS |
+| OCR | PaddleOCR PP-OCRv6 tiny on ONNX Runtime Web (WASM, Web Worker), Tesseract.js fallback |
+| Data and sign-in | Neon Postgres, Drizzle ORM, Neon Auth, localStorage for guests |
 | Testing | Vitest, PGlite, Playwright, axe |
-| Hosting | Vercel Hobby + Neon Free: **$0** to run ([COSTS.md](COSTS.md)) |
+| Hosting | Vercel Hobby, Neon Free |
 
 ## Run it locally
 
 ```bash
 npm install
-npm run dev          # http://localhost:3000 (guest-only without env vars)
-npm run check        # typecheck + lint + unit/integration tests
-npm run test:e2e     # Playwright, desktop + mobile, against a production build
-npm run eval:ocr     # OCR + parsing evaluation on rendered menus
-npm run db:migrate   # apply Drizzle migrations to Neon (needs .env.local)
+npm run dev          # http://localhost:3000 (works as a guest with no env vars)
+npm run check        # typecheck, lint and unit/integration tests
+npm run test:e2e     # end-to-end tests on desktop and mobile viewports
+npm run eval:ocr     # score both OCR engines on the rendered test menus
+npm run db:migrate   # apply database migrations (needs .env.local)
 ```
 
-Accounts need the Neon variables in `.env.example`. Deploys are manual: `vercel deploy --prod`, or the "Deploy to production" GitHub Action.
+Sign-in needs the Neon variables listed in `.env.example`. Production deploys are manual, from the CLI or the "Deploy to production" GitHub Action.
 
 ## Project structure
 
 ```
 src/
-├── app/              # Pages (home, scan, menus, taste, notebook, account) and /api routes
-├── components/       # App shell, dish dialog, taste editor, match badge
+├── app/            # Pages and API routes
+├── components/     # App shell, dish dialog, taste editor
 └── lib/
-    ├── domain/       # Vocabulary, ingredient lexicon, zod schemas
-    ├── menu/         # OCR worker, preprocessing, parser, enrichment, sample menus
-    ├── reco/         # Scoring, learning from ratings, ranking
-    └── db/           # Drizzle schema and user-scoped data access
+    ├── domain/     # Cuisines, flavours, allergen groups, ingredient lexicon, schemas
+    ├── menu/       # OCR, image prep, parser, enrichment, sample menus
+    ├── reco/       # Scoring, learning, ranking
+    └── db/         # Database schema and per-user data access
 tests/
-├── e2e/              # Playwright: journeys, accounts, accessibility, security
-└── ocr/              # Rendered-menu fixtures, OCR evaluation, real-photo runs
-docs/                 # Architecture, decisions, design, evaluation
+├── e2e/            # End-to-end journeys, accounts, accessibility, security
+└── ocr/            # Test menus, OCR scoring, real-photo runs
+docs/               # Architecture, decisions, design, evaluation
 ```
 
 ## What's next
 
 Known limits:
-- English menus only. Hand-written chalkboards and heavily angled photos still need a lot of correction in the review step.
-- Scores are a compatibility index, not a calibrated probability that you'll enjoy a dish.
-- PaddleOCR is 1.3–1.8× slower than Tesseract on real photos, and phones haven't been timed.
+- Only English menus have been tested. Handwritten boards are still mostly unreadable.
+- A match score ranks dishes for you; it isn't a calibrated chance you'll enjoy one.
+- OCR on a phone hasn't been timed yet.
 
-What to measure once real people use it, as privacy-friendly aggregate counts:
-- time from landing to the first ranked menu (the "under a minute" goal);
-- the share of scanned fields edited during review;
-- the share of picks opened, saved or rated;
-- the average rating of picks versus other dishes, the real test of the ranking.
+Next to measure, as anonymous totals once real people use it:
+- how long it takes to get from opening the app to a ranked menu;
+- how often people correct the scanned text;
+- whether picks are opened, saved and rated more than other dishes;
+- whether picks end up rated higher than the dishes people chose themselves.
 
 [Architecture](docs/ARCHITECTURE.md) · [Decisions](docs/DECISIONS.md) · [Design](docs/DESIGN.md) · [Evaluation](docs/EVALUATION.md) · [Costs](COSTS.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
-Sample restaurants are fictional. Cover illustrations were drawn for this project.
+The sample restaurants are fictional, and the cover illustrations were drawn for this project.
