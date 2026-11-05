@@ -26,6 +26,14 @@ export interface Fixture {
     fontSize?: number;
     /** "leaders": Name ........ 12 · "own-line": price on its own line · "inline" (default) */
     priceStyle?: "inline" | "leaders" | "own-line";
+    /** 3D tilt like a photo taken at an angle: [rotateX, rotateY] in degrees. */
+    perspective?: [number, number];
+    /** Darken one side with a soft shadow (0–1), like a hand or a lamp. */
+    shadow?: number;
+    /** Film-grain noise opacity (0–1). */
+    noise?: number;
+    /** Save as JPEG at this quality (0–100) instead of PNG. */
+    jpegQuality?: number;
   };
   /** A blank image with no text at all (failed scan). */
   blank?: boolean;
@@ -164,8 +172,55 @@ export const FIXTURES: Fixture[] = [
       },
     ],
   },
+  {
+    id: "phone-photo",
+    title: "PETIT JARDIN",
+    note: "Two columns photographed at an angle: perspective, shadow across one side, grain, blur, JPEG at quality 55",
+    columns: 2,
+    style: { perspective: [16, -9], shadow: 0.55, noise: 0.35, filter: "blur(0.6px)", jpegQuality: 55, fontSize: 16, ink: "#2a2722", paper: "#f1ead9" },
+    sections: [
+      {
+        name: "TO START",
+        items: [
+          { name: "Leek Vinaigrette", description: "hazelnut, soft egg", price: "£7.50", priceCents: 750 },
+          { name: "Smoked Mackerel Pâté", description: "pickled cucumber, rye toast", price: "£8.25", priceCents: 825 },
+          { name: "Beetroot Tartare", description: "horseradish cream, capers", price: "£7.95", priceCents: 795 },
+          { name: "Chicken Liver Parfait", description: "brioche, red onion jam", price: "£8.50", priceCents: 850 },
+        ],
+      },
+      {
+        name: "MAINS",
+        items: [
+          { name: "Pork Belly", description: "cider sauce, black pudding", price: "£18.50", priceCents: 1850 },
+          { name: "Hake Fillet", description: "mussels, saffron broth", price: "£21.00", priceCents: 2100 },
+          { name: "Mushroom Pithivier", description: "truffle jus, greens", price: "£16.75", priceCents: 1675 },
+          { name: "Lamb Rump", description: "anchovy butter, white beans", price: "£23.50", priceCents: 2350 },
+        ],
+      },
+    ],
+  },
+  {
+    id: "chalkboard",
+    title: "TODAY'S SPECIALS",
+    note: "Light chalk-coloured text on a dark board, soft and grainy",
+    columns: 1,
+    style: { ink: "#ece8d8", paper: "#2c312d", filter: "blur(0.7px)", noise: 0.3, fontSize: 19, rotateDeg: -1.5 },
+    sections: [
+      {
+        name: "SPECIALS",
+        items: [
+          { name: "Lamb Shawarma Wrap", description: "garlic sauce, pickles", price: "$14", priceCents: 1400 },
+          { name: "Lentil Soup", description: "lemon, cumin, crispy onions", price: "$8", priceCents: 800 },
+          { name: "Grilled Halloumi", description: "watermelon, mint", price: "$12", priceCents: 1200 },
+          { name: "Pistachio Baklava", description: "orange blossom syrup", price: "$7", priceCents: 700 },
+        ],
+      },
+    ],
+  },
   { id: "blank", title: "", note: "No text at all (failed scan)", columns: 1, sections: [], blank: true },
 ];
+
+export const imageFile = (f: Fixture) => `${f.id}.${f.style?.jpegQuality ? "jpg" : "png"}`;
 
 /** The text lines a perfect OCR would return, in reading order. */
 export function truthLines(f: Fixture): string[] {

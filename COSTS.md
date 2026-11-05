@@ -7,7 +7,8 @@ Dishwise is designed to cost **$0** to run as a personal, non-commercial portfol
 | Vercel | Hobby | Hosting, server functions for saving profiles/ratings | 1M function invocations, 4 active CPU-hrs, 100 GB fast data transfer, 1M CDN requests / month. **Non-commercial use only.** | Features pause until the 30-day window resets. No charge on Hobby. |
 | Neon Postgres | Free | Accounts' profiles, saved dishes, ratings | 100 CU-hrs compute, 0.5 GB storage per project / month; compute scales to zero after 5 min idle | Compute suspends until next month. No charge on Free. |
 | Neon Auth | Free (included) | Sign-in for cross-device sync | Available on Free plan | — |
-| Tesseract.js | Open source | OCR runs **in the visitor's browser** | No server cost | — |
+| PaddleOCR + ONNX Runtime Web | Open source | OCR runs **in the visitor's browser**. The first scan downloads ~9 MB (models + WASM runtime) from the site, cached as immutable afterwards | Counts toward Vercel's 100 GB transfer: ~11,000 first-time scanners / month | Same as Vercel above |
+| Tesseract.js | Open source | Fallback OCR, **in the visitor's browser**, loaded from jsDelivr only if PaddleOCR can't start | No server cost | — |
 
 ## Why this stays cheap
 - OCR and ranking run client-side. The server only stores small JSON rows for signed-in users.

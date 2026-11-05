@@ -1,7 +1,7 @@
 # Architecture
 
 ```
-photo ──Tesseract.js (browser)──▶ OCR lines ──parse.ts──▶ candidates ──user review──▶ menu items
+photo ──PaddleOCR in a Web Worker (Tesseract.js fallback)──▶ OCR lines ──parse.ts──▶ candidates ──user review──▶ menu items
 sample menu ───────────────────────────────────────────────────────────────────────────▶ menu items
 typed dishes ──────────────────────────────────────────────────────────────────────────▶ menu items
 menu items ──enrich.ts──▶ EnrichedDish[] ──rank.ts (profile + feedback)──▶ ranked / picks / held back
@@ -10,7 +10,8 @@ menu items ──enrich.ts──▶ EnrichedDish[] ──rank.ts (profile + feed
 Everything left of the arrow into `rank.ts` runs in the browser. The server only persists profiles and feedback for signed-in users.
 
 ## Menu understanding (`src/lib/menu`)
-- **`parse.ts`** turns OCR lines into candidate dishes. It detects price formats (dot leaders, `$12`, `€9,50`, `8 / 14`, `MP`), sections, descriptions, and two-column layouts. Columns are found by looking for an empty vertical gutter in a coverage histogram of line bounding boxes. Noise and boilerplate go to `ignored`, never into dishes.
+- **`ocr.ts` / `ocr.worker.ts` / `paddle.ts`** read the photo on the device. PaddleOCR (PP-OCRv6 tiny detector + recogniser, 6.2 MB, Apache-2.0) runs on ONNX Runtime Web (WASM) in a Web Worker. The models and the runtime are emitted by the bundler as content-hashed static files. If PaddleOCR can't start, the photo is re-prepared and read with Tesseract.js. `preprocess.ts` has one profile per engine: PaddleOCR gets flat-field lighting correction and no upscaling, Tesseract gets upscaling and no flattening.
+- **`parse.ts`** turns OCR lines into candidate dishes. `linesFromBoxes` (PaddleOCR line boxes) and `linesFromTesseract` (word boxes) both deskew, regroup rows and split at column gutters first. It detects price formats (dot leaders, `$12`, `€9,50`, `8 / 14`, `MP`), sections, descriptions, and two-column layouts. Columns are found by looking for an empty vertical gutter in a coverage histogram of line bounding boxes. Noise and boilerplate go to `ignored`, never into dishes.
 - **`enrich.ts`** tags every attribute with its provenance:
   - `stated`: the words are on the menu (`"miso" in description`).
   - `inferred`: from a known dish archetype (`usually in Pad thai`) or derived from stated ingredients.

@@ -117,6 +117,93 @@ export function linesFromTesseract(blocks: TesseractBlockLike[]): OcrLine[] {
   return out;
 }
 
+/** Minimal shape of a PaddleOCR text-line result: one detected box with its recognised text. */
+export interface PaddleBoxLike {
+  text: string;
+  /** 0–1. */
+  confidence: number;
+  box: { x: number; y: number; width: number; height: number; points?: [{ x: number; y: number }, { x: number; y: number }, ...{ x: number; y: number }[]] };
+}
+
+/**
+ * Flatten PaddleOCR output into lines for the parser. Paddle's detector returns one box per run of
+ * text and already splits at wide gaps, so boxes on the same row are regrouped like Tesseract words:
+ * - deskew by the median top-edge angle of the boxes;
+ * - a box far to the right (more than 2.5× the text height) starts a new segment (column gutter);
+ *   a far-off price stays separate and `attachRowPrices` later gives it to the nearest text on its
+ *   left, which copes with tilted photos where a row's price sits level with the next column;
+ * - text after a price starts a new segment ("£10.50   Pork belly…");
+ * - the first detector split between two text runs becomes the name/description separator.
+ */
+export function linesFromBoxes(results: PaddleBoxLike[]): OcrLine[] {
+  const items = results.filter((r) => r.text.trim() && r.box.width > 0 && r.box.height > 0);
+  const angles = items
+    .map((r) => r.box.points)
+    .filter((p): p is NonNullable<typeof p> => !!p && p[1].x - p[0].x > 40)
+    .map((p) => Math.atan2(p[1].y - p[0].y, p[1].x - p[0].x))
+    .sort((a, b) => a - b);
+  const theta = angles.length >= 3 ? angles[Math.floor(angles.length / 2)] : 0;
+  const cos = Math.cos(-theta);
+  const sin = Math.sin(-theta);
+  const boxes = items.map((r) => {
+    let { x, y } = r.box;
+    const { width: w, height: h } = r.box;
+    if (Math.abs(theta) >= 0.003) {
+      const cx = x + w / 2;
+      const cy = y + h / 2;
+      x = cx * cos - cy * sin - w / 2;
+      y = cx * sin + cy * cos - h / 2;
+    }
+    // A tilted box's axis-aligned height includes the slope; the text itself is about this tall.
+    const th = Math.max(1, h - Math.abs(Math.sin(theta)) * w);
+    return { text: r.text.replace(/\s+/g, " ").trim(), conf: r.confidence * 100, x0: x, x1: x + w, y0: y + (h - th) / 2, y1: y + (h + th) / 2 };
+  });
+  type B = (typeof boxes)[number];
+
+  // Group into rows: a box joins the row whose vertical centre is within half a line-height.
+  const cy = (b: B) => (b.y0 + b.y1) / 2;
+  const rows: B[][] = [];
+  for (const b of [...boxes].sort((a, b) => cy(a) - cy(b))) {
+    const row = rows.find((r) => {
+      const ref = r[r.length - 1];
+      return Math.abs(cy(ref) - cy(b)) < Math.min(ref.y1 - ref.y0, b.y1 - b.y0) * 0.5 && r.every((o) => o.x1 <= b.x0 + 2 || o.x0 >= b.x1 - 2);
+    });
+    if (row) row.push(b);
+    else rows.push([b]);
+  }
+
+  const out: OcrLine[] = [];
+  for (const row of rows) {
+    row.sort((a, b) => a.x0 - b.x0);
+    const h = Math.max(1, Math.min(...row.map((b) => b.y1 - b.y0)));
+    const segs: B[][] = [[row[0]]];
+    for (let i = 1; i < row.length; i++) {
+      const prev = row[i - 1];
+      const b = row[i];
+      const gap = b.x0 - prev.x1;
+      const afterPrice = PRICE_ONLY.test(prev.text) && !PRICE_ONLY.test(b.text) && /\p{L}/u.test(b.text);
+      if (gap > h * 2.5 || afterPrice) segs.push([b]);
+      else segs.at(-1)!.push(b);
+    }
+    for (const seg of segs) {
+      let text = seg[0].text;
+      let sepUsed = false;
+      for (let i = 1; i < seg.length; i++) {
+        const sep = !sepUsed && !PRICE_ONLY.test(seg[i].text) && seg[i].x0 - seg[i - 1].x1 > h * 0.6;
+        text += sep ? NAME_DESC_SEP : " ";
+        if (sep) sepUsed = true;
+        text += seg[i].text;
+      }
+      out.push({
+        text,
+        confidence: seg.reduce((a, b) => a + b.conf, 0) / seg.length,
+        bbox: { x0: seg[0].x0, y0: Math.min(...seg.map((b) => b.y0)), x1: seg.at(-1)!.x1, y1: Math.max(...seg.map((b) => b.y1)) },
+      });
+    }
+  }
+  return out;
+}
+
 export type CandidateFlag = "low-confidence" | "no-price" | "multiple-prices" | "long-name" | "check-price";
 
 export interface Candidate {
@@ -179,7 +266,8 @@ function isTitleLike(s: string): boolean {
 
 function isSection(s: string): boolean {
   const w = words(s);
-  if (w.length > 4 || s.length > 32) return false;
+  // "rice, black beans, pico" is a description that happens to start with a section word.
+  if (w.length > 4 || s.length > 32 || /[,;]/.test(s)) return false;
   const lettersOnly = s.replace(/[^\p{L}\s&]/gu, "").trim();
   if (!lettersOnly) return false;
   const allCaps = lettersOnly === lettersOnly.toUpperCase() && letters(lettersOnly) >= 3;

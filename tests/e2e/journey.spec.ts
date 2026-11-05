@@ -86,6 +86,16 @@ test("photo upload runs real OCR in the browser and finds dishes and prices", as
   await expect(page.getByRole("button", { name: /^Roast Chicken\. Score/ })).toBeVisible();
 });
 
+test("a shadowed, tilted phone photo of a two-column menu reads every dish and price", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto("/scan");
+  await page.getByTestId("menu-file").setInputFiles("tests/ocr/images/phone-photo.jpg");
+  await expect(page.getByRole("heading", { name: "Check what we read" })).toBeVisible({ timeout: 90_000 });
+  const names = await page.getByLabel(/Dish \d+ name/).evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value));
+  expect(names).toEqual(expect.arrayContaining(["Leek Vinaigrette", "Pork Belly", "Lamb Rump"]));
+  await expect(page.getByLabel(`Dish ${names.indexOf("Lamb Rump") + 1} price`)).toHaveValue("£23.50");
+});
+
 test("a non-image upload is rejected with a helpful message", async ({ page }) => {
   await page.goto("/scan");
   await page.getByTestId("menu-file").setInputFiles({ name: "menu.txt", mimeType: "text/plain", buffer: Buffer.from("not an image") });

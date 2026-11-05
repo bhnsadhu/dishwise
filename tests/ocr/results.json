@@ -1,153 +1,427 @@
 {
-  "ranAt": "2026-10-29T12:21:05.778Z",
-  "tesseract": "tesseract.js 7 (eng, LSTM)",
-  "rows": [
-    {
-      "id": "clean",
-      "note": "Clear printed single-column menu",
-      "ms": 700,
-      "cer": 0,
-      "ocrConfidence": 95,
-      "fromOcr": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 7,
-        "expected": 7
+  "ranAt": "2026-11-05T01:52:48.825Z",
+  "tesseract": {
+    "engine": "tesseract.js 7 (eng, LSTM)",
+    "rows": [
+      {
+        "id": "clean",
+        "note": "Clear printed single-column menu",
+        "ms": 2205,
+        "cer": 0,
+        "ocrConfidence": 95,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 7,
+          "expected": 7
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 7,
+          "expected": 7
+        }
       },
-      "fromTruth": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 7,
-        "expected": 7
-      }
-    },
-    {
-      "id": "two-column",
-      "note": "Two-column layout",
-      "ms": 337,
-      "cer": 0,
-      "ocrConfidence": 95,
-      "fromOcr": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 6,
-        "expected": 6
+      {
+        "id": "two-column",
+        "note": "Two-column layout",
+        "ms": 944,
+        "cer": 0,
+        "ocrConfidence": 95,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 6,
+          "expected": 6
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 6,
+          "expected": 6
+        }
       },
-      "fromTruth": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 6,
-        "expected": 6
-      }
-    },
-    {
-      "id": "odd-prices",
-      "note": "Dot leaders, euro decimal commas, size ranges and market price",
-      "ms": 299,
-      "cer": 0.01990049751243781,
-      "ocrConfidence": 86,
-      "fromOcr": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 6,
-        "expected": 6
+      {
+        "id": "odd-prices",
+        "note": "Dot leaders, euro decimal commas, size ranges and market price",
+        "ms": 1094,
+        "cer": 0.027210884353741496,
+        "ocrConfidence": 86,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 6,
+          "expected": 6
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 6,
+          "expected": 6
+        }
       },
-      "fromTruth": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 6,
-        "expected": 6
-      }
-    },
-    {
-      "id": "price-own-line",
-      "note": "Name, description, and price each on their own line",
-      "ms": 297,
-      "cer": 0,
-      "ocrConfidence": 95,
-      "fromOcr": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 3,
-        "expected": 3
+      {
+        "id": "price-own-line",
+        "note": "Name, description, and price each on their own line",
+        "ms": 1071,
+        "cer": 0,
+        "ocrConfidence": 95,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 3,
+          "expected": 3
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 3,
+          "expected": 3
+        }
       },
-      "fromTruth": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 3,
-        "expected": 3
-      }
-    },
-    {
-      "id": "names-only",
-      "note": "Incomplete menu: names and prices, no descriptions",
-      "ms": 175,
-      "cer": 0,
-      "ocrConfidence": 95,
-      "fromOcr": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 4,
-        "expected": 4
+      {
+        "id": "names-only",
+        "note": "Incomplete menu: names and prices, no descriptions",
+        "ms": 817,
+        "cer": 0,
+        "ocrConfidence": 95,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 4,
+          "expected": 4
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 4,
+          "expected": 4
+        }
       },
-      "fromTruth": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 4,
-        "expected": 4
-      }
-    },
-    {
-      "id": "degraded",
-      "note": "Same as 'clean' but blurred, tilted 2°, low contrast and smaller, like a quick phone photo",
-      "ms": 379,
-      "cer": 0.1018867924528302,
-      "ocrConfidence": 87,
-      "fromOcr": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 0,
-        "found": 5,
-        "expected": 5
+      {
+        "id": "degraded",
+        "note": "Same as 'clean' but blurred, tilted 2°, low contrast and smaller, like a quick phone photo",
+        "ms": 1445,
+        "cer": 0.1018867924528302,
+        "ocrConfidence": 87,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 0,
+          "descriptionAccuracy": 1,
+          "found": 5,
+          "expected": 5
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 5,
+          "expected": 5
+        }
       },
-      "fromTruth": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 5,
-        "expected": 5
-      }
-    },
-    {
-      "id": "blank",
-      "note": "No text at all (failed scan)",
-      "ms": 167,
-      "cer": 0,
-      "ocrConfidence": 95,
-      "fromOcr": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 0,
-        "expected": 0
+      {
+        "id": "phone-photo",
+        "note": "Two columns photographed at an angle: perspective, shadow across one side, grain, blur, JPEG at quality 55",
+        "ms": 1021,
+        "cer": 0.26649746192893403,
+        "ocrConfidence": 91,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 0.875,
+          "priceAccuracy": 0,
+          "descriptionAccuracy": 0.5,
+          "found": 7,
+          "expected": 8
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 8,
+          "expected": 8
+        }
       },
-      "fromTruth": {
-        "precision": 1,
-        "recall": 1,
-        "priceAccuracy": 1,
-        "found": 0,
-        "expected": 0
+      {
+        "id": "chalkboard",
+        "note": "Light chalk-coloured text on a dark board, soft and grainy",
+        "ms": 1394,
+        "cer": 0,
+        "ocrConfidence": 95,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 4,
+          "expected": 4
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 4,
+          "expected": 4
+        }
+      },
+      {
+        "id": "blank",
+        "note": "No text at all (failed scan)",
+        "ms": 1117,
+        "cer": 0,
+        "ocrConfidence": 95,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 0,
+          "expected": 0
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 0,
+          "expected": 0
+        }
       }
-    }
-  ]
+    ]
+  },
+  "paddle": {
+    "engine": "PaddleOCR PP-OCRv6_tiny (paddleocr + onnxruntime-web, wasm, 1 thread)",
+    "rows": [
+      {
+        "id": "clean",
+        "note": "Clear printed single-column menu",
+        "ms": 1921,
+        "cer": 0,
+        "ocrConfidence": 99,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 7,
+          "expected": 7
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 7,
+          "expected": 7
+        }
+      },
+      {
+        "id": "two-column",
+        "note": "Two-column layout",
+        "ms": 1876,
+        "cer": 0,
+        "ocrConfidence": 99,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 6,
+          "expected": 6
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 6,
+          "expected": 6
+        }
+      },
+      {
+        "id": "odd-prices",
+        "note": "Dot leaders, euro decimal commas, size ranges and market price",
+        "ms": 1100,
+        "cer": 0,
+        "ocrConfidence": 95,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 6,
+          "expected": 6
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 6,
+          "expected": 6
+        }
+      },
+      {
+        "id": "price-own-line",
+        "note": "Name, description, and price each on their own line",
+        "ms": 1197,
+        "cer": 0,
+        "ocrConfidence": 99,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 3,
+          "expected": 3
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 3,
+          "expected": 3
+        }
+      },
+      {
+        "id": "names-only",
+        "note": "Incomplete menu: names and prices, no descriptions",
+        "ms": 1088,
+        "cer": 0,
+        "ocrConfidence": 98,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 4,
+          "expected": 4
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 4,
+          "expected": 4
+        }
+      },
+      {
+        "id": "degraded",
+        "note": "Same as 'clean' but blurred, tilted 2°, low contrast and smaller, like a quick phone photo",
+        "ms": 1333,
+        "cer": 0,
+        "ocrConfidence": 98,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 5,
+          "expected": 5
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 5,
+          "expected": 5
+        }
+      },
+      {
+        "id": "phone-photo",
+        "note": "Two columns photographed at an angle: perspective, shadow across one side, grain, blur, JPEG at quality 55",
+        "ms": 1709,
+        "cer": 0.0025380710659898475,
+        "ocrConfidence": 98,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 8,
+          "expected": 8
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 8,
+          "expected": 8
+        }
+      },
+      {
+        "id": "chalkboard",
+        "note": "Light chalk-coloured text on a dark board, soft and grainy",
+        "ms": 1160,
+        "cer": 0,
+        "ocrConfidence": 99,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 4,
+          "expected": 4
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 4,
+          "expected": 4
+        }
+      },
+      {
+        "id": "blank",
+        "note": "No text at all (failed scan)",
+        "ms": 545,
+        "cer": 0,
+        "ocrConfidence": 0,
+        "fromOcr": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 0,
+          "expected": 0
+        },
+        "fromTruth": {
+          "precision": 1,
+          "recall": 1,
+          "priceAccuracy": 1,
+          "descriptionAccuracy": 1,
+          "found": 0,
+          "expected": 0
+        }
+      }
+    ]
+  }
 }

@@ -31,10 +31,14 @@ export default function HowPage() {
           </h2>
           <p className="leading-relaxed text-sub">
             Photos are read in your browser with{" "}
+            <a className="link" href="https://github.com/PaddlePaddle/PaddleOCR">
+              PaddleOCR
+            </a>{" "}
+            (its smallest model, run on ONNX Runtime) after a little clean-up: evening out shadows, grayscale and contrast, and inverting chalkboards. The photo never leaves your device. If PaddleOCR can&apos;t load,{" "}
             <a className="link" href="https://github.com/naptha/tesseract.js">
               Tesseract.js
             </a>{" "}
-            after a little clean-up: straightening, upscaling small photos, grayscale and contrast, and inverting chalkboards. A parser then finds dish names, prices, descriptions and sections. It handles dot leaders, “MP”, size ranges like “8 / 14”, two-column layouts, dietary codes like “(V)” and “(n)”, and text pasted from delivery apps. Lines it doesn&apos;t understand are shown to you, not thrown away, and you confirm everything before ranking.
+            takes over. A parser then finds dish names, prices, descriptions and sections. It handles dot leaders, “MP”, size ranges like “8 / 14”, two-column layouts, dietary codes like “(V)” and “(n)”, and text pasted from delivery apps. Lines it doesn&apos;t understand are shown to you, not thrown away, and you confirm everything before ranking.
           </p>
         </section>
 

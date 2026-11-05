@@ -3,11 +3,38 @@
 All numbers here come from runs on 2026-10-29 on a MacBook (Node 24, Chromium via Playwright). Nothing is extrapolated. Dishwise has no real-user data yet, so there are no satisfaction, retention or real-world accuracy figures.
 
 ## OCR and menu parsing (`npm run eval:ocr`)
-Seven fictional menus are rendered to PNG by a real browser (`tests/ocr/render.ts`), each with exact ground truth (`tests/ocr/fixtures.ts`). The script runs the app's own preprocessing in a browser canvas, then Tesseract.js 7 (English, LSTM), then the app's parser. It reports three things separately:
+Nine fictional menus are rendered by a real browser (`tests/ocr/render.ts`), each with exact ground truth (`tests/ocr/fixtures.ts`). For each OCR engine the script runs the app's own preprocessing in a browser canvas, then the engine, then the app's parser. It reports these separately:
 
-- **CER**: OCR character error rate over the words (order-insensitive, so it measures recognition rather than reading order).
-- **OCR → parse**: dishes found from the OCR output (precision P, recall R) and how many prices were read correctly.
-- **Truth → parse**: the parser run on perfect text, to separate parser errors from OCR errors.
+- **CER**: OCR character error rate over the words (order-insensitive, so it measures recognition rather than reading order; dot leaders are left out because they are layout, not content).
+- **OCR → parse**: dishes found from the OCR output (precision P, recall R), and how many prices and descriptions came out right.
+- **Truth → parse**: the parser run on perfect text, to separate parser errors from OCR errors. It scores 1.00 on everything for all nine fixtures.
+
+### PaddleOCR vs Tesseract (2026-11-05)
+Run in a Linux cloud container (Node 22, Chromium via Playwright, ONNX Runtime WASM on 1 thread), so the timings are not comparable with the MacBook numbers further down. Both engines get the same photos, each with its own preprocessing profile (`src/lib/menu/preprocess.ts`).
+
+| Fixture | What it tests | Tesseract.js 7: CER · P / R · prices · descriptions | PaddleOCR PP-OCRv6 tiny: CER · P / R · prices · descriptions |
+| --- | --- | --- | --- |
+| clean | Single column, `$` prices | 0.0% · 1.00 / 1.00 · 100% · 100% | 0.0% · 1.00 / 1.00 · 100% · 100% |
+| two-column | Side-by-side sections | 0.0% · 1.00 / 1.00 · 100% · 100% | 0.0% · 1.00 / 1.00 · 100% · 100% |
+| odd-prices | Dot leaders, `€9,50`, `18 / 26`, `MP` | 2.7% · 1.00 / 1.00 · 100% · n/a | 0.0% · 1.00 / 1.00 · 100% · n/a |
+| price-own-line | Name, description and price on separate lines | 0.0% · 1.00 / 1.00 · 100% · 100% | 0.0% · 1.00 / 1.00 · 100% · 100% |
+| names-only | No descriptions | 0.0% · 1.00 / 1.00 · 100% · n/a | 0.0% · 1.00 / 1.00 · 100% · n/a |
+| degraded | Blur, 2° tilt, low contrast, small type | 10.2% · 1.00 / 1.00 · **0%** · 100% | **0.0%** · 1.00 / 1.00 · **100%** · 100% |
+| phone-photo (new) | Two columns shot at an angle: perspective, shadow over one side, grain, JPEG q55 | 26.6% · 1.00 / 0.88 · **0%** · 50% | **0.3%** · 1.00 / 1.00 · **100%** · 100% |
+| chalkboard (new) | Light text on a dark, grainy board | 0.0% · 1.00 / 1.00 · 100% · 100% | 0.0% · 1.00 / 1.00 · 100% · 100% |
+| blank | No text (failed scan) | 0 items | 0 items |
+
+PaddleOCR's one remaining error is an accent (`Pâté` read as `Päté`). Per photo it took 1.1–1.9 s here, against 0.8–2.2 s for Tesseract. Phones have not been timed.
+
+What got PaddleOCR there:
+1. **The engine.** PaddleOCR's detector finds text lines as regions before reading them, so blurred prices and tilted, shadowed rows survive where Tesseract's page segmentation drops them. With no other change it already read every degraded price, and the phone photo at 7.6% CER and 63% of prices.
+2. **Flatten the lighting** (flat-field correction): estimate the paper's brightness from the brightest pixels in coarse blocks, smooth it, and divide it out. This took the phone photo from 7.6% to 0.3% CER. It made Tesseract worse (it amplifies grain, and Tesseract binarises), so only the PaddleOCR profile uses it.
+3. **Don't upscale.** PaddleOCR resizes each text line itself, so the 2000 px upscale tuned for Tesseract only slowed it down (about 2×) with no accuracy change.
+4. **Layout.** PaddleOCR returns line boxes, not words. `linesFromBoxes` regroups them into rows, splits at column gutters and marks the name/description gap. On a tilted photo a right-hand price can sit level with the *other* column's text, so far-off prices are left for `attachRowPrices` to place.
+5. **A parser bug the new description score exposed:** `rice, black beans, pico` became a section header because it starts with "rice". A line with commas is now never a section.
+
+### Tesseract.js baseline (2026-10-29)
+Seven fixtures (the two new ones above didn't exist yet), Tesseract.js 7 (English, LSTM), on a MacBook.
 
 | Fixture | What it tests | CER | OCR→parse P / R | Prices correct | Truth→parse P / R / prices |
 | --- | --- | --- | --- | --- | --- |
@@ -19,7 +46,7 @@ Seven fictional menus are rendered to PNG by a real browser (`tests/ocr/render.t
 | degraded | Blur, 2° tilt, low contrast, small type | 10.2% | 1.00 / 1.00 | **0%** | 1 / 1 / 100% |
 | blank | No text (failed scan) | n/a | 0 items, no invented dishes | n/a | n/a |
 
-The full output is in `tests/ocr/results.json`. Recognition takes about 0.2–0.8 s per image after the model loads.
+`tests/ocr/results.json` holds the latest run for both engines. Recognition took about 0.2–0.8 s per image after the model loaded.
 
 ### What changed the numbers
 The first run, before the fixes below, scored: degraded CER 90.6% with 0 dishes found; two-column 0 dishes; clean, names-only and two-column all with 0% prices correct. Three fixes, each driven by inspecting raw Tesseract output:
@@ -28,7 +55,7 @@ The first run, before the fixes below, scored: degraded CER 90.6% with 0 dishes 
 2. **Split merged columns.** Tesseract merges side-by-side columns into one line. Lines are now split at wide word gaps, and a lone price stays with its dish.
 3. **Re-attach right-aligned prices.** Tesseract returns right-aligned prices as a separate block. Each price-only line is now attached to the nearest text on the same row.
 
-### Real menu photos
+### Real menu photos (Tesseract, before the switch)
 Five openly licensed photos from Wikimedia Commons (CC0 / CC BY-SA, not redistributed in the repo; fetch list in `tests/ocr/real/sources.json`) were run through the deployed scan UI (`node tests/ocr/real-run.ts`). There is no ground truth here, so this is a reading of the output, not a score.
 
 | Photo | Before this round | After |
@@ -48,10 +75,13 @@ Changes behind the "after" column:
 - restore dropped decimal points when the rest of the menu uses decimals;
 - auto-invert dark images.
 
+These photos have not yet been re-run with PaddleOCR. They aren't in the repo, and the cloud container that ran the comparison couldn't reach Wikimedia.
+
 ### Known limits
-- On the degraded photo Tesseract doesn't read the blurred prices at all. The dishes are found and each is flagged "no price found" for the user to fix.
-- Real photos with heavy perspective, handwriting, chalkboards or occlusion still need substantial correction in the review step.
-- Only English is supported, and only English has been tested.
+- The fixtures are rendered, not photographed. They imitate blur, tilt, perspective, shadow, grain and JPEG loss, but not glare, curled paper, handwriting or occlusion.
+- Tesseract (now only the fallback) doesn't read the degraded or phone-photo prices at all.
+- PP-OCRv6 tiny is the smallest PaddleOCR model and is weaker on accented Latin text than the 31 MB "small" model.
+- Only English menus have been tested.
 
 ## Recommendation engine (`npm test`)
 The engine has no training data, so evaluation is behavioural: tests assert properties a correct recommender must have.

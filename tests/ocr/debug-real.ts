@@ -19,7 +19,7 @@ const png = await page.evaluate(async (b64) => {
   const s = Pre.computeScale(img.width, img.height);
   const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
   const x = c.getContext("2d")!; x.drawImage(img, 0, 0, c.width, c.height);
-  const d = x.getImageData(0, 0, c.width, c.height); Pre.enhanceGray(d.data); x.putImageData(d, 0, 0);
+  const d = x.getImageData(0, 0, c.width, c.height); Pre.enhanceGray(d.data, d.width, d.height); x.putImageData(d, 0, 0);
   return c.toDataURL("image/png").split(",")[1];
 }, b64);
 await browser.close();

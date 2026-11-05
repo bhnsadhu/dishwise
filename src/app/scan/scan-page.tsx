@@ -70,7 +70,7 @@ export function ScanPage() {
       const prepared = await prepareImage(file);
       preview = prepared.canvas.toDataURL("image/jpeg", 0.6);
       setStage({ kind: "reading", progress: { status: "Starting", progress: 0 }, preview });
-      const result = await recognizeMenu(prepared.canvas, (progress) => setStage({ kind: "reading", progress, preview }));
+      const result = await recognizeMenu(prepared, (progress) => setStage({ kind: "reading", progress, preview }));
       const parsed = parseMenuText(result.lines);
       if (parsed.items.length === 0) {
         setError(

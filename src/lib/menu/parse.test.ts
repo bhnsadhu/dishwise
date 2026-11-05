@@ -143,3 +143,12 @@ describe("parseMenuText — multiple columns", () => {
     expect(r.items.find((i) => i.name === "Katsu Curry")).toMatchObject({ section: "MAINS", description: "panko chicken, curry, rice" });
   });
 });
+
+describe("parseMenuText — descriptions that start with a section word", () => {
+  it("keeps 'rice, black beans, pico' as the dish's description, not a new section", () => {
+    const r = parseMenuText("PLATES\nCarnitas Bowl $15.00\nrice, black beans, pico\nSteak Burrito $14.50");
+    expect(r.items[0]).toMatchObject({ name: "Carnitas Bowl", description: "rice, black beans, pico", section: "PLATES" });
+    expect(r.items[1]).toMatchObject({ name: "Steak Burrito", section: "PLATES" });
+    expect(r.sections).toEqual(["PLATES"]);
+  });
+});

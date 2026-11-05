@@ -100,8 +100,18 @@ test("a photo with no text says so instead of inventing dishes", async ({ page }
   await expect(page.getByLabel("Dish 1 name")).toHaveValue("");
 });
 
-test("if the text reader can't download, the user gets a clear way forward", async ({ page }) => {
-  await page.route(/jsdelivr|tessdata|unpkg/, (route) => route.abort());
+test("if PaddleOCR can't load, the scan falls back to Tesseract and still reads the menu", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.route(/PP-OCRv6_tiny_/, (route) => route.abort());
+  await page.goto("/scan");
+  await page.getByTestId("menu-file").setInputFiles("tests/ocr/images/clean.png");
+  await expect(page.getByRole("heading", { name: "Check what we read" })).toBeVisible({ timeout: 90_000 });
+  const names = await page.getByLabel(/Dish \d+ name/).evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value));
+  expect(names).toEqual(expect.arrayContaining(["Charred Corn Soup", "Roast Chicken"]));
+});
+
+test("if neither text reader can download, the user gets a clear way forward", async ({ page }) => {
+  await page.route(/jsdelivr|tessdata|unpkg|PP-OCRv6_tiny_/, (route) => route.abort());
   await page.goto("/scan");
   await page.getByTestId("menu-file").setInputFiles("tests/ocr/images/clean.png");
   await expect(page.getByRole("alert").filter({ hasText: /Reading the photo failed/ })).toBeVisible({ timeout: 45_000 });
