@@ -45,18 +45,24 @@ The bar Dishwise sets itself: **a pick you trust in under a minute.**
 
 ```mermaid
 flowchart TD
-  input["Photo, pasted text, or sample menu"] --> ocr["OCR in a Web Worker<br/>PaddleOCR, Tesseract fallback"]
-  ocr --> parse["Parser: columns, prices, sections"]
-  parse --> check["You confirm the dishes"]
-  check --> enrich["Enrichment: on menu vs typical recipe"]
-  enrich --> rank["Scorer and ranker<br/>reasons, warnings, diverse picks"]
-  profile["Taste profile + learned weights"] --> rank
-  rank -->|"star ratings"| profile
-  profile -.->|"only when signed in"| api["Next.js API routes"]
-  api -.-> db[("Neon Postgres")]
+  subgraph read["Read the menu"]
+    direction LR
+    input["Photo, pasted text<br/>or sample menu"] --> ocr["OCR in a Web Worker<br/>PaddleOCR, Tesseract fallback"] --> parse["Parser<br/>columns, prices, sections"] --> check["You confirm<br/>the dishes"]
+  end
+  subgraph rankg["Rank and learn"]
+    direction LR
+    enrich["Enrichment<br/>on menu vs typical recipe"] --> rank["Scorer and ranker<br/>reasons, warnings, diverse picks"] -->|"star ratings"| profile["Taste profile<br/>+ learned weights"]
+    profile -.->|"next ranking"| rank
+  end
+  subgraph save["Only when signed in"]
+    direction LR
+    api["Next.js API routes"] --> db[("Neon Postgres")]
+  end
+  read --> rankg
+  rankg -.->|"sync profile and ratings"| save
 ```
 
-Everything above the API runs in the browser. The server never sees a menu; it only stores the profile, saved dishes and ratings of people who choose to sign in. Full scoring tables are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+The first two rows run entirely in the browser. The server never sees a menu; it only stores the profile, saved dishes and ratings of people who choose to sign in. Full scoring tables are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Hard problems
 
