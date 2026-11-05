@@ -108,7 +108,7 @@ One Sawadee dish keeps a description word in its name ("Tao-hu Khing Beancurd").
 - The fixtures are rendered, not photographed. They imitate blur, tilt, perspective, shadow, grain and JPEG loss, but not glare, curled paper, handwriting or occlusion.
 - Tesseract (now only the fallback) doesn't read the degraded or phone-photo prices at all.
 - PP-OCRv6 tiny is the smallest PaddleOCR model and is weaker on accented Latin text than the 31 MB "small" model.
-- PaddleOCR is still 1.3–1.8× slower than Tesseract on these photos (up to ~11 s for the dense bistro menu on a 4-core runner). Phones haven't been timed. Safari and older browsers that don't support cross-origin isolation run it on one thread.
+- PaddleOCR is still 1.3–1.8× slower than Tesseract on these photos (up to ~11 s for the dense bistro menu on a 4-core runner). Phones haven't been timed. Browsers without cross-origin isolation (older than Chrome 92, Firefox 79 or Safari 15.2) run it on one thread.
 - Only English menus have been tested.
 
 ## Recommendation engine (`npm test`)
