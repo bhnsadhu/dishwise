@@ -89,11 +89,11 @@ What isn't proven: nobody outside testing has used it yet, so there is no eviden
 
 ## How it was built
 
-1. **Oct 29: engine before pixels.** Scoring, parsing and evidence links came first, then the database, sign-in, an end-to-end suite and a first deploy, all in one day.
-2. **Oct 29: hardened on real input.** Real menu photos, text pasted from delivery apps, and account flows. Tests caught a frozen form after a wrong password, and a real sign-up was checked directly in the production database.
-3. **Oct 29–30: redesign.** The paper-menu concept gave way to the "Saffron" consumer-app design, with dark mode for dim restaurants and the bowl-and-tick logo.
-4. **Nov 5: a better scanner.** PaddleOCR replaced Tesseract as the main engine after winning the nine-menu evaluation on blurred, angled and shadowed photos.
-5. **Nov 5: tested where it runs.** Deploys, live-site test runs and real-photo checks became one-click GitHub Actions. The first real-photo run exposed the Thai-menu regression and the slow single thread, and both were fixed that day.
+1. **Engine before pixels.** Scoring, parsing and evidence links came first, then the database, sign-in, an end-to-end suite and a first deploy, all in one day.
+2. **Hardened on real input.** Real menu photos, text pasted from delivery apps, and account flows. Tests caught a frozen form after a wrong password, and a real sign-up was checked directly in the production database.
+3. **Redesign.** The paper-menu concept gave way to the "Saffron" consumer-app design, with dark mode for dim restaurants and the bowl-and-tick logo.
+4. **A better scanner.** PaddleOCR replaced Tesseract as the main engine after winning the nine-menu evaluation on blurred, angled and shadowed photos.
+5. **Tested where it runs.** Deploys, live-site test runs and real-photo checks became one-click GitHub Actions. The first real-photo run exposed the Thai-menu regression and the slow single thread, and both were fixed that day.
 
 ## Tech stack
 
