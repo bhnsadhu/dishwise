@@ -1,0 +1,41 @@
+# One-click check of the live site: GitHub → Actions → "Verify production" → Run workflow.
+# Runs the Playwright E2E suite (desktop Chrome + Pixel 7) against https://dishwise.bhanusadhu.com,
+# including real in-browser OCR and the PaddleOCR → Tesseract fallback.
+name: Verify production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E against production
+        env:
+          BASE_URL: https://dishwise.bhanusadhu.com
+        run: npm run test:e2e
+
+      - name: Keep failure traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
