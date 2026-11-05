@@ -41,7 +41,8 @@ test("diet and budget choices change results", async ({ page }) => {
   await page.goto("/taste");
   await page.getByRole("radio", { name: "Keep it affordable" }).click();
   await page.goto("/m/nonna-fig");
-  expect(await scoreOf(page, "Lobster Linguine")).toBeLessThan(before);
+  // The saved profile loads from localStorage after first render, so wait for the re-rank.
+  await expect.poll(() => scoreOf(page, "Lobster Linguine")).toBeLessThan(before);
 });
 
 test("favourite dishes can be added and removed", async ({ page }) => {
