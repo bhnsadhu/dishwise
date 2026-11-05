@@ -56,7 +56,7 @@ The first run, before the fixes below, scored: degraded CER 90.6% with 0 dishes 
 3. **Re-attach right-aligned prices.** Tesseract returns right-aligned prices as a separate block. Each price-only line is now attached to the nearest text on the same row.
 
 ### Real menu photos (Tesseract, before the switch)
-Five openly licensed photos from Wikimedia Commons (CC0 / CC BY-SA, not redistributed in the repo; fetch list in `tests/ocr/real/sources.json`) were run through the deployed scan UI (`node tests/ocr/real-run.ts`). There is no ground truth here, so this is a reading of the output, not a score.
+Five openly licensed photos from Wikimedia Commons (CC0 / CC BY-SA, linked rather than redistributed; list in `tests/ocr/real-sources.json`, fetched by `node tests/ocr/real-fetch.ts`) were run through the deployed scan UI (`node tests/ocr/real-run.ts`, or the "Real menu photos" GitHub Action). There is no ground truth here, so this is a reading of the output, not a score.
 
 | Photo | Before this round | After |
 | --- | --- | --- |

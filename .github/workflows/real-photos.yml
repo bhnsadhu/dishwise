@@ -1,0 +1,47 @@
+# One-click real-photo check: GitHub → Actions → "Real menu photos" → Run workflow.
+# Fetches five openly licensed menu photos from Wikimedia Commons and scans each on the live site,
+# once with PaddleOCR and once with the Tesseract fallback. There's no ground truth, so read the
+# rows in the log (or the results artifact) rather than a score.
+name: Real menu photos
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Fetch photos from Wikimedia Commons
+        run: node tests/ocr/real-fetch.ts
+
+      - name: Scan with PaddleOCR (live site)
+        run: node tests/ocr/real-run.ts
+
+      - name: Scan with the Tesseract fallback (live site)
+        env:
+          ENGINE: tesseract
+        run: node tests/ocr/real-run.ts
+
+      - name: Keep the results
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-photo-results
+          path: tests/ocr/real/results-*.json
+          retention-days: 30
