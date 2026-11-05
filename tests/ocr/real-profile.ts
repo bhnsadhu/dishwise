@@ -7,13 +7,13 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import * as ort from "onnxruntime-web";
-import { createPaddle, PADDLE_FILES } from "../../src/lib/menu/paddle.ts";
+import { createPaddle, PADDLE_DETECTION, PADDLE_FILES } from "../../src/lib/menu/paddle.ts";
 import { parseMenuText } from "../../src/lib/menu/parse.ts";
 import { openPreprocessor } from "./browser-preprocess.ts";
 
 const VARIANTS: { name: string; detection?: Record<string, unknown> }[] = [
-  { name: "current (short side >= 736, no cap)" },
-  { name: "long side <= 1600", detection: { limitType: "max", maxSideLength: 1600 } },
+  { name: "app default (long side <= 1600)", detection: PADDLE_DETECTION },
+  { name: "preset default (short side >= 736, no cap)", detection: {} },
   { name: "long side <= 1280", detection: { limitType: "max", maxSideLength: 1280 } },
   { name: "long side <= 960", detection: { limitType: "max", maxSideLength: 960 } },
 ];

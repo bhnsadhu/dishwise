@@ -36,10 +36,23 @@ export interface PaddleOptions {
   detection?: Record<string, unknown>;
 }
 
+/**
+ * Run text detection on at most 1600 px (long side). The preset's default never downscales, so a
+ * 2000 px photo was detected at full size; on the real-photo profile 1600 px found the same boxes
+ * about 40% faster, while 960 px lost almost half the lines on a far-away board.
+ */
+export const PADDLE_DETECTION = { limitType: "max", maxSideLength: 1600 };
+
 // paddleocr declares a narrower ORT shape than onnxruntime-web's overloaded types; they are the same module at runtime.
 type PaddleOrt = NonNullable<Parameters<typeof PaddleOcrService.createInstance>[0]>["ort"];
 
-export async function createPaddle(ort: typeof Ort, det: ArrayBuffer, rec: ArrayBuffer, dictText: string, options: PaddleOptions = {}): Promise<PaddleEngine> {
+export async function createPaddle(
+  ort: typeof Ort,
+  det: ArrayBuffer,
+  rec: ArrayBuffer,
+  dictText: string,
+  options: PaddleOptions = { detection: PADDLE_DETECTION },
+): Promise<PaddleEngine> {
   const service = await PaddleOcrService.createInstance({
     ort: ort as unknown as PaddleOrt,
     modelPreset: PADDLE_PRESET,

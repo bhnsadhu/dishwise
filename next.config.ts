@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // Cross-origin isolation lets the in-browser OCR (ONNX Runtime WASM) use several threads,
+          // roughly halving scan time. Everything the site loads is same-origin, except the
+          // Tesseract fallback on jsDelivr, which is served with CORS and CORP headers.
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
         ],
       },
     ];

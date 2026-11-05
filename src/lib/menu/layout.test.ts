@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { FIXTURES, truthItems, truthLines } from "../../../tests/ocr/fixtures";
 import { parseDictionary } from "./paddle";
-import { attachRowPrices, linesFromBoxes, linesFromTesseract, parseMenuText, type OcrLine, type PaddleBoxLike } from "./parse";
+import sawadee from "../../../tests/ocr/real-boxes/sawadee.json";
+import { attachRowPrices, linesFromBoxes, linesFromTesseract, parseMenuText, splitFusedNameDescription, type OcrLine, type PaddleBoxLike } from "./parse";
 import { computeScale, enhanceGray, flattenLighting, PROFILES } from "./preprocess";
 
 const box = (x0: number, y0: number, x1: number, y1: number) => ({ x0, y0, x1, y1 });
@@ -153,4 +154,48 @@ describe("parser on ground-truth fixture text (no OCR errors)", () => {
       expect(items.map((i) => i.description)).toEqual(truth.map((t) => t.description));
     });
   }
+});
+
+describe("splitFusedNameDescription (name and a smaller description on one OCR line)", () => {
+  it.each([
+    ["Chicken Satay Grilled chicken skewers (n)", "Chicken Satay", "Grilled chicken skewers (n)"],
+    ["Thai Spring Rolls Mini vegetable spring rolls (g)", "Thai Spring Rolls", "Mini vegetable spring rolls (g)"],
+    ["Chicken Masaman Curry Chicken in masaman curry with", "Chicken Masaman Curry", "Chicken in masaman curry with"],
+    ["Prawn Ga-prao Prawns stir fried with basil", "Prawn Ga-prao", "Prawns stir fried with basil"],
+    ["Vegetable Stir Fry stir fried mixed vegetables", "Vegetable Stir Fry", "stir fried mixed vegetables"],
+    ["Chicken Tikka Masala served with rice", "Chicken Tikka Masala", "served with rice"],
+    ["Surprise Menu A true way to enjoy something special", "Surprise Menu", "A true way to enjoy something special"],
+  ])("splits %j", (line, name, description) => {
+    expect(splitFusedNameDescription(line)).toEqual([name, description]);
+  });
+
+  it.each([
+    "Fish and Chips", "Bacon Sandwich or Roll", "2 Eggs on Toast", "Soupe a l'Oignon", "Goats cheese croquettes (v)",
+    "Pork belly with crackling", "Steamed Thai Jasmine Rice", "Bouillabaisse of local fish & shellfish, squid", "Baja Fish Tacos battered cod",
+  ])("leaves %j alone", (line) => {
+    expect(splitFusedNameDescription(line)).toBeNull();
+  });
+});
+
+describe("real photo replay: Sawadee Thai set menu (CC0, PaddleOCR boxes)", () => {
+  const boxes: PaddleBoxLike[] = sawadee.boxes.map((r) => {
+    const [text, conf, x, y, width, height, ...p] = r as [string, number, number, number, number, number, ...number[]];
+    const points = [0, 2, 4, 6].map((i) => ({ x: p[i], y: p[i + 1] })) as NonNullable<PaddleBoxLike["box"]["points"]>;
+    return { text, confidence: conf / 100, box: { x, y, width, height, points } };
+  });
+  const r = parseMenuText(linesFromBoxes(boxes));
+  const byName = (n: string) => r.items.filter((i) => i.name === n);
+
+  it("finds both columns and every dish, with names and descriptions apart", () => {
+    expect(r.columns).toBe(2);
+    expect(r.items.length).toBeGreaterThanOrEqual(30);
+    expect(byName("Chicken Satay")).toHaveLength(3);
+    expect(byName("Chicken Satay")[0].description).toBe("Grilled chicken skewers (n)");
+    expect(byName("Duck Masaman Curry")[0].description).toMatch(/^Roasted duck in masaman curry with potatoes/);
+    expect(byName("Vegetable Stir Fry")).toHaveLength(4);
+  });
+
+  it("keeps the allergen legend and service note out of the dishes", () => {
+    expect(r.items.some((i) => /allergens|= nuts|service charge/.test(`${i.name} ${i.description ?? ""}`))).toBe(false);
+  });
 });

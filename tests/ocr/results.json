@@ -1,12 +1,12 @@
 {
-  "ranAt": "2026-11-05T05:57:44.873Z",
+  "ranAt": "2026-11-05T06:10:54.353Z",
   "paddle": {
     "engine": "PaddleOCR PP-OCRv6_tiny (paddleocr + onnxruntime-web, wasm, 1 thread)",
     "rows": [
       {
         "id": "clean",
         "note": "Clear printed single-column menu",
-        "ms": 2064,
+        "ms": 2211,
         "cer": 0,
         "ocrConfidence": 99,
         "fromOcr": {
@@ -29,7 +29,7 @@
       {
         "id": "two-column",
         "note": "Two-column layout",
-        "ms": 2120,
+        "ms": 1751,
         "cer": 0,
         "ocrConfidence": 99,
         "fromOcr": {
@@ -52,9 +52,9 @@
       {
         "id": "odd-prices",
         "note": "Dot leaders, euro decimal commas, size ranges and market price",
-        "ms": 1044,
+        "ms": 1233,
         "cer": 0,
-        "ocrConfidence": 95,
+        "ocrConfidence": 94,
         "fromOcr": {
           "precision": 1,
           "recall": 1,
@@ -75,9 +75,9 @@
       {
         "id": "price-own-line",
         "note": "Name, description, and price each on their own line",
-        "ms": 1384,
+        "ms": 1208,
         "cer": 0,
-        "ocrConfidence": 99,
+        "ocrConfidence": 98,
         "fromOcr": {
           "precision": 1,
           "recall": 1,
@@ -98,7 +98,7 @@
       {
         "id": "names-only",
         "note": "Incomplete menu: names and prices, no descriptions",
-        "ms": 1120,
+        "ms": 708,
         "cer": 0,
         "ocrConfidence": 98,
         "fromOcr": {
@@ -121,7 +121,7 @@
       {
         "id": "degraded",
         "note": "Same as 'clean' but blurred, tilted 2°, low contrast and smaller, like a quick phone photo",
-        "ms": 1333,
+        "ms": 1320,
         "cer": 0,
         "ocrConfidence": 98,
         "fromOcr": {
@@ -144,7 +144,7 @@
       {
         "id": "phone-photo",
         "note": "Two columns photographed at an angle: perspective, shadow across one side, grain, blur, JPEG at quality 55",
-        "ms": 1974,
+        "ms": 1610,
         "cer": 0.0025380710659898475,
         "ocrConfidence": 98,
         "fromOcr": {
@@ -167,7 +167,7 @@
       {
         "id": "chalkboard",
         "note": "Light chalk-coloured text on a dark board, soft and grainy",
-        "ms": 1652,
+        "ms": 1134,
         "cer": 0,
         "ocrConfidence": 99,
         "fromOcr": {
@@ -190,7 +190,7 @@
       {
         "id": "blank",
         "note": "No text at all (failed scan)",
-        "ms": 743,
+        "ms": 699,
         "cer": 0,
         "ocrConfidence": 0,
         "fromOcr": {

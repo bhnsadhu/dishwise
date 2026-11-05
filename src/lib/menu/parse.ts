@@ -239,7 +239,9 @@ const LEADERS = /[\s.·…_]{3,}$/;
 const BOILERPLATE = [
   /https?:|www\.|\.com\b|@/i,
   /\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/,
-  /gratuity|service charge|consuming raw|undercooked|please (inform|let)|allerg(y|ies|en) (info|notice)|tax(es)? (not )?included|prices? (are )?subject|follow us|open (daily|mon|tue)|reservations/i,
+  /gratuity|service charge|consuming raw|undercooked|please (inform|let)|allerg(y|ies|en) (info|notice)|may contain allergens|dietary requirements|tax(es)? (not )?included|prices? (are )?subject|follow us|open (daily|mon|tue)|reservations/i,
+  // Dietary-code legends: "(n) = nuts (g) = gluten (v) = vegetarian", "V - Vegetarian / VE - Vegan".
+  /^\(?\p{L}{1,2}\)?\s*[=–-]\s*\p{L}+.*\(?\p{L}{1,2}\)?\s*[=–-]\s*\p{L}+/u,
 ];
 
 const SECTION_WORDS =
@@ -286,6 +288,40 @@ const UI_TAG = /^(popular|most (ordered|liked|popular)|#\d+ most (liked|ordered)
 const CALORIES = /(?:\s*[·•|,–-]\s*)?\b\d{2,4}\s*(?:k?cal(?:ories)?)\b\.?/gi;
 /** "Margherita Pizza $16 tomato, basil" → name, price, description. Price must look like money. */
 const MID_PRICE = new RegExp(`^(.{2,60}?)\\s+[·•|]?\\s*(${CUR}\\s?${NUM}|\\d{1,4}[.,]\\d{2})\\s*[·•|]?\\s+(\\S.{2,})$`);
+
+/** Small words that can sit inside a dish name ("Fish and Chips", "Eggs on Toast", "Soupe à l'Oignon"). */
+const NAME_JOINERS = new Set(["and", "or", "&", "of", "on", "in", "de", "di", "du", "des", "del", "la", "le", "les", "al", "alla", "e", "y", "a", "au", "aux", "à", "the", "n'", "con"]);
+/** Words that open a description when written in lower case ("Vegetable Stir Fry stir fried…"). */
+const DESC_OPENERS = new Set(["with", "stir", "fried", "grilled", "roasted", "roast", "served", "topped", "tossed", "braised", "baked", "steamed", "slow", "pan", "deep", "smoked", "marinated", "crispy", "fresh", "homemade", "mixed"]);
+/** Capitalised words that open a description in sentence case ("Chicken Satay Grilled chicken skewers"). */
+const DESC_LEADS = new Set([...DESC_OPENERS, "mini", "sliced", "seared", "poached", "charred", "spiced", "our", "a", "an", "two", "three"]);
+const stem = (w: string) => w.toLowerCase().replace(/[^\p{L}-]/gu, "").replace(/(es|s)$/, "");
+
+/**
+ * Split "Chicken Satay Grilled chicken skewers (n)" into name + description when a menu prints a
+ * smaller description on the same line and the OCR returns it as one run of text. The name is a
+ * run of capitalised words; the description starts either with a capitalised sentence-case word
+ * (one that repeats a name word, or a cooking word like "Grilled") or with a lower-case opener
+ * like "stir fried" or "with". Returns null when the line doesn't look like that.
+ */
+export function splitFusedNameDescription(s: string): [string, string] | null {
+  const w = words(s);
+  if (w.length < 4 || /[,;:]/.test(w.slice(0, 2).join(" "))) return null;
+  const isCap = (x: string) => /^[\p{Lu}\d]/u.test(x);
+  const isLower = (x: string) => /^\p{Ll}/u.test(x) && !NAME_JOINERS.has(x.toLowerCase());
+  const j = w.findIndex(isLower);
+  if (j < 2) return null;
+  let k = j - 1;
+  while (k > 0 && !isCap(w[k])) k--;
+  let at = -1;
+  const nameStems = new Set(w.slice(0, k).map(stem));
+  if (k >= 1 && isCap(w[k]) && (nameStems.has(stem(w[k])) || DESC_LEADS.has(w[k].toLowerCase()))) at = k;
+  else if (j === k + 1 && DESC_OPENERS.has(w[j].toLowerCase())) at = j;
+  if (at < 1 || w.length - at < 2) return null;
+  const name = w.slice(0, at);
+  if (name.length > 5 || !name.every((x) => isCap(x) || NAME_JOINERS.has(x.toLowerCase()))) return null;
+  return [name.join(" "), w.slice(at).join(" ")];
+}
 
 function looksLikeDescription(s: string): boolean {
   return /^[\p{Ll}(]/u.test(s) || /,/.test(s) || words(s).length > 7;
@@ -340,13 +376,23 @@ export function readingOrder(lines: OcrLine[]): { ordered: { line: OcrLine; inde
   // 200 bins: a gutter can be as narrow as ~1.5% of the page (3 bins).
   const bins = 200;
   const cover = new Array<number>(bins).fill(0);
-  for (const { line } of boxed) {
+  // Centred titles and footers ("Sharing Menus", allergy notes) cross the gutter of a two-column
+  // menu, so leave them out of the coverage, unless most of the page is centred (a centred
+  // single-column menu has no gutter to find).
+  const mid = minX + width / 2;
+  const centred = (l: OcrLine) => {
+    const cx = (l.bbox!.x0 + l.bbox!.x1) / 2;
+    return Math.abs(cx - mid) < width * 0.06 && l.bbox!.x0 > minX + width * 0.05 && l.bbox!.x1 < maxX - width * 0.05;
+  };
+  const nCentred = boxed.filter((l) => centred(l.line)).length;
+  const counted = nCentred <= boxed.length * 0.3 ? boxed.filter((l) => !centred(l.line)) : boxed;
+  for (const { line } of counted) {
     const a = Math.floor(((line.bbox!.x0 - minX) / width) * (bins - 1));
     const b = Math.floor(((line.bbox!.x1 - minX) / width) * (bins - 1));
     for (let i = a; i <= b; i++) cover[i]++;
   }
   // Allow a couple of spanning lines (titles) to cross the gutter.
-  const tolerance = Math.max(1, Math.floor(boxed.length * 0.08));
+  const tolerance = Math.max(1, Math.floor(counted.length * 0.08));
   const gutters: number[] = [];
   let runStart = -1;
   const lo = Math.floor(bins * 0.15);
@@ -436,7 +482,9 @@ export function parseMenuText(input: OcrLine[] | string): ParseResult {
       const m = n.match(/^(.{2,40}?)\s+-\s+(.{8,})$/);
       return m && isTitleLike(m[1]) ? ([m[1].trim(), m[2].trim()] as [string, string]) : null;
     })();
+    const fused = split ? null : splitFusedNameDescription(n);
     if (split) [n, description] = split;
+    else if (fused) [n, description] = fused;
     else if (words(n).length > 6) {
       // "Salt cod fritters, spicy sauce, aioli": the first clause names the dish.
       const comma = n.match(/^([^,]{3,40}),\s*(.{3,})$/);
@@ -473,7 +521,7 @@ export function parseMenuText(input: OcrLine[] | string): ParseResult {
     if (price) {
       // Description line carrying the price for an item named on the previous line.
       const awaitingPrice = current && current.priceCents === undefined && !current.priceText && descLines < 2;
-      if (current && awaitingPrice && looksLikeDescription(price.rest) && !isTitleLike(price.rest) && !nameDescSplit(price.rest)) {
+      if (current && awaitingPrice && looksLikeDescription(price.rest) && !isTitleLike(price.rest) && !nameDescSplit(price.rest) && !splitFusedNameDescription(price.rest)) {
         current.description = current.description ? `${current.description} ${price.rest}` : price.rest;
         current.priceCents = price.cents;
         current.priceText = price.priceText;
@@ -491,7 +539,7 @@ export function parseMenuText(input: OcrLine[] | string): ParseResult {
     }
 
     // No price on this line.
-    if (nameDescSplit(text)) {
+    if (nameDescSplit(text) || splitFusedNameDescription(text)) {
       current = start(text, conf, index);
       continue;
     }
@@ -536,7 +584,7 @@ export function parseMenuText(input: OcrLine[] | string): ParseResult {
 
   for (const c of items) {
     // Separators that didn't become a name/description split read as plain spaces.
-    c.name = c.name.split(NAME_DESC_SEP).join(" ").trim();
+    c.name = c.name.split(NAME_DESC_SEP).join(" ").replace(/\s*[.…·]+$/, "").trim();
     if (c.description) c.description = c.description.split(NAME_DESC_SEP).join(" ").replace(/^—\s*/, "").trim();
     // Price text like "12" with no cents info stays as text when not parseable.
     if (c.priceCents === undefined && !c.priceText) c.flags.push("no-price");
