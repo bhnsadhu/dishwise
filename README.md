@@ -6,7 +6,7 @@
 
 **[Try it → dishwise.bhanusadhu.com](https://dishwise.bhanusadhu.com)** · works as a guest, costs nothing, and the photo is read on your phone.
 
-![Demo: set a taste and watch the preview re-rank, open a sample menu where shrimp is held back for a shellfish allergy, see the reasons behind a 92% match, then rate it 5 stars and watch the picks update](docs/screenshots/demo.gif)
+![Demo, in dark mode: set a taste and watch the preview re-rank, open a sample menu where shrimp is held back for a shellfish allergy, see the reasons behind a 92% match, then rate it 5 stars and watch the picks update](docs/screenshots/demo.gif)
 
 <p align="center">
   <img src="docs/screenshots/phone-results-light.png" width="36%" alt="Phone: top picks for a sample menu" />
