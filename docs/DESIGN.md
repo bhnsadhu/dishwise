@@ -17,7 +17,7 @@ This replaces direction C, "Marked-Up Menu", which used pen marks on a paper men
 | `warn` / `warn-soft` | `#855800` / `#fff1d2` | `#f2c66b` / `#33290f` | Uncertain OCR reads, "confirm with staff" |
 | `cv-*` | soft pastels | muted darks | Cover-art backgrounds, one per cuisine |
 
-Dark mode follows the system until the user picks a theme in the top bar. The choice is saved in `localStorage` (`dw-theme`), and an inline script in `<head>` sets `data-theme` before first paint, so the page never flashes the wrong theme.
+Dark mode is the default, whatever the system prefers, until the user picks a theme in the top bar. The choice is saved in `localStorage` (`dw-theme`), and an inline script in `<head>` sets `data-theme` before first paint, so the page never flashes the wrong theme.
 
 ## Type
 - **Figtree** (Google Fonts, `next/font`) for everything, weights 400–900.

@@ -137,8 +137,8 @@ test("the source code is one click from the home page", async ({ page }) => {
   await expect(link).toHaveAttribute("href", "https://github.com/bhnsadhu/dishwise");
 });
 
-test("theme follows the system, can be switched, and the choice sticks", async ({ browser }) => {
-  const ctx = await browser.newContext({ colorScheme: "dark" });
+test("theme defaults to dark even on a light system, can be switched, and the choice sticks", async ({ browser }) => {
+  const ctx = await browser.newContext({ colorScheme: "light" });
   const page = await ctx.newPage();
   const theme = () => page.evaluate(() => document.documentElement.dataset.theme);
   await page.goto("/");
