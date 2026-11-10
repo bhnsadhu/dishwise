@@ -26,7 +26,7 @@ export default function HowPage() {
 
       <div className="grid items-start gap-6 lg:grid-cols-2">
         <section className="card grid gap-2 p-6" aria-labelledby="h1">
-          <h2 id="h1" className="text-[21px] font-extrabold">
+          <h2 id="h1" className="text-[21px] font-bold">
             Reading the menu
           </h2>
           <p className="leading-relaxed text-sub">
@@ -43,7 +43,7 @@ export default function HowPage() {
         </section>
 
         <section className="card grid gap-3 p-6" aria-labelledby="h2">
-          <h2 id="h2" className="text-[21px] font-extrabold">
+          <h2 id="h2" className="text-[21px] font-bold">
             Understanding each dish
           </h2>
           <p className="leading-relaxed text-sub">Ingredients, flavours, heat, course and cuisine are each tagged with where they came from:</p>
@@ -66,7 +66,7 @@ export default function HowPage() {
       </div>
 
       <section className="card p-6" aria-labelledby="h3">
-        <h2 id="h3" className="text-[21px] font-extrabold">
+        <h2 id="h3" className="text-[21px] font-bold">
           Scoring
         </h2>
         <p className="mt-2 max-w-[72ch] leading-relaxed text-sub">
@@ -75,7 +75,7 @@ export default function HowPage() {
         <dl className="mt-5 grid gap-x-10 gap-y-4 md:grid-cols-2">
           {SIGNALS.map(([k, v]) => (
             <div key={k} className="border-t border-line pt-3">
-              <dt className="font-bold">{k}</dt>
+              <dt className="font-semibold">{k}</dt>
               <dd className="m-0 mt-0.5 text-[15px] text-sub">{v}</dd>
             </div>
           ))}
@@ -85,7 +85,7 @@ export default function HowPage() {
 
       <div className="grid items-start gap-6 lg:grid-cols-2">
         <section className="card grid gap-2 p-6" aria-labelledby="h4">
-          <h2 id="h4" className="text-[21px] font-extrabold">
+          <h2 id="h4" className="text-[21px] font-bold">
             Learning from your ratings
           </h2>
           <p className="leading-relaxed text-sub">
@@ -93,7 +93,7 @@ export default function HowPage() {
           </p>
         </section>
         <section className="card grid gap-2 p-6" aria-labelledby="h5">
-          <h2 id="h5" className="text-[21px] font-extrabold">
+          <h2 id="h5" className="text-[21px] font-bold">
             Being careful
           </h2>
           <p className="leading-relaxed text-sub">

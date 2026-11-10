@@ -101,7 +101,7 @@ export function AccountPage() {
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <section className="card grid gap-5 p-5 md:p-7" aria-labelledby="acct-h">
-          <h2 id="acct-h" className="text-[21px] font-extrabold tracking-[-0.015em]">
+          <h2 id="acct-h" className="text-[21px] font-bold tracking-[-0.015em]">
             {account.status === "signed-in" ? "Signed in" : "Keep your taste everywhere"}
           </h2>
 
@@ -132,7 +132,7 @@ export function AccountPage() {
                 Sign out
               </button>
               <div className="grid gap-2 border-t border-line pt-5">
-                <h3 className="text-[15px] font-bold">Delete</h3>
+                <h3 className="text-[15px] font-semibold">Delete</h3>
                 {confirmDelete ? (
                   <div className="grid gap-3">
                     <p className="text-[15px]">This permanently deletes your account, taste, ratings and saved menus. It can&apos;t be undone.</p>
@@ -167,7 +167,7 @@ export function AccountPage() {
                     role="tab"
                     aria-selected={mode === m}
                     onClick={() => setMode(m)}
-                    className={`min-h-11 rounded-xl text-[15px] font-bold transition-colors ${mode === m ? "bg-card text-ink shadow-[var(--shadow)]" : "text-sub hover:text-ink"}`}
+                    className={`min-h-11 rounded-xl text-[15px] font-semibold transition-colors ${mode === m ? "bg-card text-ink shadow-[var(--shadow)]" : "text-sub hover:text-ink"}`}
                   >
                     {m === "sign-in" ? "Sign in" : "Create account"}
                   </button>
@@ -203,7 +203,7 @@ export function AccountPage() {
                 <Icon name={l.icon} size={21} />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block font-bold">{l.label}</span>
+                <span className="block font-semibold">{l.label}</span>
                 <span className="block truncate text-[13.5px] text-sub">{l.sub}</span>
               </span>
               <Icon name="forward" size={18} className="text-sub" />

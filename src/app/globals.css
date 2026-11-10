@@ -130,7 +130,7 @@ body {
     min-height: 48px;
     padding: 0 20px;
     border-radius: 999px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 15px;
     cursor: pointer;
     transition: transform 120ms ease, background-color 160ms ease, opacity 160ms ease;
@@ -148,14 +148,14 @@ body {
 
   .link {
     color: var(--brand-text);
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     background: none;
     border: 0;
     padding: 0;
     font: inherit;
-    font-weight: 700;
+    font-weight: 600;
   }
   .link:hover { text-decoration: underline; text-underline-offset: 3px; }
 
@@ -194,7 +194,7 @@ body {
   .field::placeholder { color: var(--sub); opacity: 0.85; }
   textarea.field { padding: 12px 14px; min-height: 160px; line-height: 1.5; }
 
-  .label { font-size: 13px; font-weight: 700; color: var(--sub); }
+  .label { font-size: 13px; font-weight: 600; color: var(--sub); }
 
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; }
   /* Whole-card hit area for a link/button that only wraps the title (keeps its accessible name short). */
@@ -207,7 +207,7 @@ body {
     align-items: center;
     border-radius: 999px;
     padding: 3px 9px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 12.5px;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;

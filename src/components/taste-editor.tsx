@@ -21,7 +21,7 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   return (
     <section aria-labelledby={id} className="grid gap-3 border-b border-line py-6 first:pt-0 last:border-0">
       <div>
-        <h2 id={id} className="text-[18px] font-extrabold tracking-[-0.01em]">
+        <h2 id={id} className="text-[18px] font-semibold tracking-[-0.01em]">
           {title}
         </h2>
         {hint && <p className="text-[14px] text-sub">{hint}</p>}

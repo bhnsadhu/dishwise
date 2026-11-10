@@ -24,7 +24,7 @@ function Preview() {
       <div className="flex items-center gap-3 px-4 py-3" style={{ background: coverGround(menu.cuisine) }}>
         <CoverArt cuisine={menu.cuisine} className="h-14 w-auto" />
         <div className="min-w-0 text-ink">
-          <h2 id="preview-h" className="text-[15px] font-extrabold">
+          <h2 id="preview-h" className="text-[15px] font-semibold">
             Live preview
           </h2>
           <label className="sr-only" htmlFor="preview-menu">
@@ -42,9 +42,9 @@ function Preview() {
       <ol className="grid gap-0 px-4 py-2" aria-live="polite">
         {rec.picks.map((p, i) => (
           <li key={p.dish.key} className="grid grid-cols-[20px_1fr_auto] items-start gap-2.5 border-b border-line py-2.5 last:border-0">
-            <span className="pt-0.5 text-[13px] font-extrabold text-sub">{i + 1}</span>
+            <span className="pt-0.5 text-[13px] font-semibold text-sub">{i + 1}</span>
             <span>
-              <span className="block text-[15px] font-bold leading-snug">{p.dish.name}</span>
+              <span className="block text-[15px] font-semibold leading-snug">{p.dish.name}</span>
               <span className="block text-[12.5px] text-sub">{topReasons(p, 1, common)[0]?.text ?? "From the menu alone"}</span>
             </span>
             <MatchPill r={p} />

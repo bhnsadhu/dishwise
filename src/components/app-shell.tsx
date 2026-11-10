@@ -27,7 +27,7 @@ export function ShellBars({ path = "", signedIn = false }: { path?: string; sign
     <>
       <header className="sticky top-0 z-40 hidden border-b border-line bg-bar backdrop-blur-md md:block">
         <div className="page flex h-16 items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-2.5 text-[21px] font-extrabold tracking-[-0.03em]">
+          <Link href="/" className="flex items-center gap-2.5 text-[21px] font-bold tracking-[-0.03em]">
             <Mark />
             Dishwise
           </Link>

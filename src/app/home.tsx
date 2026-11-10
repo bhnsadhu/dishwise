@@ -25,7 +25,7 @@ function LiveDemo() {
       <div className="grid h-28 grid-cols-[auto_1fr] items-center gap-4 px-5" style={{ background: coverGround(menu.cuisine) }}>
         <CoverArt cuisine={menu.cuisine} className="h-24 w-auto" />
         <div>
-          <p className="text-[19px] font-extrabold leading-tight text-ink">{menu.title}</p>
+          <p className="text-[19px] font-bold leading-tight text-ink">{menu.title}</p>
           <p className="text-[13px] font-semibold text-ink/80">Sample menu · {menu.items.length} dishes</p>
         </div>
       </div>
@@ -33,9 +33,9 @@ function LiveDemo() {
         <p className="mb-1 text-[13px] text-sub">{mine ? "Ranked for your taste" : "Ranked for an example taste: loves pork and mushrooms, mild heat, no shellfish"}</p>
         {rec.picks.slice(0, 3).map((p, i) => (
           <div key={p.dish.key} className="grid grid-cols-[22px_1fr_auto] items-start gap-3 border-b border-line py-2.5 last:border-0">
-            <span className="pt-0.5 text-[13px] font-extrabold text-sub">{i + 1}</span>
+            <span className="pt-0.5 text-[13px] font-semibold text-sub">{i + 1}</span>
             <span>
-              <span className="block text-[15.5px] font-bold leading-snug">{p.dish.name}</span>
+              <span className="block text-[15.5px] font-semibold leading-snug">{p.dish.name}</span>
               <span className="block text-[13px] text-ok">{topReasons(p, 2, common).map((r) => r.text).join(" · ") || "A solid choice here"}</span>
             </span>
             <MatchPill r={p} long />
@@ -50,7 +50,7 @@ function LiveDemo() {
             <span>{heldReason(held)}</span>
           </div>
         )}
-        <Link href={`/m/${menu.id}`} className="stretch mt-2 text-[14px] font-bold text-brand-text">
+        <Link href={`/m/${menu.id}`} className="stretch mt-2 text-[14px] font-semibold text-brand-text">
           See the whole menu ranked <span aria-hidden="true">→</span>
         </Link>
       </div>
@@ -65,7 +65,7 @@ function TasteSummary() {
     return (
       <div className="card flex flex-wrap items-center justify-between gap-4 p-5">
         <div>
-          <p className="text-[17px] font-bold">Tell Dishwise what you like</p>
+          <p className="text-[17px] font-semibold">Tell Dishwise what you like</p>
           <p className="text-[14.5px] text-sub">About a minute. Every question is optional.</p>
         </div>
         <Link href="/taste" className="btn btn-primary">
@@ -105,7 +105,7 @@ function YourMenus() {
   if (!hydrated || menus.length === 0) return null;
   return (
     <section aria-labelledby="mine-h" className="page mt-10">
-      <h2 id="mine-h" className="text-[22px] font-extrabold tracking-[-0.015em]">
+      <h2 id="mine-h" className="text-[22px] font-bold tracking-[-0.015em]">
         Your menus
       </h2>
       <ul className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -116,7 +116,7 @@ function YourMenus() {
                 <CoverArt cuisine={m.cuisine} className="h-12 w-auto" />
               </span>
               <span className="min-w-0">
-                <span className="block truncate font-bold">{m.title}</span>
+                <span className="block truncate font-semibold">{m.title}</span>
                 <span className="block text-[13.5px] text-sub">
                   {m.items.length} dishes · {m.source === "scan" ? "scanned" : "typed"} {new Date(m.createdAt).toLocaleDateString()}
                 </span>
@@ -136,7 +136,7 @@ export function Home() {
   return (
     <div className="pt-3 md:pt-10">
       <div className="page flex items-center justify-between md:hidden">
-        <span className="flex items-center gap-2.5 text-[22px] font-extrabold tracking-[-0.03em]">
+        <span className="flex items-center gap-2.5 text-[22px] font-bold tracking-[-0.03em]">
           <Mark />
           Dishwise
         </span>
@@ -157,7 +157,7 @@ export function Home() {
             Snap the menu in front of you. Dishwise ranks every dish for your taste, shows exactly why, and holds back anything you avoid.
           </p>
           <Link href="/scan" className="group grid grid-cols-[1fr_auto] items-center gap-x-4 rounded-[22px] bg-brand p-5 text-brand-ink shadow-[var(--glow)] transition-transform hover:-translate-y-0.5 md:max-w-[460px]">
-            <span className="text-[21px] font-extrabold tracking-[-0.015em]">Scan a menu</span>
+            <span className="text-[21px] font-bold tracking-[-0.015em]">Scan a menu</span>
             <span className="row-span-2 grid h-14 w-14 place-items-center rounded-2xl bg-brand-ink text-brand">
               <Icon name="camera" size={26} />
             </span>
@@ -193,7 +193,7 @@ export function Home() {
 
       <section aria-labelledby="samples-h" className="mt-12">
         <div className="page flex items-baseline justify-between">
-          <h2 id="samples-h" className="text-[22px] font-extrabold tracking-[-0.015em]">
+          <h2 id="samples-h" className="text-[22px] font-bold tracking-[-0.015em]">
             Try a sample menu
           </h2>
           <span className="text-[13.5px] text-sub">Fictional restaurants</span>
@@ -206,7 +206,7 @@ export function Home() {
                   <CoverArt cuisine={m.cuisine} className="h-[86%] w-auto transition-transform duration-300 group-hover:scale-105" />
                   <span className="absolute bottom-2 left-2 rounded-full bg-card px-2 py-0.5 text-[11.5px] font-semibold text-ink">Sample</span>
                 </span>
-                <span className="mt-2 block text-[16px] font-bold leading-tight">{m.title}</span>
+                <span className="mt-2 block text-[16px] font-semibold leading-tight">{m.title}</span>
                 <span className="block text-[13.5px] text-sub">
                   {m.cuisine ? cuisineLabel(m.cuisine) : "Menu"} · {m.items.length} dishes
                 </span>
@@ -219,7 +219,7 @@ export function Home() {
       <YourMenus />
 
       <section aria-labelledby="taste-h" className="page mt-10">
-        <h2 id="taste-h" className="text-[22px] font-extrabold tracking-[-0.015em]">
+        <h2 id="taste-h" className="text-[22px] font-bold tracking-[-0.015em]">
           Your taste
         </h2>
         <div className="mt-3">
@@ -228,7 +228,7 @@ export function Home() {
       </section>
 
       <section aria-labelledby="how-h" className="page mt-12">
-        <h2 id="how-h" className="text-[22px] font-extrabold tracking-[-0.015em]">
+        <h2 id="how-h" className="text-[22px] font-bold tracking-[-0.015em]">
           How Dishwise picks
         </h2>
         <ol className="mt-4 grid gap-6 md:grid-cols-3">
@@ -238,9 +238,9 @@ export function Home() {
             ["Learns and stays careful", "Rate what you order and the next menu adapts. Anything that conflicts with what you avoid is held back, never called safe."],
           ].map(([t, b], i) => (
             <li key={t} className="grid grid-cols-[36px_1fr] gap-3">
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-soft text-[15px] font-extrabold text-brand-text">{i + 1}</span>
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-soft text-[15px] font-semibold text-brand-text">{i + 1}</span>
               <span>
-                <span className="block text-[17px] font-bold">{t}</span>
+                <span className="block text-[17px] font-semibold">{t}</span>
                 <span className="mt-1 block text-[15px] leading-relaxed text-sub">{b}</span>
               </span>
             </li>

@@ -17,7 +17,7 @@ function Entry({ f }: { f: Feedback }) {
   return (
     <li className="grid gap-x-4 gap-y-2 border-b border-line py-4 last:border-0 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
       <div className="min-w-0">
-        <p className="flex items-center gap-2 text-[16.5px] font-bold leading-tight">
+        <p className="flex items-center gap-2 text-[16.5px] font-semibold leading-tight">
           {f.saved && <Icon name="heart" size={17} className="fill-current text-no" label="Saved" />}
           {f.snapshot.name}
         </p>
@@ -64,7 +64,7 @@ export function NotebookPage() {
           <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-soft text-brand-text">
             <Icon name="heart" size={26} />
           </span>
-          <p className="text-[18px] font-bold">Nothing here yet</p>
+          <p className="text-[18px] font-semibold">Nothing here yet</p>
           <p className="text-sub">Open a menu, tap a dish, and rate or save it. It lands here.</p>
           <Link href="/" className="btn btn-primary mt-1">
             Find something to order
@@ -73,13 +73,13 @@ export function NotebookPage() {
       ) : (
         <div className="grid items-start gap-6 lg:grid-cols-2">
           <section aria-labelledby="saved-h" className="card p-5">
-            <h2 id="saved-h" className="text-[20px] font-extrabold">
+            <h2 id="saved-h" className="text-[20px] font-bold">
               Saved dishes <span className="text-sub">{saved.length}</span>
             </h2>
             {saved.length ? <ul>{saved.map((f) => <Entry key={f.dishKey} f={f} />)}</ul> : <p className="mt-2 text-sub">Tap Save on a dish to keep it here.</p>}
           </section>
           <section aria-labelledby="rated-h" className="card p-5">
-            <h2 id="rated-h" className="text-[20px] font-extrabold">
+            <h2 id="rated-h" className="text-[20px] font-bold">
               Tried &amp; rated <span className="text-sub">{rated.length}</span>
             </h2>
             {rated.length ? <ul>{rated.map((f) => <Entry key={f.dishKey} f={f} />)}</ul> : <p className="mt-2 text-sub">Rate a dish after you try it and the next menu gets smarter.</p>}

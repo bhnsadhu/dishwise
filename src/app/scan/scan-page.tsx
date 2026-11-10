@@ -148,7 +148,7 @@ export function ScanPage() {
                 type="button"
                 aria-selected={stage.kind === k}
                 onClick={() => setStage({ kind: k })}
-                className={`flex min-h-12 items-center justify-center gap-2 rounded-xl text-[15px] font-bold transition-colors ${stage.kind === k ? "bg-card text-ink shadow-[var(--shadow)]" : "text-sub hover:text-ink"}`}
+                className={`flex min-h-12 items-center justify-center gap-2 rounded-xl text-[15px] font-semibold transition-colors ${stage.kind === k ? "bg-card text-ink shadow-[var(--shadow)]" : "text-sub hover:text-ink"}`}
               >
                 <Icon name={k === "pick" ? "camera" : "paste"} size={19} />
                 {k === "pick" ? "Photo" : "Type or paste"}
@@ -170,7 +170,7 @@ export function ScanPage() {
                   <Icon name="camera" size={30} />
                 </span>
                 <div>
-                  <p className="text-[18px] font-bold">Photograph the menu</p>
+                  <p className="text-[18px] font-semibold">Photograph the menu</p>
                   <p className="mx-auto mt-1 max-w-[42ch] text-[14.5px] text-sub">Lay it flat, fill the frame, avoid glare. English menus work best. The photo is read in your browser and never uploaded.</p>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2.5">
@@ -228,7 +228,7 @@ export function ScanPage() {
 
       {stage.kind === "reading" && (
         <section className="card mx-auto grid w-full max-w-2xl gap-5 p-6" aria-live="polite" aria-busy="true">
-          <h1 className="text-[26px] font-extrabold tracking-[-0.02em]">Reading your menu…</h1>
+          <h1 className="text-[26px] font-bold tracking-[-0.02em]">Reading your menu…</h1>
           <div className="grid gap-2">
             <p className="font-semibold text-brand-text">{stage.progress.status}</p>
             <div className="h-2.5 w-full overflow-hidden rounded-full bg-surf" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(stage.progress.progress * 100)}>
@@ -263,7 +263,7 @@ export function ScanPage() {
           <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_220px]">
             <label className="grid gap-1.5">
               <span className="label">Restaurant</span>
-              <input className="field text-[17px] font-bold" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} />
+              <input className="field text-[17px] font-semibold" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} />
             </label>
             <label className="grid gap-1.5">
               <span className="label">Cuisine (optional)</span>
@@ -285,7 +285,7 @@ export function ScanPage() {
                   <label className="sr-only" htmlFor={`name-${r.id}`}>
                     Dish {i + 1} name
                   </label>
-                  <input id={`name-${r.id}`} className="field font-bold" value={r.name} maxLength={120} placeholder="Dish name" onChange={(e) => update(r.id, { name: e.target.value })} />
+                  <input id={`name-${r.id}`} className="field font-semibold" value={r.name} maxLength={120} placeholder="Dish name" onChange={(e) => update(r.id, { name: e.target.value })} />
                   <label className="sr-only" htmlFor={`desc-${r.id}`}>
                     Dish {i + 1} description
                   </label>

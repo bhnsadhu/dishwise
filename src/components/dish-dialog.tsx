@@ -60,7 +60,7 @@ export function DishDialog({ ranked, total, menuTitle, cuisine, onClose }: { ran
 
           <div className="grid gap-5 px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-5 md:px-7 md:pb-7">
             <div>
-              <h2 id="dish-title" className="text-[26px] font-extrabold leading-tight tracking-[-0.02em] text-balance">
+              <h2 id="dish-title" className="text-[26px] font-bold leading-tight tracking-[-0.02em] text-balance">
                 {ranked.dish.name}
               </h2>
               <p className="mt-1 text-[15px] text-sub">{[formatPrice(ranked.dish.priceCents, ranked.dish.priceText), ranked.dish.section, menuTitle].filter(Boolean).join(" · ")}</p>
@@ -75,14 +75,14 @@ export function DishDialog({ ranked, total, menuTitle, cuisine, onClose }: { ran
               <b className={`row-span-2 text-[38px] font-black leading-none tabular-nums tracking-[-0.03em] ${held ? "text-no" : ranked.score >= 70 ? "text-ok" : "text-ink"}`} aria-label={`Score ${ranked.score} out of 100`}>
                 {held ? <Icon name="alert" size={34} /> : `${ranked.score}%`}
               </b>
-              <span className="font-bold">{held ? "Held back for you" : "match for your taste"}</span>
+              <span className="font-semibold">{held ? "Held back for you" : "match for your taste"}</span>
               <span className="text-sm text-sub">
                 #{ranked.rank} of {total} on this menu
               </span>
             </div>
 
             <section aria-labelledby="why-h">
-              <h3 id="why-h" className="text-[17px] font-extrabold">
+              <h3 id="why-h" className="text-[17px] font-semibold">
                 Why this score
               </h3>
               {ranked.contributions.length === 0 ? (
@@ -104,7 +104,7 @@ export function DishDialog({ ranked, total, menuTitle, cuisine, onClose }: { ran
                       </span>
                       <span className="flex items-center gap-2" aria-hidden="true">
                         <span className={`rounded-md border px-1.5 py-0.5 text-[11.5px] font-semibold text-sub ${c.basis === "inferred" ? "border-dashed border-sub/50" : "border-line"}`}>{BASIS[c.basis]}</span>
-                        <span className={`w-9 text-right text-[13px] font-bold tabular-nums ${c.points > 0 ? "text-ok" : "text-no"}`}>
+                        <span className={`w-9 text-right text-[13px] font-semibold tabular-nums ${c.points > 0 ? "text-ok" : "text-no"}`}>
                           {c.points > 0 ? "+" : "−"}
                           {Math.abs(c.points)}
                         </span>
@@ -137,7 +137,7 @@ export function DishDialog({ ranked, total, menuTitle, cuisine, onClose }: { ran
 
             <section aria-labelledby="rate-h" className="grid gap-3 border-t border-line pt-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 id="rate-h" className="text-[17px] font-extrabold">
+                <h3 id="rate-h" className="text-[17px] font-semibold">
                   Tried it?
                 </h3>
                 <Stars value={fb?.rating ?? null} onChange={(rating) => updateFeedback(ranked.dish, { rating }, menuTitle)} />

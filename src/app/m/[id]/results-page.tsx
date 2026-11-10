@@ -40,7 +40,7 @@ export function ResultsPage() {
     return (
       <div className="page pt-10">
         <div className="card mx-auto grid max-w-lg justify-items-center gap-3 p-8 text-center">
-          <h1 className="text-2xl font-extrabold">Menu not found</h1>
+          <h1 className="text-2xl font-bold">Menu not found</h1>
           <p className="text-sub">Menus you scan or type are kept on the device you made them on. This one isn&apos;t on this device, or it was removed.</p>
           <Link href="/" className="btn btn-primary mt-2">
             Back to home
@@ -69,7 +69,7 @@ export function ResultsPage() {
   const picksPanel = (place: "inline" | "side") => (
     <section aria-labelledby={`picks-${place}`} className="grid gap-3">
       <div className="flex items-baseline justify-between">
-        <h2 id={`picks-${place}`} className="scroll-mt-24 text-[20px] font-extrabold tracking-[-0.015em]">
+        <h2 id={`picks-${place}`} className="scroll-mt-24 text-[20px] font-bold tracking-[-0.015em]">
           Top picks for you
         </h2>
         <span className="text-sm text-sub">{rec.stage === "learning" ? `Using ${ratedCount} rating${ratedCount === 1 ? "" : "s"}` : rec.stage === "profile" ? "From your taste" : "From the menu"}</span>
@@ -85,9 +85,9 @@ export function ResultsPage() {
                 onClick={() => setSelected(p.dish.key)}
                 className="card grid h-full w-full gap-1.5 p-4 text-left shadow-[var(--shadow)] transition-transform hover:-translate-y-0.5 lg:grid-cols-[28px_1fr_auto] lg:items-start lg:gap-x-3 lg:shadow-none"
               >
-                <span className="text-[13px] font-extrabold text-sub lg:pt-0.5">#{i + 1}</span>
+                <span className="text-[13px] font-semibold text-sub lg:pt-0.5">#{i + 1}</span>
                 <span className="grid gap-1 lg:col-start-2">
-                  <span className="text-[16px] font-bold leading-snug">{p.dish.name}</span>
+                  <span className="text-[16px] font-semibold leading-snug">{p.dish.name}</span>
                   <span className="text-[13.5px] leading-snug text-sub">{reasonLine(p) || "A solid choice here"}</span>
                   <span className="text-[14px] font-semibold tabular-nums">{formatPrice(p.dish.priceCents, p.dish.priceText)}</span>
                 </span>
@@ -112,7 +112,7 @@ export function ResultsPage() {
       </div>
 
       <header className="mt-4 grid gap-2 md:mt-6">
-        <h1 className="text-[28px] font-extrabold leading-tight tracking-[-0.025em] md:text-[38px]">{menu.title}</h1>
+        <h1 className="text-[28px] font-bold leading-tight tracking-[-0.025em] md:text-[38px]">{menu.title}</h1>
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[15px] text-sub">
           {menu.cuisine && <span>{cuisineLabel(menu.cuisine)}</span>}
           {menu.cuisine && <span aria-hidden="true">·</span>}
@@ -161,7 +161,7 @@ export function ResultsPage() {
 
           {groups.map((g, gi) => (
             <section key={gi} aria-labelledby={sectionId(g.section)} className="mt-7 scroll-mt-32 first:mt-6 lg:first:mt-0">
-              <h2 id={sectionId(g.section)} className="scroll-mt-32 text-[21px] font-extrabold tracking-[-0.015em]">
+              <h2 id={sectionId(g.section)} className="scroll-mt-32 text-[21px] font-bold tracking-[-0.015em]">
                 {g.section ?? "Dishes"}
               </h2>
               <ul className="mt-3 grid gap-3 md:grid-cols-2">
@@ -177,7 +177,7 @@ export function ResultsPage() {
                             type="button"
                             onClick={() => setSelected(d.key)}
                             aria-label={`${d.name}. ${held ? "Held back" : `Score ${r.score}`}. Show why.`}
-                            className={`stretch text-left text-[16px] font-bold leading-snug ${held ? "text-sub" : ""}`}
+                            className={`stretch text-left text-[16px] font-semibold leading-snug ${held ? "text-sub" : ""}`}
                           >
                             {d.name}
                           </button>
@@ -187,7 +187,7 @@ export function ResultsPage() {
                         <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px]">
                           <span className="font-semibold tabular-nums">{formatPrice(d.priceCents, d.priceText)}</span>
                           {held ? (
-                            <span className="inline-flex items-center gap-1 rounded-md bg-no-soft px-2 py-0.5 text-[12.5px] font-bold text-no">
+                            <span className="inline-flex items-center gap-1 rounded-md bg-no-soft px-2 py-0.5 text-[12.5px] font-semibold text-no">
                               <Icon name="alert" size={14} />
                               {heldReason(r)}
                             </span>
@@ -208,7 +208,7 @@ export function ResultsPage() {
           {picksPanel("side")}
           {rec.heldBack.length > 0 && (
             <section aria-labelledby="held-h" className="card grid gap-2 p-4">
-              <h2 id="held-h" className="flex items-center gap-2 text-[16px] font-extrabold text-no">
+              <h2 id="held-h" className="flex items-center gap-2 text-[16px] font-semibold text-no">
                 <Icon name="alert" size={18} />
                 Held back ({rec.heldBack.length})
               </h2>
