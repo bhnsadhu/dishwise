@@ -70,5 +70,3 @@ export function learnFromFeedback(feedback: Feedback[]): LearnedTaste {
   }
   return { weights, support, examples };
 }
-
-export const emptyLearned = (): LearnedTaste => ({ weights: new Map(), support: new Map(), examples: [] });

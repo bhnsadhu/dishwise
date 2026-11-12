@@ -109,13 +109,6 @@ export const COURSES = ["starter", "main", "side", "dessert", "drink", "unknown"
 export type Course = (typeof COURSES)[number];
 
 /** 0 = no heat, 4 = very hot. */
-export const SPICE_LEVELS = [
-  { level: 0, label: "No heat" },
-  { level: 1, label: "Mild" },
-  { level: 2, label: "Medium" },
-  { level: 3, label: "Hot" },
-  { level: 4, label: "Very hot" },
-] as const;
 export type SpiceLevel = 0 | 1 | 2 | 3 | 4;
 
 export const BUDGETS = [
