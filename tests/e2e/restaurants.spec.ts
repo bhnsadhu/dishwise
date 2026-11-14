@@ -49,6 +49,10 @@ for (const restaurant of [
     await expect(dialog.getByText(restaurant.option, { exact: false })).toBeVisible();
     await expect(dialog.getByText("Choices and add-ons, not included in this score:")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    // Measure the final colors after the sheet's opacity animation, even on a busy test runner.
+    await dialog.evaluate(async node => {
+      await Promise.all(node.getAnimations({ subtree: true }).map(animation => animation.finished.catch(() => {})));
+    });
     const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
     expect(result.violations).toEqual([]);
   });
