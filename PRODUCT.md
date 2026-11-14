@@ -10,7 +10,7 @@ web
 Primary: a diner at a restaurant table, phone in hand, deciding what to order in the next minute or two, often in dim light, sometimes with others waiting. Secondary: the same person at home ordering online, pasting a menu. Recruiters evaluate the project by how real and fast it feels for that diner (confirmed by owner 2026-10-29).
 
 ## Product Purpose
-Answer "What should I order here?" Dishwise reads the menu in front of you (photo, paste, or sample), ranks every dish against your taste, explains each ranking, and learns from what you rate. Success: a confident pick in under a minute, and trust in why.
+Answer "What should I order here?" Dishwise reads the menu in front of you (photo, paste, supported restaurant, or sample), ranks every dish against your taste, explains each ranking, and learns from what you rate. Success: a confident pick in under a minute, and trust in why.
 
 ## Positioning
 Explainable, honest personal ranking of a specific menu: every reason points to the menu's own words or is labelled as a typical-recipe guess; nothing is invented; dietary conflicts are flagged and held back. Runs free and private: menu photos are read on the device and never uploaded.
@@ -18,13 +18,14 @@ Explainable, honest personal ranking of a specific menu: every reason points to 
 ## Operating Context
 - Two first-class contexts (owner decision 2026-10-29): diners on phones at the table, and recruiters/reviewers on laptops, who must understand and try the product in seconds. The laptop view is designed in its own right (DoorDash-web-style), not a stretched phone layout.
 - Used one-handed at a table; must be fast to scan and tap.
-- Inputs: menu photo (camera or library), pasted text from sites and delivery apps, typed dishes, five fictional sample menus.
+- Inputs: menu photo (camera or library), pasted text from sites and delivery apps, typed dishes, supported public restaurant menus, five fictional sample menus.
 - Guests use everything; an account (Neon Auth, email + password) only syncs taste, ratings and saved dishes across devices.
 
 ## Capabilities and Constraints
 - Taste profile: cuisines, favourite dishes, liked/disliked ingredients and flavours, heat tolerance, diet, things to avoid, budget. All optional.
 - Ranking: deterministic 0–100 match with a point-by-point "why"; diversified top picks; held-back list for diet/allergy conflicts; learns from 1–5★ ratings and saves.
 - Scan: in-browser OCR with an editable review step that flags uncertain reads.
+- Restaurant pilot: search a reviewed directory, open a public restaurant menu and rank it with the same taste profile. Initial coverage is Watson's at The Yard in Urbana, Illinois. Show source, retrieval time and size prices. Source failures offer scan/paste recovery; no claim of citywide coverage or live availability.
 - Notebook: saved, tried and rated dishes; ratings editable.
 - $0 infrastructure (Vercel Hobby, Neon Free); no paid APIs.
 
@@ -34,7 +35,8 @@ Explainable, honest personal ranking of a specific menu: every reason points to 
 
 ## Evidence on Hand
 - Five fictional sample menus in `src/lib/menu/samples.ts` (must stay labelled fictional).
-- No food photography, no real restaurant data, no user reviews, no ratings from other people, no delivery, no prices beyond what a menu shows. None of these may be fabricated.
+- One real restaurant source: Watson's at The Yard, read from its official public HTML menu. Source and validation details live in `docs/RESTAURANT-MENUS.md`.
+- No food photography, no user reviews, no ratings from other people, no delivery, no prices beyond what a menu shows. None of these may be fabricated.
 
 ## Product Principles
 1. Honesty over confidence: show what the menu says, label guesses, never claim a dish is safe.

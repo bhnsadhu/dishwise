@@ -6,6 +6,7 @@ import { REPO_URL } from "@/components/app-shell";
 import { CoverArt, coverGround } from "@/components/cover-art";
 import { GithubMark, Icon, Mark } from "@/components/icons";
 import { ThemeToggleIcon } from "@/components/theme-toggle";
+import { RestaurantSearch } from "@/components/restaurant-search";
 import { MatchPill, heldReason } from "@/components/match";
 import { useStore } from "@/lib/client/store";
 import { ingredientLabel } from "@/lib/domain/ingredients";
@@ -164,6 +165,10 @@ export function Home() {
             <span className="text-[14.5px] font-medium opacity-80">Point your camera at the menu. The photo stays on your device.</span>
           </Link>
           <div className="flex flex-wrap gap-2.5">
+            <a href="#restaurants" className="btn btn-secondary">
+              <Icon name="search" size={19} />
+              Find a restaurant
+            </a>
             <Link href="/scan?mode=type" className="btn btn-secondary">
               <Icon name="paste" size={19} />
               Paste a menu
@@ -190,6 +195,8 @@ export function Home() {
         </div>
         <LiveDemo />
       </section>
+
+      <RestaurantSearch />
 
       <section aria-labelledby="samples-h" className="mt-12">
         <div className="page flex items-baseline justify-between">

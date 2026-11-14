@@ -9,7 +9,7 @@ import { GithubMark, Icon, Mark, type IconName } from "./icons";
 export const REPO_URL = "https://github.com/bhnsadhu/dishwise";
 
 const TABS: { href: string; label: string; icon: IconName; match: (p: string) => boolean }[] = [
-  { href: "/", label: "Home", icon: "home", match: (p) => p === "/" || p.startsWith("/m/") || p === "/menus" },
+  { href: "/", label: "Home", icon: "home", match: (p) => p === "/" || p.startsWith("/m/") || p.startsWith("/restaurants/") || p === "/menus" },
   { href: "/scan", label: "Scan", icon: "camera", match: (p) => p === "/scan" },
   { href: "/notebook", label: "Saved", icon: "heart", match: (p) => p === "/notebook" },
   { href: "/account", label: "You", icon: "user", match: (p) => p === "/account" || p === "/taste" || p === "/how" },
@@ -33,7 +33,7 @@ export function ShellBars({ path = "", signedIn = false }: { path?: string; sign
           </Link>
           <nav aria-label="Main" className="flex items-center gap-1">
             {[...TABS, { href: "/taste", label: "Your taste", icon: "sliders" as IconName, match: (p: string) => p === "/taste" }].map((t) => {
-              const on = t.href === "/" ? path === "/" || path.startsWith("/m/") || path === "/menus" : t.match(path) && !(t.href === "/account" && path === "/taste");
+              const on = t.match(path) && !(t.href === "/account" && path === "/taste");
               return (
                 <Link
                   key={t.href}

@@ -10,6 +10,7 @@ The source's `robots.txt` permits the public page and disallows private API and 
 
 ## Data path
 
+- Home's restaurant search matches names, cities and cuisine terms within the reviewed directory. An empty result offers scan and paste; it does not imply the restaurant does not exist. `/restaurants/watsons-the-yard` loads the source on the server and passes plain menu fields to the existing ranking screen. Taste, ratings and saves keep their existing guest and account behavior.
 - `src/lib/restaurants/catalog.ts` holds reviewed location metadata and local search terms. Only a registry ID can select a source URL.
 - `parse-watsons.ts` extracts plain text with Cheerio. All six expected food sections must be present, each with dishes. Changed sections, duplicates and invalid records fail the load rather than silently presenting a partial menu.
 - `fetch-menu.ts` bounds the request to eight seconds and one megabyte. Redirects, non-HTML responses and HTTP errors fail closed. No user-supplied URL is fetched and no cookies are sent.
@@ -20,5 +21,13 @@ Size-dependent prices do not participate in numeric budget scoring. Sauce and pr
 ## Verification
 
 Run `npx vitest run src/lib/restaurants/restaurant-menu.test.ts`. The tests cover extraction, add-on exclusion, variant and missing prices, incomplete markup, URL restrictions, response limits and source failure. Fixtures are authored examples of the HTML structure. A separate local smoke check fetched the actual public page and verified the 19-dish result and a size-dependent price; routine tests do not contact the restaurant.
+
+`tests/e2e/restaurants.spec.ts` covers search, empty results, keyboard navigation, source metadata, price ranges, personalization, saving and accessibility in both themes. The real-source journey is opt-in because it depends on the restaurant's current menu. With Dishwise running locally, run:
+
+```sh
+BASE_URL=http://127.0.0.1:3220 PLAYWRIGHT_CHANNEL=chrome TEST_LIVE_RESTAURANT=1 npx playwright test tests/e2e/restaurants.spec.ts --workers=1
+```
+
+`PLAYWRIGHT_CHANNEL=chrome` uses installed Chrome in a separate test profile. Omit it to use Playwright's Chromium. No personal browser session is used.
 
 To add a location, verify its identity and public menu source, review applicable access restrictions, add a narrowly scoped adapter and registry entry, and test prices, options, missing data and changed markup. Never generalize this adapter into an arbitrary URL proxy or silently add all restaurants returned by a delivery platform.

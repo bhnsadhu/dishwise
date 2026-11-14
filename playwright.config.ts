@@ -9,7 +9,7 @@ export default defineConfig({
   timeout: 45_000,
   fullyParallel: true,
   reporter: [["list"]],
-  use: { baseURL: BASE_URL ?? `http://localhost:${PORT}`, trace: "retain-on-failure" },
+  use: { baseURL: BASE_URL ?? `http://localhost:${PORT}`, channel: process.env.PLAYWRIGHT_CHANNEL, trace: "retain-on-failure" },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["Pixel 7"] } },

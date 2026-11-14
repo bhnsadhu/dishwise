@@ -7,6 +7,7 @@ import { enrichMenu, type EnrichedDish } from "@/lib/menu/enrich";
 import { sampleMenuById } from "@/lib/menu/samples";
 import { recommend, type Recommendation } from "@/lib/reco/rank";
 import { useStore } from "./store";
+import type { Restaurant } from "@/lib/restaurants/catalog";
 
 export interface ResolvedMenu {
   id: string;
@@ -15,7 +16,8 @@ export interface ResolvedMenu {
   cuisine?: CuisineId;
   items: MenuItemInput[];
   illustrative: boolean;
-  source: "sample" | "scan" | "manual";
+  source: "sample" | "scan" | "manual" | "restaurant";
+  restaurant?: Restaurant & { checkedAt: string };
 }
 
 export function useResolvedMenu(id: string): ResolvedMenu | null | undefined {

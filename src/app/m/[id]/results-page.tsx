@@ -7,7 +7,7 @@ import { CoverArt, coverGround } from "@/components/cover-art";
 import { DishDialog } from "@/components/dish-dialog";
 import { Icon } from "@/components/icons";
 import { MatchPill, formatPrice, heldReason, isHeld } from "@/components/match";
-import { useRecommendation, useResolvedMenu } from "@/lib/client/use-menu";
+import { useRecommendation, useResolvedMenu, type ResolvedMenu } from "@/lib/client/use-menu";
 import { useStore } from "@/lib/client/store";
 import { cuisineLabel } from "@/lib/domain/vocab";
 import type { EnrichedDish } from "@/lib/menu/enrich";
@@ -28,9 +28,10 @@ function Described({ r }: { r: RankedDish }) {
   );
 }
 
-export function ResultsPage() {
+export function ResultsPage({ providedMenu }: { providedMenu?: ResolvedMenu } = {}) {
   const { id } = useParams<{ id: string }>();
-  const menu = useResolvedMenu(id);
+  const deviceMenu = useResolvedMenu(id);
+  const menu = providedMenu ?? deviceMenu;
   const result = useRecommendation(menu);
   const { profileTouched, feedback, profile } = useStore();
   const [selected, setSelected] = useState<string | null>(null);
@@ -104,12 +105,12 @@ export function ResultsPage() {
 
   return (
     <div className="page pt-3 md:pt-6">
-      <div className="relative grid h-40 place-items-center overflow-hidden rounded-[22px] md:h-56" style={{ background: coverGround(menu.cuisine) }}>
+      {menu.restaurant ? <Link href="/#restaurants" className="inline-flex min-h-11 items-center gap-2 text-[14px] font-semibold text-sub hover:text-ink"><Icon name="back" size={16} />Restaurant menus</Link> : <div className="relative grid h-40 place-items-center overflow-hidden rounded-[22px] md:h-56" style={{ background: coverGround(menu.cuisine) }}>
         <CoverArt cuisine={menu.cuisine} className="h-[88%] w-auto" />
         <Link href="/" className="absolute left-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-card text-ink shadow-md md:hidden" aria-label="Back to home">
           <Icon name="back" size={20} />
         </Link>
-      </div>
+      </div>}
 
       <header className="mt-4 grid gap-2 md:mt-6">
         <h1 className="text-[28px] font-bold leading-tight tracking-[-0.025em] md:text-[38px]">{menu.title}</h1>
@@ -120,8 +121,17 @@ export function ResultsPage() {
           {menu.illustrative && (
             <span className="rounded-md bg-warn-soft px-2 py-0.5 text-[12.5px] font-semibold text-warn">Sample menu · fictional restaurant</span>
           )}
-          {!menu.illustrative && <span className="rounded-md bg-surf px-2 py-0.5 text-[12.5px] font-semibold">{menu.source === "scan" ? "Scanned" : "Typed"} on this device</span>}
+          {menu.restaurant ? <span className="rounded-md bg-surf px-2 py-0.5 text-[12.5px] font-semibold">Restaurant menu</span>
+            : !menu.illustrative && <span className="rounded-md bg-surf px-2 py-0.5 text-[12.5px] font-semibold">{menu.source === "scan" ? "Scanned" : "Typed"} on this device</span>}
         </p>
+        {menu.restaurant && <div className="mt-1 grid gap-2 text-[14px] text-sub">
+          <p>{menu.restaurant.address}</p>
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <a href={menu.restaurant.sourceUrl} target="_blank" rel="noopener noreferrer" className="link inline-flex min-h-11 items-center">View restaurant menu<span className="sr-only"> (opens in a new tab)</span></a>
+            <span>Checked <time dateTime={menu.restaurant.checkedAt}>{new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Chicago" }).format(new Date(menu.restaurant.checkedAt))}</time> CT</span>
+          </p>
+          <p className="max-w-[75ch]">Prices and availability may change. Size prices stay as listed. Add-ons and sauces aren’t ranked separately.</p>
+        </div>}
         {!profileTouched && rec.stage === "cold-start" && (
           <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-brand-soft p-4">
             <p className="text-[15px]">
