@@ -5,7 +5,7 @@ test("restaurant search explains its coverage and gives an empty-search recovery
   await page.goto("/");
   await page.getByRole("link", { name: "Find a restaurant", exact: true }).click();
   const section = page.getByRole("region", { name: "Find a restaurant menu" });
-  await expect(section).toContainText("1 restaurant");
+  await expect(section).toContainText("5 restaurants");
   const input = page.getByRole("searchbox", { name: "Restaurant, city or cuisine" });
   await input.fill("not in the directory");
   await expect(section.getByRole("heading", { name: "That restaurant isn’t in Dishwise yet" })).toBeVisible();
@@ -29,6 +29,30 @@ const scoreOf = async (page: Page) => {
   const label = await page.getByRole("button", { name: /^TOFU PO’BOY\. Score/ }).getAttribute("aria-label");
   return Number(label?.match(/Score (\d+)/)?.[1]);
 };
+
+for (const restaurant of [
+  { id: "kohinoor", name: "Kohinoor", count: 138, dish: /^CHANA SAAG\. Score/, price: "$13.99", option: "Vegan preparation available upon request.", note: /Dinner food menu/ },
+  { id: "kofusion-downtown", name: "KoFusion Downtown", count: 24, dish: /^Panang Curry\. Score/, option: /Protein choice: tofu, chicken, shrimp/i, note: /This source does not list prices/ },
+  { id: "fiesta-cafe", name: "Fiesta Cafe", count: 21, dish: /^Enchilada Lunch\. Score/, price: "$10.95", option: /Your choice of meats/, note: /weekdays, 11am to 5pm/ },
+  { id: "jupiters-downtown", name: "Jupiter’s Downtown", count: 28, dish: /^BBQ Chicken grinder\. Score/, price: "$10.75", option: /Add Onions and Jalapeños For/, note: /Build-your-own pizzas/ },
+]) {
+  test(`reviewed menu at ${restaurant.name} preserves prices, choices and source scope`, async ({ page }) => {
+    test.skip(process.env.TEST_LIVE_RESTAURANT !== "1", "Opt in to current public menus.");
+    await page.goto(`/restaurants/${restaurant.id}`);
+    await expect(page.getByRole("heading", { level: 1, name: restaurant.name })).toBeVisible();
+    await expect(page.getByText(`${restaurant.count} dishes`, { exact: true })).toBeVisible();
+    await expect(page.getByText(restaurant.note)).toBeVisible();
+    await page.getByRole("button", { name: restaurant.dish }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog.getByText("Why this score")).toBeVisible();
+    if (restaurant.price) await expect(dialog).toContainText(restaurant.price);
+    await expect(dialog.getByText(restaurant.option, { exact: false })).toBeVisible();
+    await expect(dialog.getByText("Choices and add-ons, not included in this score:")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+    expect(result.violations).toEqual([]);
+  });
+}
 
 test("live restaurant menu supports taste, source details, rating and saving", async ({ page }) => {
   test.skip(process.env.TEST_LIVE_RESTAURANT !== "1", "Opt in to the real restaurant source with TEST_LIVE_RESTAURANT=1.");

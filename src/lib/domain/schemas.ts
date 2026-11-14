@@ -48,10 +48,12 @@ export const emptyProfile = (): TasteProfile => tasteProfileSchema.parse({ versi
 export const menuItemInputSchema = z.object({
   name: z.string().trim().min(1).max(120),
   description: z.string().trim().max(600).optional(),
+  /** Choices/add-ons shown separately, never treated as included ingredients by the ranker. */
+  optionsText: z.string().trim().max(600).optional(),
   /** Price in minor units (cents). Absent when the menu shows no price or it could not be read. */
   priceCents: z.number().int().min(0).max(10_000_000).optional(),
   /** Free-form price text kept when it is not numeric, e.g. "MP" / "Market price". */
-  priceText: z.string().trim().max(40).optional(),
+  priceText: z.string().trim().max(120).optional(),
   section: z.string().trim().max(80).optional(),
   /** Menu-declared cuisine, if the menu or user specified one. */
   cuisine: cuisineId.optional(),

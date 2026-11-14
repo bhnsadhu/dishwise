@@ -25,7 +25,7 @@ Explainable, honest personal ranking of a specific menu: every reason points to 
 - Taste profile: cuisines, favourite dishes, liked/disliked ingredients and flavours, heat tolerance, diet, things to avoid, budget. All optional.
 - Ranking: deterministic 0–100 match with a point-by-point "why"; diversified top picks; held-back list for diet/allergy conflicts; learns from 1–5★ ratings and saves.
 - Scan: in-browser OCR with an editable review step that flags uncertain reads.
-- Restaurant pilot: search a reviewed directory, open a public restaurant menu and rank it with the same taste profile. Initial coverage is Watson's at The Yard in Urbana, Illinois. Show source, retrieval time and size prices. Source failures offer scan/paste recovery; no claim of citywide coverage or live availability.
+- Restaurant pilot: search a reviewed directory, open a public restaurant menu and rank it with the same taste profile. Coverage is five reviewed Champaign-Urbana locations: Watson's at The Yard, Kohinoor, KoFusion Downtown, Fiesta Cafe and Jupiter's Downtown. Each listing names the menu subset it covers. Show source, retrieval time and size prices. Source failures offer scan/paste recovery; no claim of citywide coverage or live availability.
 - Notebook: saved, tried and rated dishes; ratings editable.
 - $0 infrastructure (Vercel Hobby, Neon Free); no paid APIs.
 
@@ -35,7 +35,7 @@ Explainable, honest personal ranking of a specific menu: every reason points to 
 
 ## Evidence on Hand
 - Five fictional sample menus in `src/lib/menu/samples.ts` (must stay labelled fictional).
-- One real restaurant source: Watson's at The Yard, read from its official public HTML menu. Source and validation details live in `docs/RESTAURANT-MENUS.md`.
+- Five real restaurant sources, read from their official public HTML menus. Source choices and add-ons appear separately from ingredients and do not affect scores. Source and validation details live in `docs/RESTAURANT-MENUS.md`.
 - No food photography, no user reviews, no ratings from other people, no delivery, no prices beyond what a menu shows. None of these may be fabricated.
 
 ## Product Principles

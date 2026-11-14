@@ -14,7 +14,7 @@ export function RestaurantSearch() {
         <div>
           <h2 id="restaurants-h" className="text-[22px] font-bold tracking-[-0.015em]">Find a restaurant menu</h2>
           <p id="restaurant-coverage" className="mt-1 max-w-[60ch] text-[15px] text-sub">
-            Starting in Champaign–Urbana with {RESTAURANTS.length} restaurant. Choose a menu and we’ll rank its dishes for your taste.
+            Starting in Champaign–Urbana with {RESTAURANTS.length} restaurants. Choose a menu and we’ll rank its dishes for your taste.
           </p>
         </div>
         <div>

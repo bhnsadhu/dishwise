@@ -42,7 +42,7 @@ export function ShellBars({ path = "", signedIn = false }: { path?: string; sign
                   className={`flex min-h-10 items-center gap-2 rounded-full px-3.5 text-[15px] font-semibold transition-colors ${on ? "bg-surf text-ink" : "text-sub hover:text-ink"}`}
                 >
                   <Icon name={t.icon} size={19} />
-                  {t.href === "/account" ? (signedIn ? "Account" : "Sign in") : t.label}
+                  <span className="sr-only lg:not-sr-only">{t.href === "/account" ? (signedIn ? "Account" : "Sign in") : t.label}</span>
                 </Link>
               );
             })}

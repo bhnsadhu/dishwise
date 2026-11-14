@@ -24,6 +24,7 @@ export interface EnrichedDish {
   key: string;
   name: string;
   description?: string;
+  optionsText?: string;
   priceCents?: number;
   priceText?: string;
   section?: string;
@@ -338,6 +339,7 @@ export function enrichDish(item: MenuItemInput, opts: EnrichOptions = {}): Enric
     key: `${opts.menuKey ?? "menu"}::${slugify(name)}`,
     name,
     description: item.description?.trim() || undefined,
+    optionsText: item.optionsText,
     priceCents: item.priceCents,
     priceText: item.priceText,
     section: item.section,

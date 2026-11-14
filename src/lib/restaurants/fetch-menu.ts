@@ -2,6 +2,18 @@ import "server-only";
 import type { MenuInput } from "@/lib/domain/schemas";
 import { restaurantById } from "./catalog";
 import { parseWatsonsMenu } from "./parse-watsons";
+import { parseKohinoorMenu } from "./parse-kohinoor";
+import { parseKofusionMenu } from "./parse-kofusion";
+import { parseFiestaMenu } from "./parse-fiesta";
+import { parseJupitersMenu } from "./parse-jupiters";
+
+const PARSERS: Record<string, (html: string) => MenuInput> = {
+  "watsons-the-yard": parseWatsonsMenu,
+  kohinoor: parseKohinoorMenu,
+  "kofusion-downtown": parseKofusionMenu,
+  "fiesta-cafe": parseFiestaMenu,
+  "jupiters-downtown": parseJupitersMenu,
+};
 
 export type RestaurantMenuResult =
   | { status: "ready"; menu: MenuInput; checkedAt: string }
@@ -48,7 +60,7 @@ export async function fetchRestaurantMenu(id: string, fetcher: typeof fetch = fe
       credentials: "omit",
       signal: AbortSignal.timeout(8_000),
     });
-    const menu = parseWatsonsMenu(await boundedHtml(response));
+    const menu = PARSERS[id](await boundedHtml(response));
     return { status: "ready", menu, checkedAt: new Date().toISOString() };
   } catch (error) {
     // Public source diagnostics only. Never log headers, cookies or response bodies.

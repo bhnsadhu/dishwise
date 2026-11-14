@@ -81,6 +81,9 @@ describe("bounded restaurant access", () => {
 });
 
 it("searches location and restaurant names without claiming broader coverage", () => {
-  for (const query of ["", "Watson's", "watson’s", "URBANA", "champaign chicken", "The Yard"]) expect(searchRestaurants(query)).toHaveLength(1);
+  for (const query of ["Watson's", "watson’s", "champaign chicken", "The Yard"]) expect(searchRestaurants(query)).toHaveLength(1);
+  for (const query of ["", "URBANA", "champaign"]) expect(searchRestaurants(query)).toHaveLength(5);
+  expect(searchRestaurants("Mexican").map(restaurant => restaurant.id)).toEqual(["fiesta-cafe"]);
+  expect(searchRestaurants("Ko Fusion").map(restaurant => restaurant.id)).toEqual(["kofusion-downtown"]);
   expect(searchRestaurants("another restaurant")).toEqual([]);
 });

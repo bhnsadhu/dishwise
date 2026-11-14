@@ -131,6 +131,7 @@ export function ResultsPage({ providedMenu }: { providedMenu?: ResolvedMenu } = 
             <span>Checked <time dateTime={menu.restaurant.checkedAt}>{new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Chicago" }).format(new Date(menu.restaurant.checkedAt))}</time> CT</span>
           </p>
           <p className="max-w-[75ch]">Prices and availability may change. Size prices stay as listed. Add-ons and sauces aren’t ranked separately.</p>
+          {menu.restaurant.menuNote && <p className="max-w-[75ch]">{menu.restaurant.menuNote}</p>}
         </div>}
         {!profileTouched && rec.stage === "cold-start" && (
           <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-brand-soft p-4">

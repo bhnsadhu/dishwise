@@ -69,6 +69,7 @@ export function DishDialog({ ranked, total, menuTitle, cuisine, onClose }: { ran
                   {highlight(ranked.dish.description, terms).map((s, i) => (s.kind ? <span key={i} className="em">{s.text}</span> : <Fragment key={i}>{s.text}</Fragment>))}
                 </p>
               )}
+              {ranked.dish.optionsText && <p className="mt-3 text-[14px] leading-relaxed text-sub"><strong className="font-semibold text-ink">Choices and add-ons, not included in this score:</strong> {ranked.dish.optionsText}</p>}
             </div>
 
             <div className={`grid grid-cols-[auto_1fr] items-center gap-x-4 rounded-2xl p-4 ${held ? "bg-no-soft" : ranked.score >= 70 ? "bg-ok-soft" : "bg-surf"}`}>
