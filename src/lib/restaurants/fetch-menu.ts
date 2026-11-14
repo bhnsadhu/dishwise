@@ -8,10 +8,12 @@ export type RestaurantMenuResult =
   | { status: "unavailable" }
   | { status: "not-found" };
 
-export const MAX_MENU_BYTES = 1_000_000;
+// Squarespace can serve a larger page to the hosting region than to a local browser.
+export const MAX_MENU_BYTES = 3_000_000;
 
 async function boundedHtml(response: Response): Promise<string> {
-  if (!response.ok || !/^text\/html(?:;|$)/i.test(response.headers.get("content-type") ?? "")) throw new Error("Menu unavailable");
+  if (!response.ok) throw new Error(`Menu HTTP ${response.status}`);
+  if (!/^text\/html(?:;|$)/i.test(response.headers.get("content-type") ?? "")) throw new Error("Menu response is not HTML");
   if (Number(response.headers.get("content-length")) > MAX_MENU_BYTES || !response.body) throw new Error("Menu too large or empty");
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -48,7 +50,9 @@ export async function fetchRestaurantMenu(id: string, fetcher: typeof fetch = fe
     });
     const menu = parseWatsonsMenu(await boundedHtml(response));
     return { status: "ready", menu, checkedAt: new Date().toISOString() };
-  } catch {
+  } catch (error) {
+    // Public source diagnostics only. Never log headers, cookies or response bodies.
+    console.warn("Restaurant menu unavailable", id, error instanceof Error ? { name: error.name, message: error.message, cause: String(error.cause ?? "") } : "Unknown error");
     // A source error never falls back to invented dishes or a fictional sample.
     return { status: "unavailable" };
   }
